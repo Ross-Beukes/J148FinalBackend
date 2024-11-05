@@ -16,7 +16,7 @@ public interface contract_periodRepo {
      * @return an Optional containing the added contract period, if successful
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractorPeriod) throws SQLException;
+    Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException;
     /**
      * Finds a contract period by its name.
      *
