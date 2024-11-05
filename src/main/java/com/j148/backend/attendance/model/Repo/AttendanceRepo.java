@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AttendanceRepo {
-    /**Inserts a attendance record into the database
+    /**
+     * Inserts a attendance record into the database
      *
      * @param attendance the attendance object containing details to be saved.
-     * @return true if the record was successfully inserted, false if otherwise*/
-    boolean createAttendanceRecord(Attendance attendance)throws SQLException;
+     * @return Optional of attendance if Insertion is successful, or return an Empty Optional if the Insertion was not successful
+     */
+    Optional<Attendance> createAttendanceRecord(Attendance attendance)throws SQLException;
     /**
      * Retrieves an attendance record by its ID.
      *
@@ -22,10 +24,14 @@ public interface AttendanceRepo {
     /**
      * Updates an existing attendance record in the database
      *
-     * @param  attendance the Attendance object containing updated details.
-     * @return true if the record was successfully updated, false otherwise.*/
-    boolean updateAttendance(Attendance attendance) throws SQLException;
-
+     * @param attendance the Attendance object containing updated details.
+     * @return Optional of attendance if the Update is successful, or return an empty Optional if Update was not successful.
+     */
+    Optional<Attendance>updateAttendance(Attendance attendance) throws SQLException;
+/**
+ * Retrieves a List of existing attendance records
+ *
+ * @return a list of attendance records*/
 
     List<Attendance>getAllAttendance()throws SQLException;
 }

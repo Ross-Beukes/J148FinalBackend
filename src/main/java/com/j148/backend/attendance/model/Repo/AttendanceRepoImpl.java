@@ -22,12 +22,14 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
      * Inserts a attendance record into the database
      *
      * @param attendance the attendance object containing details to be saved.
-     * @return true if the record was successfully inserted, false if otherwise
+     * @return Optional of attendance if Insertion is successful, or return an Empty Optional if the Insertion was not successful
      */
     @Override
-    public boolean createAttendanceRecord(Attendance attendance) throws SQLException {
+    public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
         String query = "INSERT into attendance (timeTn,timeOut, register, contractorId) VALUES (?,?,?,?)";
         try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query)) {
+
+            con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
             statement.setTimestamp(2, Timestamp.valueOf(attendance.getTimeOut()));
             statement.setString(3, attendance.getRegister().name());
@@ -36,14 +38,16 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
             Savepoint save = con.setSavepoint();
             int affectedRows = statement.executeUpdate();
 
-            if (affectedRows < 0) {
-                return false;
-            }
-            return affectedRows > 0;
+            if (affectedRows > 0) {
+                con.commit();
+                return Optional.of(attendance);
+            } else {
+                con.rollback();
+                return Optional.empty();
 
+            }
 
         }
-
     }
 
     /**
@@ -59,17 +63,18 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
             statement.setLong(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
-                Attendance attendance = new Attendance();
+                Attendance attendance = Attendance.builder().build();
                 attendance.setAttendanceId(rs.getLong("attendanceId"));
                 attendance.setTimeIn(rs.getTimestamp("timeIn").toLocalDateTime());
                 attendance.setTimeOut(rs.getTimestamp("timeOut").toLocalDateTime());
                 attendance.setRegister(Attendance.Register.valueOf(rs.getString("register")));
 
-                Contractor contractor = new Contractor();
+                Contractor contractor = Contractor.builder().build();
                 contractor.setContractorId(rs.getLong("contractorId"));
                 attendance.setContractor(contractor);
 
                 return Optional.of(attendance);
+
             } else {
                 return Optional.empty();
 
@@ -81,13 +86,14 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
      * Updates an existing attendance record in the database
      *
      * @param attendance the Attendance object containing updated details.
-     * @return true if the record was successfully updated, false otherwise.
+     * @return Optional of attendance if the Update is successful, or return an empty Optional if Update was not successful.
      */
 
     @Override
-    public boolean updateAttendance(Attendance attendance) throws SQLException {
+    public Optional<Attendance> updateAttendance(Attendance attendance) throws SQLException {
         String query = "UPDATE attendance SET timeIn = ?, timeOut = ?, register = ?, contractorId = ? WHERE attendanceId = ?";
         try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query)) {
+            con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
             statement.setTimestamp(2, Timestamp.valueOf(attendance.getTimeOut()));
             statement.setString(3, attendance.getRegister().name());
@@ -96,19 +102,18 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
 
             Savepoint save = con.setSavepoint();
             int affectedRows = statement.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+
+            if (affectedRows > 0) {
+                con.commit();
+                return Optional.of(attendance);
+
+            }
+
         }
+
+        return Optional.empty();
     }
 
-    /**
-     * Deletes an attendance record from the database by its id.
-     *
-     * @param id the unique identifier of attendance record to delete
-     * @return true if the record was successfully deleted, false if otherwise
-     */
 
 
 
@@ -120,17 +125,14 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
         try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query);
              ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
-                Attendance attendance = new Attendance();
-                attendance.setAttendanceId(rs.getLong("attendanceId"));
-                attendance.setTimeIn(rs.getTimestamp("timeIn").toLocalDateTime());
-                attendance.setTimeOut(rs.getTimestamp("timeOut").toLocalDateTime());
-                attendance.setRegister(Attendance.Register.valueOf(rs.getString("register")));
+                Attendance attendance = Attendance.builder()
+                        .attendanceId(rs.getLong("attendanceId")).timeIn(rs.getTimestamp("timeIn").toLocalDateTime())
+                                .timeOut(rs.getTimestamp("timeOut").toLocalDateTime())
+                                        .register(Attendance.Register.valueOf("register")).build();
+                                        Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractorId")).build();
+                                        attendance.setContractor(contractor);
+                                        attendanceList.add(attendance);
 
-                Contractor contractor = new Contractor();
-                contractor.setContractorId(rs.getLong("contractorId"));
-                attendance.setContractor(contractor);
-
-                attendanceList.add(attendance);
             }
 
 
