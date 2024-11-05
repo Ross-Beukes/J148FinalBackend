@@ -83,11 +83,12 @@ DROP TABLE IF EXISTS `contractor`;
 CREATE TABLE `contractor` (
   `contractor_id` bigint NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
-  `start_date` date NOT NULL,
-  `end_date` date NOT NULL,
   `status` enum('EXTERNAL','SUSPENDED','ACTIVE','ON_LEAVE') DEFAULT NULL,
+  `contractor_period_id` bigint NOT NULL,
   PRIMARY KEY (`contractor_id`),
   UNIQUE KEY `user_id_UNIQUE` (`user_id`),
+  KEY `contractor_period_id_idx` (`contractor_period_id`),
+  CONSTRAINT `contractor_period_id` FOREIGN KEY (`contractor_period_id`) REFERENCES `contractor_period` (`contractor_period_id`),
   CONSTRAINT `iduser` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -99,6 +100,32 @@ CREATE TABLE `contractor` (
 LOCK TABLES `contractor` WRITE;
 /*!40000 ALTER TABLE `contractor` DISABLE KEYS */;
 /*!40000 ALTER TABLE `contractor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `contractor_period`
+--
+
+DROP TABLE IF EXISTS `contractor_period`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `contractor_period` (
+  `contractor_period_id` bigint NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `start_date` date NOT NULL,
+  `end_date` date NOT NULL,
+  PRIMARY KEY (`contractor_period_id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `contractor_period`
+--
+
+LOCK TABLES `contractor_period` WRITE;
+/*!40000 ALTER TABLE `contractor_period` DISABLE KEYS */;
+/*!40000 ALTER TABLE `contractor_period` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -207,7 +234,7 @@ CREATE TABLE `user` (
   `id_number` varchar(13) NOT NULL,
   `role` enum('APPLICANT','CONTRACTOR','INSTRUCTOR','ADMIN') NOT NULL DEFAULT 'APPLICANT',
   `race` varchar(45) NOT NULL,
-  `loaction` varchar(255) NOT NULL,
+  `location` varchar(255) NOT NULL,
   `age` int NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
@@ -261,4 +288,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-04 13:42:51
+-- Dump completed on 2024-11-04 14:23:30
