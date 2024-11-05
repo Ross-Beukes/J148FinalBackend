@@ -1,6 +1,7 @@
-package com.j148.backend.files.model;
+package com.j148.backend.files.repo;
 
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.files.model.Files;
 import com.j148.backend.user.model.User;
 
 import java.sql.*;

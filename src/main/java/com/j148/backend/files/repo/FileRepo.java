@@ -1,4 +1,6 @@
-package com.j148.backend.files.model;
+package com.j148.backend.files.repo;
+
+import com.j148.backend.files.model.Files;
 
 import java.util.List;
 import java.util.Optional;
