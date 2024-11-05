@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.j148.backend.aptitude_test.model.Repo;
+package com.j148.backend.aptitude_test.repo;
 
 /**
  *
@@ -10,6 +10,7 @@ package com.j148.backend.aptitude_test.model.Repo;
  */
 
 import com.j148.backend.aptitude_test.model.AptitudeTest;
+import com.j148.backend.aptitude_test.model.Repo.AptitudeRepo;
 import com.j148.backend.user.model.User;
 import com.j148.backend.config.DBConfig;
 
