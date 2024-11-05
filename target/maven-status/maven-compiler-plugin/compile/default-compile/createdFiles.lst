@@ -1,11 +1,12 @@
 com\j148\backend\warning\model\Warning$WarningState.class
 com\j148\backend\contractor\model\Contractor$ContractorBuilder.class
+com\j148\backend\files\model\FileRepo.class
 com\j148\backend\hearing\model\Hearing$HearingBuilder.class
 com\j148\backend\files\model\Files$Verified.class
 com\j148\backend\warning\model\Warning.class
-com\j148\backend\user\repo\UserRepoImpl.class
 com\j148\backend\JakartaRestConfiguration.class
 com\j148\backend\aptitude_test\model\AptitudeTest$AptitudeTestBuilder.class
+com\j148\backend\files\model\FileRepoImpl.class
 com\j148\backend\user\model\User.class
 com\j148\backend\aptitude_test\model\AptitudeTest.class
 com\j148\backend\leave_request\model\LeaveRequest$Decision.class
@@ -18,7 +19,6 @@ com\j148\backend\hearing\model\Hearing.class
 com\j148\backend\config\DBConfig.class
 com\j148\backend\files\model\Files$Category.class
 com\j148\backend\files\model\Files.class
-com\j148\backend\user\repo\UserRepo.class
 com\j148\backend\contractor\model\Contractor$Status.class
 com\j148\backend\files\model\Files$FilesBuilder.class
 com\j148\backend\resources\JakartaEE91Resource.class
