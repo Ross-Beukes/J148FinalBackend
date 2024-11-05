@@ -115,7 +115,7 @@ public interface WarningRepo {
      * @return Optional containing a List of warnings with the specified reason, empty Optional if none found
      * @throws SQLException if a database access error occurs
      */
-    Optional<List<Warning>> findWarningsByReason(Warning.WarningReason reason) throws SQLException;
+    Optional<List<Warning>> findWarningsByReason(Warning warning) throws SQLException;
 
     /**
      * Checks if a warning exists for a specific contractor on a given date.

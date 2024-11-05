@@ -272,7 +272,8 @@ public class WarningRepoImpl extends DBConfig implements WarningRepo {
 
 
     @Override
-    public Optional<List<Warning>> findWarningsByReason(Warning.WarningReason reason) throws SQLException {
+    public Optional<List<Warning>> findWarningsByReason(Warning warning) throws SQLException {
+        String reason = warning.getReason().name();
         String sql = """
                 SELECT w.*, c.*, u.*, cp.*
                 FROM warning w 
