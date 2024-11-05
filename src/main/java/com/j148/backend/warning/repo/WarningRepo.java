@@ -111,7 +111,7 @@ public interface WarningRepo {
     /**
      * Retrieves all warnings with a specific reason.
      *
-     * @param reason the WarningReason to search for
+     * @param warning with the WarningReason to search for
      * @return Optional containing a List of warnings with the specified reason, empty Optional if none found
      * @throws SQLException if a database access error occurs
      */

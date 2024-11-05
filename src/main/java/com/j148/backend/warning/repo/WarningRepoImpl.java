@@ -5,7 +5,6 @@ import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.user.model.User;
 import com.j148.backend.warning.model.Warning;
-
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
