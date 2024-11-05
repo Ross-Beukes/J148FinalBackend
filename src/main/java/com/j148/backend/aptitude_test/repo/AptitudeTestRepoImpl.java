@@ -10,7 +10,6 @@ package com.j148.backend.aptitude_test.repo;
  */
 
 import com.j148.backend.aptitude_test.model.AptitudeTest;
-import com.j148.backend.aptitude_test.model.Repo.AptitudeRepo;
 import com.j148.backend.user.model.User;
 import com.j148.backend.config.DBConfig;
 
