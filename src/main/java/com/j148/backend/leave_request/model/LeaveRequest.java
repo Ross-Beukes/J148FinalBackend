@@ -17,6 +17,6 @@ public class LeaveRequest {
     private Files file;
 
     public enum Decision {
-        APPROVED, DENIED
+        APPROVED, DENIED, PENDING
     }
 }
