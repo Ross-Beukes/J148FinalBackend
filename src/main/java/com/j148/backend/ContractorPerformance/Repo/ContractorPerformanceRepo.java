@@ -10,8 +10,23 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ContractorPerformanceRepo {
-    Optional<ContractorPerformance>getContractorPerformance(User user)throws SQLException;
-    List<ContractorPerformance>getAllContractorPerformance()throws SQLException;
+    
+    /**
+     * Retrieves the performance data for a specific contractor based on the provided user.
+     * This data includes information on warnings, attendance records, and hearings.
+     *
+     * @param user the user object representing the contractor whose performance data is needed.
+     * @return an Optional containing the contractor performance data if available, or an empty Optional if not found.
+     * @throws SQLException if a database access error occurs.
+     */
+    Optional<ContractorPerformance> getContractorPerformance(User user) throws SQLException;
 
-
+    /**
+     * Retrieves performance data for all contractors.
+     * The data includes warnings, attendance records, and hearing details for each contractor.
+     *
+     * @return a list of contractor performance records for all contractors.
+     * @throws SQLException if a database access error occurs.
+     */
+    List<ContractorPerformance> getAllContractorPerformance() throws SQLException;
 }
