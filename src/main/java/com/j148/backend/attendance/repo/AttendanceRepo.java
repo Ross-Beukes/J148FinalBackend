@@ -1,4 +1,4 @@
-package com.j148.backend.attendance.Repo;
+package com.j148.backend.attendance.repo;
 
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.contractor.model.Contractor;
