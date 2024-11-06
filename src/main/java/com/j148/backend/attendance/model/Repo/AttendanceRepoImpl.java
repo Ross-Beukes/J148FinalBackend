@@ -139,4 +139,27 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
         }
         return attendanceList;
     }
+
+    @Override
+    public List<Attendance> FindAllAttendanceForContractor(Contractor contractor) throws SQLException {
+        List<Attendance>attendanceList = new ArrayList<>();
+        String query= "SELECT * FROM attendance WHERE contractorId =?";
+        try(Connection con = getConnection();
+        PreparedStatement statement= con.prepareStatement(query)){
+            statement.setLong(1, contractor.getContractorId());
+            ResultSet rs = statement.executeQuery();
+
+            while(rs.next()){
+                Attendance attendance =Attendance.builder().build();
+                attendance.setAttendanceId(rs.getLong("attendanceId"));
+                attendance.setTimeIn(rs.getTimestamp("timeIn").toLocalDateTime());
+                attendance.setTimeOut(rs.getTimestamp("timeOut").toLocalDateTime());
+                attendance.setRegister(Attendance.Register.valueOf(rs.getString("register")));
+
+                attendance.setContractor(contractor);
+                attendanceList.add(attendance);
+            }
+        }
+        return attendanceList;
+    }
 }
