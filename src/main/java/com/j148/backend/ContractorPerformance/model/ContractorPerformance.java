@@ -14,18 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-
 public class ContractorPerformance {
 
-    private List<Warning> warnings;
-    private List<Attendance> attendanceList;
-    private List<Hearing> hearings;
-
-    private Contractor contractor;
-    private ContractPeriod contractPeriod;
-   private User user;
+    private List<Warning> warningList;   // Multiple warnings for a contractor
+    private List<Attendance> attendanceList;  // Multiple attendance records for a contractor
+    private List<Hearing> hearingList;  // Multiple hearings for a contractor
+    private Contractor contractor;  // Singular contractor object (one contractor per performance)
+    private ContractPeriod contractPeriod;  // Singular contract period (one contract period per performance)
+    private User user;  // Singular user object (one user per performance)
 
 }
-
-
