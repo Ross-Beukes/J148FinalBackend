@@ -1,4 +1,4 @@
-package com.j148.backend.contract_period.model.contract_periodRepo;
+package com.j148.backend.contract_period.repo;
 
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contract_period.model.ContractPeriod;
