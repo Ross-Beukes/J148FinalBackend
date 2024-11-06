@@ -1,4 +1,4 @@
-package com.j148.backend.contractor.model.repo;
+package com.j148.backend.contractor.repo;
 
 import com.j148.backend.contractor.model.Contractor;
 import java.sql.SQLException;
