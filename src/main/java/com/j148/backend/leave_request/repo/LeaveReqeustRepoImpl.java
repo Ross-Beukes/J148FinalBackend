@@ -30,6 +30,50 @@ import java.util.logging.Logger;
  * @author yusuf
  */
 public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo{
+    
+        @Override
+    public Optional<LeaveRequest> acceptLeaveRequest(Long leaveRequestId) throws SQLException {
+        return updateDecision(leaveRequestId, LeaveRequest.Decision.APPROVED);
+    }
+
+    @Override
+    public Optional<LeaveRequest> declineLeaveRequest(Long leaveRequestId) throws SQLException {
+        return updateDecision(leaveRequestId, LeaveRequest.Decision.DENIED);
+        
+    }
+    
+    private Optional<LeaveRequest> updateDecision(Long leaveRequestId, LeaveRequest.Decision decision) throws SQLException {
+        String query = "UPDATE leave_request SET decision = ? WHERE leave_request_id = ?";
+
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            con.setAutoCommit(false);
+            ps.setString(1, decision.toString());
+            ps.setLong(2, leaveRequestId);
+            Savepoint beforeUpdate = con.setSavepoint();
+
+            if (ps.executeUpdate() > 0) {
+                con.commit();
+                return findById(leaveRequestId); // retrieve updated LeaveRequest
+            } else {
+                con.rollback(beforeUpdate);
+            }
+        } catch (SQLException e) {
+        }
+        return Optional.empty();
+    }
+        private Optional<LeaveRequest> findById(Long leaveRequestId) throws SQLException {
+        String query = "SELECT * FROM leave_requests WHERE leave_request_id = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setLong(1, leaveRequestId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapRowToLeaveRequest(rs));
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
 
     @Override
     public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException{
@@ -139,6 +183,16 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo{
             }
         }
         return requestMap;
+    }
+     private LeaveRequest mapRowToLeaveRequest(ResultSet rs) throws SQLException {
+        return LeaveRequest.builder()
+                .leaveRequestId(rs.getLong("leave_request_id"))
+                .startDate(rs.getDate("start_date").toLocalDate())
+                .endDate(rs.getDate("end_date").toLocalDate())
+                .decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
+                .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
+                .file(Files.builder().fileId(rs.getLong("file_id")).build())
+                .build();
     }
     
 }
