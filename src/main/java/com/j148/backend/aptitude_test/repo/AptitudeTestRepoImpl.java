@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.j148.backend.config.DBConfig.getCon;
+
 public class AptitudeTestRepoImpl implements AptitudeRepo {
 
     @Override
     public AptitudeTest create (AptitudeTest aptitudeTest) throws SQLException {
         String sql = "INSERT INTO aptitude_tests (test_mark, test_date, user_id) VALUES (?, ?, ?)";
-        try (Connection conn = DBConfig.getCon();
+        try (Connection conn = getCon();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, aptitudeTest.getTestMark());
@@ -48,7 +50,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
     @Override
     public Optional<AptitudeTest> findById(Long id) throws SQLException  {
         String sql = "SELECT * FROM aptitude_tests WHERE aptitude_test_id = ?";
-        try (Connection conn = DBConfig.getCon();
+        try (Connection conn = getCon();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setLong(1, id);
@@ -65,7 +67,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
     public List<AptitudeTest> findAll() throws SQLException {
         String sql = "SELECT * FROM aptitude_tests";
         List<AptitudeTest> aptitudeTests = new ArrayList<>();
-        try (Connection conn = DBConfig.getCon();
+        try (Connection conn = getCon();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -81,7 +83,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
     @Override
     public AptitudeTest update(AptitudeTest aptitudeTest) throws SQLException {
         String sql = "UPDATE aptitude_tests SET test_mark = ?, test_date = ?, user_id = ? WHERE aptitude_test_id = ?";
-        try (Connection conn = DBConfig.getCon();
+        try (Connection conn = getCon();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, aptitudeTest.getTestMark());
@@ -99,7 +101,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
     @Override
     public void deleteById(Long id) {
         String sql = "DELETE FROM aptitude_tests WHERE aptitude_test_id = ?";
-        try (Connection conn = DBConfig.getCon();
+        try (Connection conn = getCon();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setLong(1, id);

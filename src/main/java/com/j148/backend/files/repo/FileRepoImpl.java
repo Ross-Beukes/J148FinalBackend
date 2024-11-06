@@ -84,13 +84,13 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     files.add(new Files(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            Files.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            Files.Verified.valueOf(rs.getString(7))
+                            rs.getLong("file_id"),
+                            rs.getString("file_type"),
+                            Files.Category.valueOf(rs.getString("category")),
+                            rs.getTimestamp("date_added").toLocalDateTime(),
+                            rs.getString("path"),
+                            User.builder().userId(rs.getLong("user_id")).build(),
+                            Files.Verified.valueOf(rs.getString("verified"))
                     ));
                 }
             }
@@ -111,13 +111,13 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     files.add(new Files(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            Files.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            Files.Verified.valueOf(rs.getString(7))
+                            rs.getLong("file_id"),
+                            rs.getString("file_type"),
+                            Files.Category.valueOf(rs.getString("category")),
+                            rs.getTimestamp("date_added").toLocalDateTime(),
+                            rs.getString("path"),
+                            User.builder().userId(rs.getLong("user_id")).build(),
+                            Files.Verified.valueOf(rs.getString("verified"))
                     ));
                 }
             }
@@ -138,13 +138,13 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     files.add(new Files(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            Files.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            Files.Verified.valueOf(rs.getString(7))
+                            rs.getLong("file_id"),
+                            rs.getString("file_type"),
+                            Files.Category.valueOf(rs.getString("category")),
+                            rs.getTimestamp("date_added").toLocalDateTime(),
+                            rs.getString("path"),
+                            User.builder().userId(rs.getLong("user_id")).build(),
+                            Files.Verified.valueOf(rs.getString("verified"))
                     ));
                 }
             }
@@ -164,13 +164,13 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     files.add(new Files(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            Files.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            Files.Verified.valueOf(rs.getString(7))
+                            rs.getLong("file_id"),
+                            rs.getString("file_type"),
+                            Files.Category.valueOf(rs.getString("category")),
+                            rs.getTimestamp("date_added").toLocalDateTime(),
+                            rs.getString("path"),
+                            User.builder().userId(rs.getLong("user_id")).build(),
+                            Files.Verified.valueOf(rs.getString("verified"))
                     ));
                 }
             }
