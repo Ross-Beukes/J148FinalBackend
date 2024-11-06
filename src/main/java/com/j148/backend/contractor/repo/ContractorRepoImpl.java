@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ContractorRepositoryImpl extends DBConfig implements ContractorRepository {
+public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public Optional<Contractor> save(Contractor contractor) throws SQLException {
