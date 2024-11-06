@@ -26,6 +26,15 @@ public interface contract_periodRepo {
      */
     Optional<ContractPeriod> findContractPeriodByName(String name) throws SQLException;
     /**
+     * Finds a contract period by its name.
+     *
+     * @param contractPeriodId the id of the contract period to be retrieved
+     * @return an Optional containing the contract period if found, or an empty Optional if not
+     * @throws SQLException if there is an error accessing the database
+     */
+
+    Optional<ContractPeriod> findContractPeriodById(long contractPeriodId) throws SQLException;
+    /**
      * Updates an existing contract period in the database.
      *
      * @param contractPeriod the contract period with updated information
