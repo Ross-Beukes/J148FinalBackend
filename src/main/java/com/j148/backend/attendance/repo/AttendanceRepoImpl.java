@@ -1,3 +1,4 @@
+
 package com.j148.backend.attendance.repo;
 
 import com.j148.backend.attendance.model.Attendance;
@@ -13,7 +14,6 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
-
     private static final String url = "jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false";
     private Timestamp timestamp;
 
@@ -25,12 +25,11 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
      * Inserts a attendance record into the database
      *
      * @param attendance the attendance object containing details to be saved.
-     * @return Optional of attendance if Insertion is successful, or return an
-     * Empty Optional if the Insertion was not successful
+     * @return Optional of attendance if Insertion is successful, or return an Empty Optional if the Insertion was not successful
      */
     @Override
     public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
-        String query = "INSERT into attendance (timeTn, timeOut, register, contractorId) VALUES (?,?,?,?)";
+        String query = "INSERT into attendance (time_in,time_out, register, contractor_id) VALUES (?,?,?,?)";
         try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query)) {
 
             con.setAutoCommit(false);
@@ -58,8 +57,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
      * Retrieves an attendance record by its ID.
      *
      * @param id the unique identifier of the attendance record.
-     * @return an Optional containing the Attendance object if found, otherwise
-     * an empty Optional
+     * @return an Optional containing the Attendance object if found, otherwise an empty Optional
      */
     @Override
     public Optional<Attendance> getAttendanceByID(Long id) throws SQLException {
@@ -94,9 +92,10 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
      * @return Optional of attendance if the Update is successful, or return an
      * empty Optional if Update was not successful.
      */
+
     @Override
     public Optional<Attendance> updateAttendance(Attendance attendance) throws SQLException {
-        String query = "UPDATE attendance SET timeIn = ?, timeOut = ?, register = ?, contractorId = ? WHERE attendanceId = ?";
+        String query = "UPDATE attendance SET timeIn = ?, timeOut = ?, register = ?, contractor_id = ? WHERE attendanceId = ?";
         try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query)) {
             con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
@@ -119,21 +118,27 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
         return Optional.empty();
     }
 
+
+
+
+
     @Override
     public List<Attendance> getAllAttendance() throws SQLException {
         List<Attendance> attendanceList = new ArrayList<>();
         String query = "SELECT * FROM attendance";
-        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query); ResultSet rs = statement.executeQuery()) {
+        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
                 Attendance attendance = Attendance.builder()
-                        .attendanceId(rs.getLong("attendanceId")).timeIn(rs.getTimestamp("timeIn").toLocalDateTime())
-                        .timeOut(rs.getTimestamp("timeOut").toLocalDateTime())
-                        .register(Attendance.Register.valueOf("register")).build();
-                Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractorId")).build();
-                attendance.setContractor(contractor);
-                attendanceList.add(attendance);
+                        .attendanceId(rs.getLong("attendance_id")).timeIn(rs.getTimestamp("time_in").toLocalDateTime())
+                                .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
+                                        .register(Attendance.Register.valueOf("register")).build();
+                                        Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractor_id")).build();
+                                        attendance.setContractor(contractor);
+                                        attendanceList.add(attendance);
 
             }
+
 
         }
         return attendanceList;

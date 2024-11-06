@@ -200,7 +200,7 @@ CREATE TABLE `leave_request` (
   `file_id` bigint NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `decision` enum('APPROVED','DENIED') NOT NULL,
+  `decision` enum('APPROVED','DENIED','PENDING') NOT NULL DEFAULT 'PENDING',
   PRIMARY KEY (`leave_request_id`),
   KEY `contid_idx` (`contractor_id`),
   KEY `file_id_idx` (`file_id`),
@@ -236,6 +236,7 @@ CREATE TABLE `user` (
   `race` varchar(45) NOT NULL,
   `location` varchar(255) NOT NULL,
   `age` int NOT NULL,
+  `password` varchar(45) NOT NULL,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
   UNIQUE KEY `id_number_UNIQUE` (`id_number`)
@@ -288,4 +289,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-04 14:23:30
+-- Dump completed on 2024-11-05 10:14:37
