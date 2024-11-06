@@ -1,15 +1,14 @@
 package com.j148.backend.contract_period.repo;
 
 import com.j148.backend.config.DBConfig;
-import com.j148.backend.contract_period.model.ContractPeriod;
 
 import java.sql.*;
 import java.util.Optional;
 /**Martinez*/
 
-public class contract_periodRepoImpl extends DBConfig implements contract_periodRepo {
+public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRepo {
     @Override
-    public Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException {
+    public Optional<com.j148.backend.contract_period.model.ContractPeriod> saveContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException {
         String query = "INSERT INTO contractor_period (name, start_date, end_date) VALUES (?, ?, ?)";
 
         try (Connection con = DBConfig.getCon()) {
@@ -38,7 +37,7 @@ public class contract_periodRepoImpl extends DBConfig implements contract_period
     }
 
     @Override
-    public Optional<ContractPeriod> findContractPeriodByName(String name) throws SQLException {
+    public Optional<com.j148.backend.contract_period.model.ContractPeriod> findContractPeriodByName(String name) throws SQLException {
         String query = "SELECT contractor_period_id, name, start_date, end_date FROM contractor_period WHERE name = ?";
 
         try (Connection con = DBConfig.getCon();
@@ -86,7 +85,7 @@ public class contract_periodRepoImpl extends DBConfig implements contract_period
         return Optional.empty();
     }
     @Override
-    public Optional<ContractPeriod> updateContractPeriod(ContractPeriod contractPeriod) throws SQLException {
+    public Optional<com.j148.backend.contract_period.model.ContractPeriod> updateContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException {
         String query = "UPDATE contractor_period SET name = ?, start_date = ?, end_date = ? WHERE contractor_period_id = ?";
 
         try (Connection con = DBConfig.getCon()) {
