@@ -1,5 +1,5 @@
 
-package com.j148.backend.attendance.model.Repo;
+package com.j148.backend.attendance.Repo;
 
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.config.DBConfig;
@@ -9,7 +9,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     private static final String url = "jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false";
