@@ -15,7 +15,7 @@ import java.util.Random;
  * @author glenl
  */
 public class UserServiceImpl implements UserService {
-    
+
     private UserRepo userRepo = new UserRepoImpl();
 
     private Random random = new Random();
@@ -48,7 +48,27 @@ public class UserServiceImpl implements UserService {
             user.setRole(User.Role.CONTRACTOR);
             return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("Applicant was not promoted to Contractor"));
         } else {
-            throw new IllegalArgumentException("The user is null"); 
+            throw new IllegalArgumentException("The user is null");
+        }
+    }
+
+    @Override
+    public User LogIn(User user) throws SQLException, Exception {
+        if (user != null) {
+            if (user.getEmail() != null && user.getPassword() != null) {
+                String email = user.getEmail();
+                String password = user.getPassword();
+                User foundUser = userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User email not recognised"));
+                if (email.equalsIgnoreCase(foundUser.getEmail()) && password.equals(foundUser.getPassword())) {
+                    return foundUser;
+                } else {
+                    throw new Exception("Invalid email or password");
+                }
+            } else {
+                throw new IllegalArgumentException("Email or password is missing");
+            }
+        } else {
+            throw new IllegalArgumentException("User is null");
         }
     }
 

@@ -57,4 +57,17 @@ public interface UserService {
      */
     User promoteUser(User user) throws SQLException, Exception;
 
+    /**
+     * Attempts to log in a user by verifying the provided email and password.
+     *
+     * @param user A User object containing the email and plain-text password
+     * for login.
+     * @return The authenticated User object if login is successful.
+     * @throws SQLException If a database access error occurs.
+     * @throws Exception If the user email is not recognized or if the password
+     * is invalid.
+     * @throws IllegalArgumentException If the user, email, or password is null.
+     */
+    User LogIn(User user) throws SQLException, Exception;
+
 }
