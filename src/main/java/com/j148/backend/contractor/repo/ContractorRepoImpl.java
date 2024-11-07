@@ -1,6 +1,7 @@
 package com.j148.backend.contractor.repo;
 
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.user.model.User;
 
@@ -114,6 +115,32 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
             }
         }
         return contractors;
+    }
+
+    @Override
+    public List<Contractor> findCurrentContractor(ContractPeriod contractPeriod) throws SQLException {
+        String query = "SELECT * FROM contractor WHERE contract_period_id = ?";
+        List<Contractor> currentContractors = new ArrayList<>();
+        
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            User user = new User();
+            ContractPeriod currentContractPeriod = new ContractPeriod();
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                user.setUserId(rs.getLong("user_id"));
+                currentContractPeriod.setContractPeriodId(rs.getLong("contractor_period_id"));
+                
+                Contractor contractor = Contractor.builder()
+                        .contractorId(rs.getLong("contractor_id"))
+                        .status(Contractor.Status.valueOf(rs.getString("status")))
+                        .user(user)
+                        .contractPeriod(currentContractPeriod)
+                        .build();
+                currentContractors.add(contractor);
+            }
+            
+        }
+        return currentContractors;
     }
 }
 

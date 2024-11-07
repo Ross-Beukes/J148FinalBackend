@@ -354,4 +354,34 @@ public class WarningRepoImpl extends DBConfig implements WarningRepo {
                 .age(rs.getInt("age"))
                 .build();
     }
+
+    @Override
+    public Optional<Warning> createAbsentWarning(Contractor contractor) throws SQLException {
+        try (Connection con = getCon()) {
+            con.setAutoCommit(false);
+            Savepoint beforeLateWarning = con.setSavepoint();
+
+            try {
+                Warning warning = Warning.builder()
+                        .contractor(contractor)
+                        .dateIssue(LocalDateTime.now())
+                        .reason(Warning.WarningReason.ABSENT)
+                        .state(Warning.WarningState.ACTIVE)
+                        .build();
+
+                Optional<Warning> result = save(warning);
+                if (result.isPresent()) {
+                    con.commit();
+                    return result;
+                }
+
+                con.rollback(beforeLateWarning);
+                return Optional.empty();
+
+            } catch (SQLException e) {
+                con.rollback(beforeLateWarning);
+                throw e;
+            }
+        }
+    }
 }

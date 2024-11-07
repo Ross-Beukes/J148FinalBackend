@@ -127,4 +127,6 @@ public interface WarningRepo {
      * @throws SQLException if a database access error occurs
      */
     Optional<Boolean> existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException;
+    
+    Optional<Warning> createAbsentWarning(Contractor contractor) throws SQLException;
 }
