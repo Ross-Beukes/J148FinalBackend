@@ -108,4 +108,25 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<ContractPeriod> getNextContractPeriod() throws SQLException {
+        String query = "SELECT * FROM contractor_period WHERE start_date > CURDATE()";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ContractPeriod contractPeriod = ContractPeriod.builder().build();
+                    contractPeriod.setContractPeriodId(rs.getLong("contractor_period_id"));
+                    contractPeriod.setName(rs.getString("name"));
+                    contractPeriod.setStartDate(rs.getDate("start_date").toLocalDate());
+                    contractPeriod.setEndDate(rs.getDate("end_date").toLocalDate());
+
+                    return Optional.of(contractPeriod);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+    
+    
 }

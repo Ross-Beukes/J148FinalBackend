@@ -28,4 +28,20 @@ public interface ContractPeriodService {
      * @throws Exception if no active contract period is found in the database.
      */
     ContractPeriod getCurrentContractPeriod() throws SQLException, Exception;
+
+    /**
+     * Retrieves the next contract period starting after the current date.
+     *
+     * <p>
+     * This method queries the database for the next available contract period
+     * where the start date is greater than the current date. If a matching
+     * contract period is found, it returns an {@link Optional} containing the
+     * {@link ContractPeriod} object. If no matching contract period is found,
+     * an empty {@link Optional} is returned.
+     *
+     * @return An {@link Optional} containing the next {@link ContractPeriod} if
+     * found; otherwise, an empty {@link Optional}.
+     * @throws SQLException if a database access error occurs.
+     */
+    ContractPeriod getNextContractPeriod() throws SQLException, Exception;
 }

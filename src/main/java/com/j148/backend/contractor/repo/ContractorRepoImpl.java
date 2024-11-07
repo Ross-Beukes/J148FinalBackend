@@ -14,14 +14,14 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public Optional<Contractor> save(Contractor contractor) throws SQLException {
-        String sql = "INSERT INTO contractor (contractor_id, status, user_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO contractor (contractor_period_id, status, user_id) VALUES (?, ?, ?)";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             con.setAutoCommit(false);
             Savepoint beforeSave = con.setSavepoint();
 
             try {
-                ps.setLong(1, contractor.getContractorId());
+                ps.setLong(1, contractor.getContractPeriod().getContractPeriodId());
                 ps.setString(2, contractor.getStatus().toString());
                 ps.setLong(3, contractor.getUser().getUserId());
 

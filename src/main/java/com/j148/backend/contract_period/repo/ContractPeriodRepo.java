@@ -54,4 +54,18 @@ public interface ContractPeriodRepo {
      * executing the SQL statement.
      */
     Optional<ContractPeriod> getCurrentContractPeriod() throws SQLException;
+
+    /**
+     * Retrieves the next contract period where the start date is after the
+     * current date.
+     *
+     * <p>
+     * This method checks the database for a contract period that starts after
+     * today’s date and returns it if found.
+     *
+     * @return An Optional containing the next contract period if it exists,
+     * otherwise Optional.empty().
+     * @throws SQLException if a database access error occurs.
+     */
+    Optional<ContractPeriod> getNextContractPeriod() throws SQLException;
 }

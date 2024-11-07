@@ -69,8 +69,8 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
             if (rs.next()) {
                 Attendance attendance = Attendance.builder().build();
                 attendance.setAttendanceId(rs.getLong("attendanceId"));
-                attendance.setTimeIn(rs.getTimestamp("timeIn").toLocalDateTime());
-                attendance.setTimeOut(rs.getTimestamp("timeOut").toLocalDateTime());
+                attendance.setTimeIn(rs.getTimestamp("time_in").toLocalDateTime());
+                attendance.setTimeOut(rs.getTimestamp("time_out").toLocalDateTime());
                 attendance.setRegister(Attendance.Register.valueOf(rs.getString("register")));
 
                 Contractor contractor = Contractor.builder().build();

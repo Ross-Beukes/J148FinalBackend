@@ -21,5 +21,10 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
     public ContractPeriod getCurrentContractPeriod() throws SQLException, Exception {
         return contractPeriodRepo.getCurrentContractPeriod().orElseThrow(() -> new Exception("Contract Period not found"));
     }
+
+    @Override
+    public ContractPeriod getNextContractPeriod() throws SQLException, Exception {
+        return contractPeriodRepo.getNextContractPeriod().orElseThrow(() -> new Exception("Next Contract Period not found"));
+    }
     
 }
