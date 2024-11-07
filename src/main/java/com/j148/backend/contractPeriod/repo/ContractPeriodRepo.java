@@ -1,6 +1,6 @@
-package com.j148.backend.contract_period.repo;
+package com.j148.backend.contractPeriod.repo;
 
-import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.contractPeriod.model.ContractPeriod;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -16,7 +16,7 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the added contract period, if successful
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<com.j148.backend.contract_period.model.ContractPeriod> saveContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException;
+    Optional<com.j148.backend.contractPeriod.model.ContractPeriod> saveContractPeriod(com.j148.backend.contractPeriod.model.ContractPeriod contractPeriod) throws SQLException;
     /**
      * Finds a contract period by its name.
      *
@@ -24,7 +24,7 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the contract period if found, or an empty Optional if not
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<com.j148.backend.contract_period.model.ContractPeriod> findContractPeriodByName(String name) throws SQLException;
+    Optional<com.j148.backend.contractPeriod.model.ContractPeriod> findContractPeriodByName(String name) throws SQLException;
     /**
      * Finds a contract period by its name.
      *
@@ -41,6 +41,6 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the updated contract period, if successful
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<com.j148.backend.contract_period.model.ContractPeriod> updateContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException;
+    Optional<com.j148.backend.contractPeriod.model.ContractPeriod> updateContractPeriod(com.j148.backend.contractPeriod.model.ContractPeriod contractPeriod) throws SQLException;
     
 }
