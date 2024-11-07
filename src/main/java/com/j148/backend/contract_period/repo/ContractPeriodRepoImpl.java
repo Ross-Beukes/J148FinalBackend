@@ -1,6 +1,7 @@
 package com.j148.backend.contract_period.repo;
 
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.contract_period.model.ContractPeriod;
 
 import java.sql.*;
 import java.util.Optional;

@@ -1,20 +1,23 @@
 package com.j148.backend.contractor.service;
 
+import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 
 import com.j148.backend.contractor.repo.ContractorRepo;
-import java.sql.SQLException;
-import java.util.Optional;
+import com.j148.backend.contractor.repo.ContractorRepoImpl;
+
 
 public class ContractorServiceImpl implements ContractorService{
-    private final ContractorRepo contractorRepo;
 
-    public ContractorServiceImpl(ContractorRepo contractorRepo) {
-        this.contractorRepo = contractorRepo;
-    }
+   
+    private final ContractorRepo contractorRepo = new ContractorRepoImpl();
 
-    @Override
-    public Optional<Contractor> update(Contractor contractor) throws SQLException {
-        return contractorRepo.update(contractor);
+  
+    public Contractor updateContractor(Contractor contractor) throws Exception{
+        if(contractor != null){
+            return contractorRepo.update(contractor).get();
+        }else{
+            throw new UserNotFoundException("user not found update failed");
+        }
     }
 }
