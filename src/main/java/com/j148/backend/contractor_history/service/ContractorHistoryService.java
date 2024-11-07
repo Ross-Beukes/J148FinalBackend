@@ -13,6 +13,13 @@ import com.j148.backend.contractor_history.model.ContractorHistory;
  */
 public interface ContractorHistoryService {
     
+  /**
+   * This method returns a contractor history object which contains a list of
+   * both a specific contractors warnings and hearings and returns it.
+   * 
+   * @param Contractor
+   * @return ContractorHistory
+   */   
    public ContractorHistory viewWarningAndHearingHistory(Contractor contractor) throws Exception;
    
    

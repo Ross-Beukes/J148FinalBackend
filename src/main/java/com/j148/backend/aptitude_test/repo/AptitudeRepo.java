@@ -21,7 +21,7 @@ public interface AptitudeRepo {
      * @param aptitudeTest the AptitudeTest entity to save
      * @return the saved AptitudeTest entity, with any generated fields populated
      */
-    AptitudeTest create (AptitudeTest aptitudeTest) throws SQLException;
+    Optional<AptitudeTest> create (AptitudeTest aptitudeTest) throws SQLException;
     
      
     /**
@@ -48,7 +48,7 @@ public interface AptitudeRepo {
      */
     
     
-    AptitudeTest update(AptitudeTest aptitudeTest) throws SQLException;
+    Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException;
     
     
     /**

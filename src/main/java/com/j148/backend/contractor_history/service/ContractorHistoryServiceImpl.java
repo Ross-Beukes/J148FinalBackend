@@ -32,10 +32,11 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
         
         if(contractor != null && contractor.getContractorId()!= 0){
             
-            List<Warning> warningHistory = new ArrayList<>();
-            List<Hearing> hearingHistory = new ArrayList<>();
             
             try {
+            List<Warning> warningHistory;
+            List<Hearing> hearingHistory;
+                
                 hearingHistory = hri.findContractorHearingHistory(contractor);
                 warningHistory = wri.findAllActiveByContractor(contractor).get();
                 

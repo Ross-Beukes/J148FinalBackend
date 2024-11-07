@@ -22,7 +22,6 @@ public class Contract {
     private Date offerDate;
     private Date decisionDate;
     private Date expirationDate;
-    private Contractor contractor;
     private boolean isDeleted;
 
     public enum Decision {

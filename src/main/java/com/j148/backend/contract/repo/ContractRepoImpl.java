@@ -1,4 +1,6 @@
 package com.j148.backend.contract.repo;
 
-public class ContractRepoImpl {
+import com.j148.backend.config.DBConfig;
+
+public class ContractRepoImpl extends DBConfig {
 }
