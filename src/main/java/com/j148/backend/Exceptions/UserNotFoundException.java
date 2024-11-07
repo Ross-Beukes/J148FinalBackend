@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author Tshireletso
  */
-public class UserNotFoundException extends Exception{
+public class UserNotFoundException extends RuntimeException{
 
  public UserNotFoundException() {}
     

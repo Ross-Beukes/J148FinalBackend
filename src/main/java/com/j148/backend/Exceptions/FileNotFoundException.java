@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author Tshireletso
  */
-public class FileNotFoundException extends Exception {
+public class FileNotFoundException extends RuntimeException {
     
    public FileNotFoundException(){}
    

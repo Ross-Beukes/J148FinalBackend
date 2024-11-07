@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author Tshireletso
  */
-public class AptitudeTestNotFoundException extends Exception{
+public class AptitudeTestNotFoundException extends RuntimeException{
     
     public AptitudeTestNotFoundException(){}
     
