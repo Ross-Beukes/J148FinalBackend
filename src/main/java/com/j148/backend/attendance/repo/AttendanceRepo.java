@@ -1,6 +1,7 @@
 package com.j148.backend.attendance.repo;
 
 import com.j148.backend.attendance.model.Attendance;
+import com.j148.backend.contractor.model.Contractor;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -34,4 +35,10 @@ public interface AttendanceRepo {
  * @return a list of attendance records*/
 
     List<Attendance>getAllAttendance()throws SQLException;
+    /**
+     * Finds all the Attendance records for particular contractor
+     * @param  contractor the contractor Object that will contain the attendance records for the contractor.
+     * @return List of all the attendance records of the Contractor.+*/
+    List<Attendance>FindAllAttendanceForContractor(Contractor contractor)throws SQLException;
+
 }
