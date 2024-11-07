@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface ContractorRepository {
+public interface ContractorRepo {
 
     /**
      * Saves a new contractor record to the database.
