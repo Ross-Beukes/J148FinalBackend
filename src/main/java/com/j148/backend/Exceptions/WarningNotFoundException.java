@@ -6,18 +6,18 @@ package com.j148.backend.Exceptions;
 
 /**
  *
- * @author Tshireletso
+ * @author arshr
  */
-public class AptitudeTestNotFoundException extends Exception {
+public class WarningNotFoundException extends Exception {
 
-    public AptitudeTestNotFoundException() {
+    public WarningNotFoundException() {
     }
 
-    public AptitudeTestNotFoundException(String message) {
+    public WarningNotFoundException(String message) {
         super(message);
     }
 
-    public AptitudeTestNotFoundException(String message, Throwable cause) {
+    public WarningNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 
