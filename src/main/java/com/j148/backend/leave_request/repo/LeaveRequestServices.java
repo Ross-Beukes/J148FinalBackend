@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 
 public interface LeaveRequestServices {
-    Optional<LeaveRequest> acceptLeaveRequest(Long leaveRequestId) throws SQLException;
-    Optional<LeaveRequest> declineLeaveRequest(Long leaveRequestId) throws SQLException;
-    Optional<LeaveRequest> getLeaveRequestById(Long leaveRequestId) throws SQLException;
+    Optional<LeaveRequest> acceptLeaveRequest(LeaveRequest leaveRequest) throws SQLException;
+    Optional<LeaveRequest> declineLeaveRequest(LeaveRequest leaveRequest) throws SQLException;
+    Optional<LeaveRequest> getLeaveRequestById(LeaveRequest leaveRequest) throws SQLException;
 }
