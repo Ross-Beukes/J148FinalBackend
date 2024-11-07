@@ -29,4 +29,6 @@ public interface ContractorPerformanceRepo {
      * @throws SQLException if a database access error occurs.
      */
     List<ContractorPerformance> getAllContractorPerformance() throws SQLException;
+    
+    List<ContractorPerformance> filterContractorPerformance(String filters, List<ContractorPerformance> cp);
 }

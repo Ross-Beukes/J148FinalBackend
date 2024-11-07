@@ -1,5 +1,6 @@
 package com.j148.backend.ContractorPerformance.model;
 
+import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
@@ -22,5 +23,6 @@ public class ContractorPerformance {
     private Contractor contractor;  // Singular contractor object (one contractor per performance)
     private ContractPeriod contractPeriod;  // Singular contract period (one contract period per performance)
     private User user;  // Singular user object (one user per performance)
+    private AptitudeTest aptitudeTest;
 
 }
