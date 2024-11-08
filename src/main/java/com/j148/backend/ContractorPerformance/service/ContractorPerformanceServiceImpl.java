@@ -39,21 +39,21 @@ public class ContractorPerformanceServiceImpl implements ContractorPerformanceSe
 
     @Override
     public List<ContractorPerformance> getAllContractorPerformance() throws ContractorPerformanceNotFoundException, UserNotFoundException, ContractorNotFoundException, SQLException {
-            List<ContractorPerformance> contractorPerformance = contractorPerformanceRepo.getAllContractorPerformance();
+        List<ContractorPerformance> contractorPerformance = contractorPerformanceRepo.getAllContractorPerformance();
 
-            if (contractorPerformance.isEmpty()) {
-                return List.of();//return empty list
-            }
-            
-            for (ContractorPerformance cp : contractorPerformance){
-                validateContractorPerformance(cp);
-            }
-            return contractorPerformance;
+        if (contractorPerformance.isEmpty()) {
+            return List.of();//return empty list
+        }
 
-       
+        for (ContractorPerformance cp : contractorPerformance){
+            validateContractorPerformance(cp);
+        }
+        return contractorPerformance;
+
+
     }
 
-    
+
     public void validateContractorPerformance(ContractorPerformance contractorPerformance) throws ContractorPerformanceNotFoundException, UserNotFoundException, ContractorNotFoundException {
         if (contractorPerformance == null) {
             throw new ContractorPerformanceNotFoundException("Contractor Performance Object is equal to null");
