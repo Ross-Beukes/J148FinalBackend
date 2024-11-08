@@ -261,7 +261,7 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
     @Override
     public List<Hearing> findHearingsWithinDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
 
-        String query = "SELECT * FROM hearing WHERE schedule_date BETWEEN ? AND ?";
+        String query = "SELECT * FROM hearings WHERE schedule_date BETWEEN ? AND ?";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setTimestamp(1, Timestamp.valueOf(startDate));
             ps.setTimestamp(2, Timestamp.valueOf(endDate));
@@ -295,6 +295,40 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
         }
     }
 
+    @Override
+    public List<Hearing> findContractorHearingHistory(Contractor contractor) throws SQLException {
+    String sql = "SELECT * from hearings WHERE contractor_id = ?";
+    List<Hearing> hearingHistory = new ArrayList<>();
+    
+    try(Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)){
+    
+        try(ResultSet rs = ps.executeQuery()){
+            while(rs.next()){
+            
+              
+                       long hearingsid =  rs.getLong("hearings_id");
+                       LocalDateTime scheduleDate = rs.getTimestamp("schedule_date").toLocalDateTime();
+                       Hearing.Outcome outcome = Hearing.Outcome.valueOf(rs.getString("outcome"));
+                       String reason = rs.getString("reason");
+                       
+                         Hearing retrievedHearing = Hearing.builder()
+                            .hearingsId(hearingsid)
+                            .contractor(contractor)
+                            .scheduleDate(scheduleDate)
+                            .outcome(outcome)
+                            .reason(reason)
+                            .build();
+                       // null checks in front end not there don't show
+                       hearingHistory.add(retrievedHearing);
+            }
+        }
+    }
+    
+    return hearingHistory;
+        
+    }
+
+    
    
 
 }

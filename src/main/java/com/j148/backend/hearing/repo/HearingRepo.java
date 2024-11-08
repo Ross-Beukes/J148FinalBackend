@@ -4,6 +4,7 @@
  */
 package com.j148.backend.hearing.repo;
 
+import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -81,4 +82,13 @@ public interface HearingRepo {
      * @throws SQLException If a database access error occurs.
      */
     List<Hearing> findHearingsWithinDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException;
+     /**
+     * Retrieves all hearing records for a particular Contractor.
+     *
+     * @param contractor
+     *
+     * @return A List of Hearing objects
+     * @throws SQLException If a database access error occurs.
+     */
+    List<Hearing> findContractorHearingHistory(Contractor contractor) throws SQLException;
 }

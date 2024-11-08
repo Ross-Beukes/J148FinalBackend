@@ -22,12 +22,14 @@ import java.util.Optional;
 public class AptitudeTestRepoImpl implements AptitudeRepo {
 
     @Override
-    public AptitudeTest create (AptitudeTest aptitudeTest) throws SQLException {
+    public Optional<AptitudeTest> create (AptitudeTest aptitudeTest) throws SQLException {
         String sql = "INSERT INTO aptitude_tests (test_mark, test_date, user_id) VALUES (?, ?, ?)";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setInt(1, aptitudeTest.getTestMark());
+             
+            Savepoint beforeTestSave = conn.setSavepoint(); 
+            
+           try{ stmt.setInt(1, aptitudeTest.getTestMark());
             stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
             stmt.setLong(3, aptitudeTest.getUser().getUserId());
 
@@ -36,13 +38,19 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
                 try (ResultSet rs = stmt.getGeneratedKeys()) { 
                     if (rs.next()) {
                         aptitudeTest.setAptitudeTestId(rs.getLong(1));
+                        conn.commit();
+                        return Optional.of(aptitudeTest);
+                        
                     }
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            conn.rollback(beforeTestSave);
+            throw e;
         }
-        return aptitudeTest;
+        }
+        
+        return Optional.empty();
     }
 
     @Override
@@ -72,28 +80,34 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
             while (rs.next()) {
                 aptitudeTests.add(mapRowToAptitudeTest(rs));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } 
         return aptitudeTests;
     }
 
     @Override
-    public AptitudeTest update(AptitudeTest aptitudeTest) throws SQLException {
+    public Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException {
         String sql = "UPDATE aptitude_tests SET test_mark = ?, test_date = ?, user_id = ? WHERE aptitude_test_id = ?";
         try (Connection conn = DBConfig.getCon();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)){ 
+            Savepoint beforeTestSave = conn.setSavepoint();
 
-            stmt.setInt(1, aptitudeTest.getTestMark());
+           try{
+               stmt.setInt(1, aptitudeTest.getTestMark());
             stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
             stmt.setLong(3, aptitudeTest.getUser().getUserId());
             stmt.setLong(4, aptitudeTest.getAptitudeTestId());
 
-            stmt.executeUpdate();
+          if(stmt.executeUpdate()>0){
+              conn.commit();
+              return Optional.of(aptitudeTest);
+          }
         } catch (SQLException e) {
-            e.printStackTrace();
+            conn.rollback(beforeTestSave);
+            throw e;
         }
-        return aptitudeTest;
+           
+        }
+        return Optional.empty();
     }
 
     @Override
