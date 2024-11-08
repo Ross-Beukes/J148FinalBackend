@@ -29,23 +29,29 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
     public Optional<Hearing> createHearing(Hearing hearing) throws SQLException {
         String query = "INSERT INTO hearings(contractor_id, schedule_date, outcome, reason) VALUES(?,?,?,?)";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setLong(1, hearing.getContractor().getContractorId());
-            ps.setTimestamp(1, Timestamp.valueOf(hearing.getScheduleDate()));
-            ps.setString(3, hearing.getOutcome().name());
-            ps.setString(4, hearing.getReason());
+            con.setAutoCommit(false);
             Savepoint beforeHearingInsert = con.setSavepoint();
 
-            if (ps.executeUpdate() > 0) {
-                con.commit();
-                try (ResultSet rs = ps.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        hearing.setHearingsId(rs.getLong(1));
+            try {
+                ps.setLong(1, hearing.getContractor().getContractorId());
+                ps.setTimestamp(2, Timestamp.valueOf(hearing.getScheduleDate()));
+                ps.setString(3, hearing.getOutcome().name());
+                ps.setString(4, hearing.getReason());
 
+                if (ps.executeUpdate() > 0) {
+                    try (ResultSet rs = ps.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            hearing.setHearingsId(rs.getLong(1));
+                            con.commit();
+                            return Optional.of(hearing);
+                        }
                     }
+                } else {
+                    con.rollback(beforeHearingInsert);
                 }
-                return Optional.of(hearing);
-            } else {
+            } catch (SQLException e) {
                 con.rollback(beforeHearingInsert);
+                throw e;
             }
         }
         return Optional.empty();
@@ -53,72 +59,94 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
 
     @Override
     public Optional<Hearing> updateHearing(Hearing hearing) throws SQLException {
-        String query;
+    String query;
+    // Set connection and transaction management
+    try (Connection con = getCon()) {
+        con.setAutoCommit(false); // Start transaction
+
+        // Check each field in `Hearing` to see what needs updating
         if (hearing.getContractor().getContractorId() != null) {
-            query = "UPDATE hearings SET contractor_id WHERE hearing_id = ?";
-            try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            query = "UPDATE hearings SET contractor_id = ? WHERE hearing_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setLong(1, hearing.getContractor().getContractorId());
                 ps.setLong(2, hearing.getHearingsId());
 
                 Savepoint beforeChangingContractorId = con.setSavepoint();
-                if (ps.executeUpdate() > 0) {
-                    con.commit();
-                    return Optional.of(hearing);
-                } else {
+                try {
+                    if (ps.executeUpdate() > 0) {
+                        con.commit();
+                        return Optional.of(hearing);
+                    } else {
+                        con.rollback(beforeChangingContractorId);
+                    }
+                } catch (SQLException e) {
                     con.rollback(beforeChangingContractorId);
-                    return Optional.empty();
+                    throw e;
                 }
             }
         } else if (hearing.getScheduleDate() != null) {
-            query = "UPDATE hearings SET schedule_date WHERE hearing_id = ?";
-            try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            query = "UPDATE hearings SET schedule_date = ? WHERE hearing_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setTimestamp(1, Timestamp.valueOf(hearing.getScheduleDate()));
                 ps.setLong(2, hearing.getHearingsId());
 
                 Savepoint beforeChangingScheduleDate = con.setSavepoint();
-                if (ps.executeUpdate() > 0) {
-                    con.commit();
-                    return Optional.of(hearing);
-                } else {
+                try {
+                    if (ps.executeUpdate() > 0) {
+                        con.commit();
+                        return Optional.of(hearing);
+                    } else {
+                        con.rollback(beforeChangingScheduleDate);
+                    }
+                } catch (SQLException e) {
                     con.rollback(beforeChangingScheduleDate);
-                    return Optional.empty();
+                    throw e;
                 }
             }
         } else if (hearing.getOutcome() != null) {
-            query = "UPDATE hearings SET outcome WHERE hearing_id = ?";
-            try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            query = "UPDATE hearings SET outcome = ? WHERE hearing_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setString(1, hearing.getOutcome().name());
                 ps.setLong(2, hearing.getHearingsId());
 
                 Savepoint beforeChangingOutcome = con.setSavepoint();
-                if (ps.executeUpdate() > 0) {
-                    con.commit();
-                    return Optional.of(hearing);
-                } else {
+                try {
+                    if (ps.executeUpdate() > 0) {
+                        con.commit();
+                        return Optional.of(hearing);
+                    } else {
+                        con.rollback(beforeChangingOutcome);
+                    }
+                } catch (SQLException e) {
                     con.rollback(beforeChangingOutcome);
-                    return Optional.empty();
+                    throw e;
                 }
             }
         } else if (hearing.getReason() != null) {
-            query = "UPDATE hearings SET reason WHERE hearing_id = ?";
-            try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            query = "UPDATE hearings SET reason = ? WHERE hearing_id = ?";
+            try (PreparedStatement ps = con.prepareStatement(query)) {
                 ps.setString(1, hearing.getReason());
                 ps.setLong(2, hearing.getHearingsId());
 
                 Savepoint beforeChangingReason = con.setSavepoint();
-                if (ps.executeUpdate() > 0) {
-                    con.commit();
-                    return Optional.of(hearing);
-                } else {
+                try {
+                    if (ps.executeUpdate() > 0) {
+                        con.commit();
+                        return Optional.of(hearing);
+                    } else {
+                        con.rollback(beforeChangingReason);
+                    }
+                } catch (SQLException e) {
                     con.rollback(beforeChangingReason);
-                    return Optional.empty();
+                    throw e;
                 }
             }
-
-        } else {
-            return Optional.empty();
         }
+    } catch (SQLException e) {
+        throw e; // Rethrow after rolling back to the initial savepoint
     }
+    return Optional.empty(); // Return empty if no fields were updated
+}
 
     @Override
     public Optional<Hearing> getHearing(Hearing hearing) throws SQLException {
@@ -221,7 +249,7 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
 
         }
     }
-    
+
     @Override
     public List<Hearing> findUpcomingHearings() throws SQLException {
 
@@ -257,7 +285,7 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
 
         }
     }
-    
+
     @Override
     public List<Hearing> findHearingsWithinDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
 
@@ -294,7 +322,5 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
 
         }
     }
-
-   
 
 }
