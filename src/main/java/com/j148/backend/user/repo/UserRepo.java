@@ -6,6 +6,7 @@ package com.j148.backend.user.repo;
 
 import com.j148.backend.user.model.User;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -67,12 +68,12 @@ public interface UserRepo {
      * database.
      *
      * @param user The {@link User} object containing the email address to
-     * search for. This object must have the email attribute set.
+     *             search for. This object must have the email attribute set.
      * @return An {@link Optional} containing the {@link User} object with full
      * details if a matching user is found. If no user is found or an error
      * occurs, returns an empty Optional.
      * @throws SQLException if there is an error connecting to the database or
-     * executing the SQL statement.
+     *                      executing the SQL statement.
      */
     Optional<User> retreiveUserFromEmail(User user) throws SQLException;
 
