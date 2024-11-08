@@ -1,6 +1,7 @@
 package com.j148.backend.contract_period.repo;
 
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.contract_period.model.ContractPeriod;
 
 import java.sql.*;
 import java.util.Optional;
@@ -80,6 +81,29 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
                 }
                 else{
                     con.rollback(savepoint);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+    
+      
+    public Optional<ContractPeriod> findContract(long id) throws SQLException {
+        String query = "SELECT contractor_period_id, name, start_date, end_date FROM contractor_period WHERE name = ?";
+
+        try (Connection con = DBConfig.getCon();
+             PreparedStatement stmt = con.prepareStatement(query)) {
+
+            stmt.setLong(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    ContractPeriod contractPeriod = new ContractPeriod();
+                    contractPeriod.setContractPeriodId(rs.getLong("contractor_period_id"));
+                    contractPeriod.setName(rs.getString("name"));
+                    contractPeriod.setStartDate(rs.getDate("start_date").toLocalDate());
+                    contractPeriod.setEndDate(rs.getDate("end_date").toLocalDate());
+                    return Optional.of(contractPeriod);
                 }
             }
         }
