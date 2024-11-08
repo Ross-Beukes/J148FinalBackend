@@ -30,7 +30,9 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
                             return Optional.of(contractPeriod);
                         }
                     }
-                }else{con.rollback(savepoint);}
+                }else {
+                    con.rollback(savepoint);
+                }
             }
         }
         return Optional.empty();
@@ -102,8 +104,7 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
                 if (affectedRows > 0) {
                     con.commit();
                     return Optional.of(contractPeriod);
-                }
-                else{
+                }else {
                     con.rollback(savepoint);
                 }
             }
