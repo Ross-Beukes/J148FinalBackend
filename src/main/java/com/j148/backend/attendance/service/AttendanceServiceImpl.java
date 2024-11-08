@@ -10,6 +10,9 @@ import com.j148.backend.attendance.repo.AttendanceRepoImpl;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
+import com.j148.backend.hearing.model.Hearing;
+import com.j148.backend.hearing.service.HearingService;
+import com.j148.backend.hearing.service.HearingServiceImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
@@ -29,6 +32,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     private AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
     private ContractorService contractorService = new ContractorServiceImpl();
     private WarningService warningService = new WarningServiceImpl();
+    private HearingService hearingService = new HearingServiceImpl();
 
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in
@@ -42,6 +46,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                     attendance.setRegister(Attendance.Register.LATE);
                     Contractor contractor = attendance.getContractor();
                     Warning warning = warningService.lateComingWarning(contractor);
+                    Hearing hearing = hearingService.IssueHearing(contractor);
                     //issue warning 
                 } else {
                     attendance.setRegister(Attendance.Register.PRESENT);
@@ -78,6 +83,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                         orElseThrow(() -> new Exception("unable to add attendance record"));
                 Contractor contractor = attendance.getContractor();
                 Warning warning = warningService.absentWarning(contractor);
+                Hearing hearing = hearingService.IssueHearing(contractor);
             }
         }
         return attendances;
