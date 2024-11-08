@@ -129,6 +129,8 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
         List<ContractorPerformance> contractorPerformances = new ArrayList<>();
         Map<Long, ContractorPerformance> contractorMap = new HashMap<>();
 
+        //Might need to play around with this join statement(Consider which is the left table)
+        //Might need to null check in the function
         String query = "SELECT "
                 + "user.user_id, user.name AS user_name, user.surname, user.email, "
                 + "contractor.contractor_id, contractor.user_id AS contractor_user_id, contractor.status, contractor.contractor_period_id, "
@@ -481,7 +483,8 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
     }
 
     /**
-     * The following methods are helper methods used for specific filtering based on filter names, operators and values  
+     * The following methods are helper methods used for specific filtering
+     * based on filter names, operators and values
      */
     private void filterByAttendanceTime(List<ContractorPerformance> cp, LocalDateTime timeIn, char operator) {
         for (int i = cp.size() - 1; i >= 0; i--) {
@@ -631,8 +634,8 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
 
     private void filterByAptitudeTestMark(List<ContractorPerformance> cp, int mark, char operator) {
         for (int i = cp.size() - 1; i >= 0; i--) {
-            AptitudeTest at = cp.get(i).getAptitudeTest();
-            if (at == null || !compare(at.getTestMark(), mark, operator)) {
+            AptitudeTest aptitudeTest = cp.get(i).getAptitudeTest();
+            if (aptitudeTest == null || !compare(aptitudeTest.getTestMark(), mark, operator)) {
                 cp.remove(i);
             }
         }
