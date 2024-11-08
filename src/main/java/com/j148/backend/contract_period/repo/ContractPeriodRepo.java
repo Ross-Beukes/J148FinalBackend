@@ -17,7 +17,7 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the added contract period, if successful
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<ContractPeriod> saveContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException;
+    Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException;
 
     /**
      * Finds a contract period by its name.
@@ -36,7 +36,7 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the updated contract period, if successful
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<ContractPeriod> updateContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException;
+    Optional<ContractPeriod> updateContractPeriod(ContractPeriod contractPeriod) throws SQLException;
 
     /**
      * Retrieves the current contract period based on today's date.

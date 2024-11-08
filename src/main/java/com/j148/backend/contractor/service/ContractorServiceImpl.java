@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.j148.backend.contractor.service;
 
 import com.j148.backend.contract_period.model.ContractPeriod;
@@ -37,7 +33,7 @@ public class ContractorServiceImpl implements ContractorService {
         Contractor contractor = Contractor.builder().build();
         if (user != null) {
             User promotedUser = userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("The user was not promoted"));
-            contractor.setUser(user);
+            contractor.setUser(promotedUser);
             contractor.setStatus(Contractor.Status.ACTIVE);
             ContractPeriod contractPeriod = contractPeriodService.getNextContractPeriod();
             contractor.setContractPeriod(contractPeriod);

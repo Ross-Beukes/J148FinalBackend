@@ -12,7 +12,7 @@ import java.util.Optional;
 public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRepo {
 
     @Override
-    public Optional<ContractPeriod> saveContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException {
+    public Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException {
         String query = "INSERT INTO contractor_period (name, start_date, end_date) VALUES (?, ?, ?)";
 
         try (Connection con = DBConfig.getCon()) {
@@ -65,7 +65,7 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
     }
 
     @Override
-    public Optional<ContractPeriod> updateContractPeriod(com.j148.backend.contract_period.model.ContractPeriod contractPeriod) throws SQLException {
+    public Optional<ContractPeriod> updateContractPeriod(ContractPeriod contractPeriod) throws SQLException {
         String query = "UPDATE contractor_period SET name = ?, start_date = ?, end_date = ? WHERE contractor_period_id = ?";
 
         try (Connection con = DBConfig.getCon()) {

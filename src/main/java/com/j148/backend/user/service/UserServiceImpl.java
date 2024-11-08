@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.j148.backend.user.service;
 
 import com.j148.backend.user.model.User;
@@ -22,29 +18,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String generateAdminToken() {
-        String token = "A";
+        StringBuilder token = new StringBuilder("A");
         char[] letters = new char[5];
         for (int i = 0; i < letters.length; i++) {
             letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token = token + letters[i];
+            token.append(letters[i]);
         }
-        return token;
+        return token.toString();
     }
 
     @Override
     public String generateInstructotToken() {
-        String token = "I";
+        StringBuilder token = new StringBuilder("I");
         char[] letters = new char[5];
         for (int i = 0; i < letters.length; i++) {
             letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token = token + letters[i];
+            token.append(letters[i]);
         }
-        return token;
+        return token.toString();
     }
 
     @Override
     public User promoteUser(User user) throws SQLException, Exception {
-        if (user != null) {
+        if (user != null && user.getIdNumber() != null) {
             user.setRole(User.Role.CONTRACTOR);
             return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("Applicant was not promoted to Contractor"));
         } else {

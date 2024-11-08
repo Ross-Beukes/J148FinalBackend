@@ -42,7 +42,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                 con.commit();
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
-                        user.setUserId(rs.getLong("user_id"));
+                        user.setUserId(rs.getLong(1));  //1 is the columnIndex for the user_id field;
                     }
                 }
                 return Optional.of(user);
@@ -80,6 +80,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> retreiveUserFromEmail(User user) throws SQLException {
         String query = "SELECT * FROM user WHERE email = ?";
+        User foundUser;
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getEmail());
             try (ResultSet rs = ps.executeQuery()) {
@@ -94,7 +95,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     String race = rs.getString("race");
                     String location = rs.getString("location");
                     int age = rs.getInt("age");
-                    user.builder().userId(userID).
+                    foundUser = User.builder().userId(userID).
                             name(name).
                             surname(surname).
                             email(email).
@@ -103,7 +104,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                             role(role).race(race).
                             location(location).
                             age(age).build();
-                    return Optional.of(user);
+                    return Optional.of(foundUser);
 
                 }
             }
@@ -132,6 +133,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
 
     @Override
     public Optional<User> retreiveUserFromUserID(User user) throws SQLException {
+        User foundUser;
         String query = "SELECT * FROM user WHERE user_id = ?";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, user.getUserId());
@@ -147,7 +149,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     String race = rs.getString("race");
                     String location = rs.getString("location");
                     int age = rs.getInt("age");
-                    user.builder().userId(userID).
+                    foundUser = User.builder().userId(userID).
                             name(name).
                             surname(surname).
                             email(email).
@@ -156,7 +158,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                             role(role).race(race).
                             location(location).
                             age(age).build();
-                    return Optional.of(user);
+                    return Optional.of(foundUser);
 
                 }
             }

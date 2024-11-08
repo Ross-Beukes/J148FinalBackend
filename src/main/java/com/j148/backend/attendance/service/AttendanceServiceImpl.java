@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.j148.backend.attendance.service;
 
 import com.j148.backend.attendance.model.Attendance;
@@ -16,6 +12,7 @@ import com.j148.backend.hearing.service.HearingServiceImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -24,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- *
  * @author glenl
  */
 public class AttendanceServiceImpl implements AttendanceService {
@@ -36,13 +32,13 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in
-        if (attendance != null) {
+        if (attendance != null && attendance.getContractor().getContractorId() != null) {
             Attendance foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).
                     orElseThrow(() -> new Exception("Unable to find attendance in the database"));
             if (foundAttendance != null) {
-                LocalTime targeTime = LocalTime.of(8, 30);
+                LocalTime targetTime = LocalTime.of(8, 30);
                 LocalTime currentTime = LocalTime.now();
-                if (currentTime.isAfter(targeTime)) {
+                if (currentTime.isAfter(targetTime)) {
                     attendance.setRegister(Attendance.Register.LATE);
                     Contractor contractor = attendance.getContractor();
                     Warning warning = warningService.lateComingWarning(contractor);
@@ -65,9 +61,20 @@ public class AttendanceServiceImpl implements AttendanceService {
     public Attendance checkOut(Attendance attendance) throws SQLException, Exception { //check out
         Attendance foundAttendance = attendanceRepo.getAttendanceByID(attendance.getAttendanceId()).orElseThrow(() -> new Exception("No attendance record found"));
         if (foundAttendance != null) {
-            attendance.setTimeOut(LocalDateTime.now());
-            return this.attendanceRepo.updateAttendance(attendance).
-                    orElseThrow(() -> new Exception("Unable to update database"));
+            Long attendanceId = foundAttendance.getAttendanceId();
+            LocalDateTime timeIn = foundAttendance.getTimeIn();
+            LocalDateTime timeOut = foundAttendance.getTimeOut();
+            Attendance.Register register = foundAttendance.getRegister();
+            Contractor contractor = foundAttendance.getContractor();
+            Long contractorID = contractor.getContractorId();
+            if (timeOut != null) {
+                throw new Exception("Contractor already checked out");
+            }
+            if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L ) {
+                attendance.setTimeOut(LocalDateTime.now());
+                return this.attendanceRepo.updateAttendance(attendance).
+                        orElseThrow(() -> new Exception("Unable to update database"));
+            }
         }
         return attendance;
     }
@@ -76,10 +83,10 @@ public class AttendanceServiceImpl implements AttendanceService {
     public List<Attendance> createAbsentContractors() throws SQLException, Exception {
         List<Contractor> contractors = contractorService.findCurrentContractors();
         List<Attendance> attendances = contractorsNotCheckedIn(contractors);
-        if (!attendances.isEmpty()) {
-            for (int i = 0; i < attendances.size(); i++) {
-                attendances.get(i).setRegister(Attendance.Register.ABSENT);
-                Attendance attendance = this.attendanceRepo.createAttendanceRecord(attendances.get(i)).
+        if (!attendances.isEmpty() && !contractors.isEmpty()) {
+            for (Attendance value : attendances) {
+                value.setRegister(Attendance.Register.ABSENT);
+                Attendance attendance = this.attendanceRepo.createAttendanceRecord(value).
                         orElseThrow(() -> new Exception("unable to add attendance record"));
                 Contractor contractor = attendance.getContractor();
                 Warning warning = warningService.absentWarning(contractor);
@@ -94,22 +101,22 @@ public class AttendanceServiceImpl implements AttendanceService {
         List<Attendance> todayAttendances = attendanceRepo.todaysAttenance();
         List<Attendance> missingAttendances = new ArrayList<>();
 
-        for (int i = 0; i < todayAttendances.size(); i++) {
+        for (Attendance todayAttendance : todayAttendances) {
             for (int j = 0; j < contractors.size(); j++) {
                 if (!(contractors.get(j).getStatus().equals(Contractor.Status.ACTIVE))) {
                     contractors.remove(j);
                     break;
                 }
-                if (Objects.equals(todayAttendances.get(i).getContractor().getContractorId(), contractors.get(j).getContractorId())) {
+                if (Objects.equals(todayAttendance.getContractor().getContractorId(), contractors.get(j).getContractorId())) {
                     contractors.remove(j);
                     break;
                 }
             }
         }
-        for (int i = 0; i < contractors.size(); i++) {
+        for (Contractor contractor : contractors) {
             Attendance attendance = Attendance.builder().build();
             attendance.setTimeIn(LocalDateTime.now());
-            attendance.setContractor(contractors.get(i));
+            attendance.setContractor(contractor);
             attendance.setRegister(Attendance.Register.ABSENT);
             missingAttendances.add(attendance);
         }
