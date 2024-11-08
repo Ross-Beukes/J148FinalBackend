@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
-    private static final String url = "jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false";
-
-    private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, "root", "root");
-    }
+//    private static final String url = "jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false";
+//
+//    private Connection getConnection() throws SQLException {
+//        return DriverManager.getConnection(url, "root", "root");
+//    }
 
     /**
      * Inserts a attendance record into the database
@@ -26,7 +26,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     @Override
     public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
         String query = "INSERT into attendance (time_in,time_out, register, contractor_id) VALUES (?,?,?,?)";
-        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query)) {
+        try (Connection con = getCon(); PreparedStatement statement = con.prepareStatement(query)) {
 
             con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
@@ -41,7 +41,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 con.commit();
                 return Optional.of(attendance);
             } else {
-                con.rollback();
+                con.rollback(save);
                 return Optional.empty();
 
             }
@@ -58,7 +58,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     @Override
     public Optional<Attendance> getAttendanceByID(Long id) throws SQLException {
         String query = "SELECT * FROM attendance WHERE attendance_id= ?";
-        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query)) {
+        try (Connection con = getCon(); PreparedStatement statement = con.prepareStatement(query)) {
             statement.setLong(1, id);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -91,7 +91,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     @Override
     public Optional<Attendance> updateAttendance(Attendance attendance) throws SQLException {
         String query = "UPDATE attendance SET time_in = ?, time_out = ?, register = ?, contractor_id = ? WHERE attendance_id = ?";
-        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query)) {
+        try (Connection con = getCon(); PreparedStatement statement = con.prepareStatement(query)) {
             con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
             statement.setTimestamp(2, Timestamp.valueOf(attendance.getTimeOut()));
@@ -106,11 +106,14 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 con.commit();
                 return Optional.of(attendance);
 
+            }else{
+                con.rollback(save);
+                return Optional.empty();
             }
 
         }
 
-        return Optional.empty();
+
     }
 
 
@@ -121,7 +124,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     public List<Attendance> getAllAttendance() throws SQLException {
         List<Attendance> attendanceList = new ArrayList<>();
         String query = "SELECT * FROM attendance";
-        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query);
+        try (Connection con = getCon(); PreparedStatement statement = con.prepareStatement(query);
              ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
                 Attendance attendance = Attendance.builder()
@@ -143,7 +146,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     public List<Attendance> FindAllAttendanceForContractor(Contractor contractor) throws SQLException {
         List<Attendance>attendanceList = new ArrayList<>();
         String query= "SELECT * FROM attendance WHERE contractor_id = ?";
-        try(Connection con = getConnection();
+        try(Connection con = getCon();
         PreparedStatement statement= con.prepareStatement(query)){
             statement.setLong(1, contractor.getContractorId());
             ResultSet rs = statement.executeQuery();
