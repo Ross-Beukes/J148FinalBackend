@@ -124,6 +124,9 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
                 return Optional.of(contract);
                 
             }
+            else {
+                con.rollback(save);
+            }
           
           }catch(Exception e){
               System.out.println("Error while updating a contract, Try again later");
