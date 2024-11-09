@@ -71,6 +71,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public Optional<Contractor> updateStatus(Contractor contractor) throws SQLException {
+
         String sql = "UPDATE contractor SET status = ? WHERE contractor_id = ?";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -100,6 +101,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
     @Override
     public List<Contractor> findAll() throws SQLException {
         String sql = "SELECT * FROM contractor";
+
         List<Contractor> contractors = new ArrayList<>();
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
