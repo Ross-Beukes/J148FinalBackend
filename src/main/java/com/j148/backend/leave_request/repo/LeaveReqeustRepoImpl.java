@@ -41,7 +41,17 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo{
         return updateDecision(leaveRequestId, LeaveRequest.Decision.DENIED);
         
     }
-    
+
+    @Override
+    public Optional<LeaveRequest> retrieveById(Long leaveRequestId) {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<LeaveRequest> updateLeaveRequest(LeaveRequest leaveRequest) {
+        return Optional.empty();
+    }
+
     private Optional<LeaveRequest> updateDecision(Long leaveRequestId, LeaveRequest.Decision decision) throws SQLException {
         String query = "UPDATE leave_request SET decision = ? WHERE leave_request_id = ?";
 
