@@ -1,3 +1,7 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.j148.backend.hearing.service;
 
 import com.j148.backend.contractor.model.Contractor;
@@ -6,13 +10,72 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepo;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
+import java.sql.SQLException;
 
+import com.j148.backend.warning.repo.WarningRepo;
+import com.j148.backend.warning.repo.WarningRepoImpl;
 import java.time.LocalDateTime;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+
+/**
+ *
+ * @author Tshireletso
+ */
 public class HearingServiceImpl implements HearingService {
 
     private final HearingRepo hearingRepo = new HearingRepoImpl();
     private final ContractorRepo contractorRepo = new ContractorRepoImpl();
+    private final WarningRepo warningRepo = new WarningRepoImpl();
+
+    @Override
+    public LocalDateTime scheduleHearing() throws Exception{
+        // get one week to the current date and time
+        LocalDateTime hearingDate = LocalDateTime.now().plusWeeks(1);
+
+        return hearingDate;
+    }
+
+    @Override
+    public Hearing IssueHearing(Contractor contractor) throws Exception{
+
+        if(contractor != null){
+            int hearingCount = 0;
+            long warningCount = 0l;
+            HearingRepoImpl hri = new HearingRepoImpl();
+
+            //Obtain count based on a Contractors amount of hearings already
+            try {
+                hearingCount = hearingRepo.findContractorHearingHistory(contractor).size();
+            } catch (SQLException ex) {
+                throw ex;
+            }
+            //Obtain count based on a Contractors amount of active warnings
+            try {
+                warningCount = warningRepo.countActiveWarningsByContractor(contractor).get() ;
+            } catch (SQLException ex) {
+                Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing warning history", ex);
+            }
+
+
+            if(warningCount % 3 == 0 && warningCount > 0){
+
+                if(warningCount * 3L != hearingCount){
+                    Hearing hearing = Hearing.builder()
+                            .scheduleDate(scheduleHearing())
+                            .hearingsId(0L)
+                            .contractor(contractor)
+                            .reason("Contractor has received three or more warnings for being late or absent")
+                            .outcome(Hearing.Outcome.NULL)
+                            .build();
+                    return hearing;
+                }
+
+            }
+        }
+        return null;
+    }
 
     @Override
     public Hearing rescheduleHearing(Hearing hearing, Contractor contractor) throws Exception {
@@ -48,4 +111,12 @@ public class HearingServiceImpl implements HearingService {
                 .orElseThrow(() -> new Exception("Failed to reschedule hearing"));
 
     }
+
+
+
 }
+    
+  
+    
+    
+

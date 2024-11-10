@@ -14,108 +14,60 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author yusuf
  */
 public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo{
-    
-        @Override
-    public Optional<LeaveRequest> acceptLeaveRequest(Long leaveRequestId) throws SQLException {
-        return updateDecision(leaveRequestId, LeaveRequest.Decision.APPROVED);
-    }
 
     @Override
-    public Optional<LeaveRequest> declineLeaveRequest(Long leaveRequestId) throws SQLException {
-        return updateDecision(leaveRequestId, LeaveRequest.Decision.DENIED);
-        
-    }
+    public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException {
+        String query = "INSERT INTO leave_request (contractor_id, file_id, start_date, end_date, decision) VALUES(?, ?, ?, ?, ?)";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-    @Override
-    public Optional<LeaveRequest> retrieveById(Long leaveRequestId) {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<LeaveRequest> updateLeaveRequest(LeaveRequest leaveRequest) {
-        return Optional.empty();
-    }
-
-    private Optional<LeaveRequest> updateDecision(Long leaveRequestId, LeaveRequest.Decision decision) throws SQLException {
-        String query = "UPDATE leave_request SET decision = ? WHERE leave_request_id = ?";
-
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             con.setAutoCommit(false);
-            ps.setString(1, decision.toString());
-            ps.setLong(2, leaveRequestId);
-            Savepoint beforeUpdate = con.setSavepoint();
+            ps.setLong(1, leaveRequest.getContractor().getContractorId());
+            ps.setLong(2, leaveRequest.getFile().getFileId());
+            ps.setString(3, String.valueOf(leaveRequest.getStartDate()));
+            ps.setString(4, String.valueOf(leaveRequest.getEndDate()));
+            ps.setString(5, "PENDING");
 
+            Savepoint beforeReservationInput = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
                 con.commit();
-                return findById(leaveRequestId); // retrieve updated LeaveRequest
-            } else {
-                con.rollback(beforeUpdate);
-            }
-        } catch (SQLException e) {
-        }
-        return Optional.empty();
-    }
-        private Optional<LeaveRequest> findById(Long leaveRequestId) throws SQLException {
-        String query = "SELECT * FROM leave_requests WHERE leave_request_id = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setLong(1, leaveRequestId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return Optional.of(mapRowToLeaveRequest(rs));
-                }
-            }
-        }
-        return Optional.empty();
-    }
-
-
-    @Override
-    public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException{
-        String query = "INSERT INTO leave_request (contractor_id, file_id, start_date, end_date, decision) VALUES(?, ?, ?, ?, ?)";
-        try(Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)){
-
-                con.setAutoCommit(false);
-                ps.setLong(1, leaveRequest.getContractor().getContractorId());
-                ps.setLong(2, leaveRequest.getFile().getFileId());
-                ps.setString(3, String.valueOf(leaveRequest.getStartDate()));
-                ps.setString(4, String.valueOf(leaveRequest.getEndDate()));
-                ps.setString(5, "PENDING");
-
-                Savepoint beforeReservationInput = con.setSavepoint();
-                if(ps.executeUpdate() > 0){
-                    con.commit();
-                    try(ResultSet keys = ps.getGeneratedKeys()){
-                        if(keys.next()){
-                            leaveRequest.setLeaveRequestId(keys.getLong(1));
-                        }
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        leaveRequest.setLeaveRequestId(keys.getLong(1));
                     }
-
-                    return Optional.of(leaveRequest);
-                }else{
-                    con.rollback(beforeReservationInput);
                 }
+
+                return Optional.of(leaveRequest);
+            } else {
+                con.rollback(beforeReservationInput);
             }
+        }
         return Optional.empty();
     }
 
     @Override
-    public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws SQLException{
+    public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws SQLException {
         HashMap<Long, LeaveRequest> requestMap = new HashMap<>();
         String query = "SELECT * FROM leave_requests WHERE contractor_id = ?";
-        try(Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)){
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, contractor.getContractorId());
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next()){
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
                     requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
@@ -129,15 +81,15 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo{
     }
 
     @Override
-    public AbstractMap<Long, LeaveRequest> retrieveLeaveRequestsByStartAndEndDate(LocalDate startDate, LocalDate endDate) throws SQLException{
+    public AbstractMap<Long, LeaveRequest> retrieveLeaveRequestsByStartAndEndDate(LocalDate startDate, LocalDate endDate) throws SQLException {
         HashMap<Long, LeaveRequest> requestMap = new HashMap<>();
         String query = "SELECT * FROM leave_requests WHERE start_date > ? AND end_date < ?";
-        try(Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)){
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, String.valueOf(startDate));
             ps.setString(2, String.valueOf(endDate));
-            try(ResultSet rs = ps.executeQuery()){
-                while(rs.next()){
-    //                requestMap.keySet().add(rs.getLong("leave_request_id"));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    //                requestMap.keySet().add(rs.getLong("leave_request_id"));
                     requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
@@ -198,5 +150,5 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo{
                 .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                 .build();
     }
-    
+
 }

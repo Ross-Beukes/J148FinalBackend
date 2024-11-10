@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author Tshireletso
  */
-public class LeaveRequestNotFoundException extends Exception{
+public class LeaveRequestNotFoundException extends RuntimeException{
     
     public LeaveRequestNotFoundException() {}
     
