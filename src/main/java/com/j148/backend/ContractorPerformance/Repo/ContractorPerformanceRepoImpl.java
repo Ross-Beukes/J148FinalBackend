@@ -240,7 +240,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
     }
 
     @Override
-    public List<ContractorPerformance> filterContractorPerformance(String filters, List<ContractorPerformance> cp) {
+    public List<ContractorPerformance> filterContractorPerformance(String filters, List<ContractorPerformance> cp) throws SQLException {
 //        String[] filterList = filters.toLowerCase().split(",");
 //        for (int i = 0; i < filterList.length; i++) {
 //            int operatorPos = 0;
@@ -661,6 +661,42 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 return actual.compareTo(target) < 0;
             default:
                 return false;
+        }
+
+    }
+
+    @Override
+    public List<ContractorPerformance> getAllContractors() throws SQLException {
+        String query = "SELECT "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, "
+                + "contractor.contractor_id, contractor.status"
+                + "FROM user "
+                + "JOIN contractor ON user.user_id = contractor.user_id ";
+
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ContractorPerformance cp = new ContractorPerformance();
+            List<ContractorPerformance> cpList = new ArrayList<>();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = User.builder()
+                            .userId(rs.getLong("user_id"))
+                            .name(rs.getString("user_name"))
+                            .surname(rs.getString("surname"))
+                            .email(rs.getString("email"))
+                            .build();
+
+                    Contractor contractor = Contractor.builder()
+                            .contractorId(rs.getLong("contractor_id"))
+                            .status(Contractor.Status.valueOf(rs.getString("status")))
+                            .build();
+
+                    cp.setUser(user);
+                    cp.setContractor(contractor);
+                    cpList.add(cp);
+                }
+                return cpList;
+            }
+
         }
 
     }

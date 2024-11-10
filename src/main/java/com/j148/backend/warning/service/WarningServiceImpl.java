@@ -24,56 +24,47 @@ public class WarningServiceImpl implements WarningService {
     private WarningRepo warningRepo = new WarningRepoImpl();
 
     @Override
-    public Optional<Warning> save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException {
-        // Check if the warning object is null and throw exception if it is
-        if (warning == null) {
-            throw new WarningNotFoundException("Warning returned a null");
-        } else if (warning.getContractor() == null || warning.getContractor().getContractorId() == 0) {
-            throw new ContractorNotFoundException("Warning does not contain contractor");
-        }else if(warning.getReason() == null){
-            throw new WarningNotFoundException("Reason not found");
-        }
-
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Warning> findById(Warning warning) throws SQLException {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<Warning> updateState(Warning warning) throws SQLException {
+    public Warning save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Optional<List<Warning>> findByContractor(Contractor contractor) throws SQLException {
+    public Warning findById(Warning warning) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Optional<List<Warning>> findAllActiveByContractor(Contractor contractor) throws SQLException {
+    public List<Warning> findByContractor(Contractor contractor) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Optional<List<Warning>> findAppealedByContractor(Contractor contractor) throws SQLException {
+    public List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Optional<Warning> createLateWarning(Contractor contractor) throws SQLException {
+    public List<Warning> findAppealedByContractor(Contractor contractor) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Optional<List<Warning>> findWarningsByDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
+    public Warning updateState(Warning warning) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Optional<List<Warning>> findFinalWarningsByContractor(Contractor contractor) throws SQLException {
+    public Warning createLateWarning(Contractor contractor) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public List<Warning> findWarningsByDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public List<Warning> findFinalWarningsByContractor(Contractor contractor) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -83,13 +74,14 @@ public class WarningServiceImpl implements WarningService {
     }
 
     @Override
-    public Optional<Boolean> existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException {
+    public List<Warning> findWarningsByReason(Warning warning) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Optional<List<Warning>> findWarningsByReason(Warning warning) throws SQLException {
+    public Boolean existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
+    
 }

@@ -18,29 +18,29 @@ import java.util.Optional;
  * @author arshr
  */
 public interface WarningService {
-    Optional<Warning> save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException;
+    Warning save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException;
     
-    Optional<Warning> findById(Warning warning) throws SQLException;
+    Warning findById(Warning warning) throws SQLException;
     
-    Optional<List<Warning>> findByContractor(Contractor contractor) throws SQLException;
+    List<Warning> findByContractor(Contractor contractor) throws SQLException;
     
-    Optional<List<Warning>> findAllActiveByContractor(Contractor contractor) throws SQLException;
+    List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException;
     
-    Optional<List<Warning>> findAppealedByContractor(Contractor contractor) throws SQLException;
+    List<Warning> findAppealedByContractor(Contractor contractor) throws SQLException;
     
-    Optional<Warning> updateState(Warning warning) throws SQLException;
+    Warning updateState(Warning warning) throws SQLException;
     
-    Optional<Warning> createLateWarning(Contractor contractor) throws SQLException;
+    Warning createLateWarning(Contractor contractor) throws SQLException;
     
-    Optional<List<Warning>> findWarningsByDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException;
+    List<Warning> findWarningsByDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException;
     
-    Optional<List<Warning>> findFinalWarningsByContractor(Contractor contractor) throws SQLException;
+    List<Warning> findFinalWarningsByContractor(Contractor contractor) throws SQLException;
     
     Optional<Long> countActiveWarningsByContractor(Contractor contractor) throws SQLException;
     
-    Optional<List<Warning>> findWarningsByReason(Warning warning) throws SQLException;
+    List<Warning> findWarningsByReason(Warning warning) throws SQLException;
     
-    Optional<Boolean> existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException;
+    Boolean existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException;
     
     
 }
