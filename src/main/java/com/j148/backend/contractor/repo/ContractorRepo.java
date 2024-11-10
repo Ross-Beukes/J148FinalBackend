@@ -19,11 +19,11 @@ public interface ContractorRepo {
     /**
      * Finds a contractor by its unique identifier.
      *
-     * @param contractorId the unique identifier of the contractor
+     * @param contractor the unique identifier of the contractor
      * @return an Optional containing the found contractor if it exists, otherwise an empty Optional
      * @throws SQLException if a database access error occurs
      */
-    Optional<Contractor> findById(Long contractorId) throws SQLException;
+    Optional<Contractor> findByID(Contractor contractor) throws SQLException;
 
     /**
      * Updates an existing contractor record in the database.
@@ -32,7 +32,7 @@ public interface ContractorRepo {
      * @return an Optional containing the updated contractor if successful, otherwise an empty Optional
      * @throws SQLException if a database access error occurs
      */
-    Optional<Contractor> update(Contractor contractor) throws SQLException;
+    Optional<Contractor> updateStatus(Contractor contractor) throws SQLException;
 
     /**
      * Retrieves all contractors from the database.
@@ -42,5 +42,3 @@ public interface ContractorRepo {
      */
     List<Contractor> findAll() throws SQLException;
 }
-
-
