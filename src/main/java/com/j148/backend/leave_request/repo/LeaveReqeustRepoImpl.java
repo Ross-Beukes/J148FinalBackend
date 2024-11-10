@@ -195,7 +195,7 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo{
                 .endDate(rs.getDate("end_date").toLocalDate())
                 .decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                 .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                .file(Files.builder().fileId(rs.getLong("file_id")).build())
+                .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                 .build();
     }
     

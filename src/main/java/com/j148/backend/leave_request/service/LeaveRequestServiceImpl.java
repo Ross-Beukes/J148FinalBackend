@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.j148.backend.leave_request.repo;
+package com.j148.backend.leave_request.service;
 import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
 import com.j148.backend.leave_request.model.LeaveRequest;
+import com.j148.backend.leave_request.repo.LeaveRequestRepo;
 
 import java.sql.SQLException;
 
