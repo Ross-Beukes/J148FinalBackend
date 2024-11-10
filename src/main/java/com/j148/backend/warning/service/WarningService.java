@@ -9,18 +9,20 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.WarningNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.warning.model.Warning;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 /**
- *
  * @author arshr
  */
 public interface WarningService {
     Warning save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException;
+
     Warning appealWarning(Warning warning, Contractor contractor) throws Exception;
+
     Warning findById(Warning warning) throws SQLException;
 
     List<Warning> findByContractor(Contractor contractor) throws SQLException;
@@ -42,4 +44,5 @@ public interface WarningService {
     List<Warning> findWarningsByReason(Warning warning) throws SQLException;
 
     Boolean existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException;
+}
 

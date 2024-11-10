@@ -121,7 +121,6 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                         .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
                         .register(Attendance.Register.valueOf("register")).build();
                 Contractor contractor = Contractor.builder().contractorId(rs.getLong("`contractor_id`")).build();
-                                        Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractor_id")).build();
                 attendance.setContractor(contractor);
                 attendanceList.add(attendance);
 
