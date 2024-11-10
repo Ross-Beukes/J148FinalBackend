@@ -41,6 +41,12 @@ public interface LeaveRequestRepo {
     Optional<LeaveRequest> updateLeaveRequestToApprovedOrDenied(LeaveRequest leaveRequest) throws SQLException;
     /*
     Updates the leave request to approved or denied
+
     */
-    
+      Optional<LeaveRequest> acceptLeaveRequest(Long leaveRequestId) throws SQLException;
+    Optional<LeaveRequest> declineLeaveRequest(Long leaveRequestId) throws SQLException;
+
+    public Optional<LeaveRequest> retrieveById(Long leaveRequestId);
+
+    Optional<LeaveRequest> updateLeaveRequest(LeaveRequest leaveRequest);
 }
