@@ -16,12 +16,12 @@ import java.util.Optional;
 public interface AptitudeRepo {
     
      /**
-     * Saves a new AptitudeTest to the database.
-     * 
-     * @param aptitudeTest the AptitudeTest entity to save
-     * @return the saved AptitudeTest entity, with any generated fields populated
-     */
-    AptitudeTest create (AptitudeTest aptitudeTest) throws SQLException;
+      * Saves a new AptitudeTest to the database.
+      *
+      * @param aptitudeTest the AptitudeTest entity to save
+      * @return the saved AptitudeTest entity, with any generated fields populated
+      */
+    Optional<AptitudeTest> create (AptitudeTest aptitudeTest) throws SQLException;
     
      
     /**
@@ -41,14 +41,14 @@ public interface AptitudeRepo {
     
     List<AptitudeTest> findAll() throws SQLException;
       /**
-     * Updates an existing AptitudeTest in the database.
-     * 
-     * @param aptitudeTest the AptitudeTest entity with updated values
-     * @return the updated AptitudeTest entity
-     */
+       * Updates an existing AptitudeTest in the database.
+       *
+       * @param aptitudeTest the AptitudeTest entity with updated values
+       * @return the updated AptitudeTest entity
+       */
     
     
-    AptitudeTest update(AptitudeTest aptitudeTest) throws SQLException;
+    Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException;
     
     
     /**

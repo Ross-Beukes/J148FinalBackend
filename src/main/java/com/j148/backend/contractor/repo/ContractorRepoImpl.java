@@ -13,7 +13,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public Optional<Contractor> save(Contractor contractor) throws SQLException {
-        String sql = "INSERT INTO contractor (contractor_id, status, user_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO contractor (contractor_period_id, status, user_id) VALUES (?, ?, ?)";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             con.setAutoCommit(false);
@@ -45,7 +45,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public Optional<Contractor> findById(Long contractorId) throws SQLException {
-        String sql = "SELECT contractor_id, status, user_id FROM contractor WHERE contractor_id = ?";
+        String sql = "SELECT * FROM contractor WHERE contractor_id = ?";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, contractorId);

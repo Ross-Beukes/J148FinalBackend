@@ -94,7 +94,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     String race = rs.getString("race");
                     String location = rs.getString("location");
                     int age = rs.getInt("age");
-                    user.builder().userId(userID).
+                    return Optional.of(User.builder().userId(userID).
                             name(name).
                             surname(surname).
                             email(email).
@@ -102,8 +102,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                             idNumber(id_number).
                             role(role).race(race).
                             location(location).
-                            age(age).build();
-                    return Optional.of(user);
+                            age(age).build());
 
                 }
             }

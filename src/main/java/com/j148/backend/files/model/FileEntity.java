@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Files {
+public class FileEntity {
     private Long fileId;
     private String fileType;
     private Category category;
