@@ -6,6 +6,8 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.repo.ContractorRepo;
 import com.j148.backend.contractor.repo.ContractorRepoImpl;
 
+import java.util.Optional;
+
 
 public class ContractorServiceImpl implements ContractorService{
 
@@ -14,10 +16,13 @@ public class ContractorServiceImpl implements ContractorService{
 
   
     public Contractor updateContractor(Contractor contractor) throws Exception{
-        if(contractor != null){
-            return contractorRepo.update(contractor).get();
-        }else{
-            throw new UserNotFoundException("user not found update failed");
+        if(contractor == null){
+            throw new UserNotFoundException("User not found, update failed");
+
+        } else {
+            Optional<Contractor> updatedContractor = contractorRepo.update(contractor);
+            return updatedContractor.orElseThrow(() -> new UserNotFoundException("User not found, update failed"));
         }
     }
+
 }

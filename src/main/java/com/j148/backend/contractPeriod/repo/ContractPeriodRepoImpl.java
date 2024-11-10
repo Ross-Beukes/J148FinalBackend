@@ -5,11 +5,10 @@ import com.j148.backend.contractPeriod.model.ContractPeriod;
 
 import java.sql.*;
 import java.util.Optional;
-/**Martinez*/
 
 public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRepo {
     @Override
-    public Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException {
+    public Optional<ContractPeriod> save(ContractPeriod contractPeriod) throws SQLException {
         String query = "INSERT INTO contractor_period (name, start_date, end_date) VALUES (?, ?, ?)";
 
         try (Connection con = getCon()) {
@@ -39,8 +38,8 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
     }
 
     @Override
-    public Optional<ContractPeriod> findContractPeriodByName(String name) throws SQLException {
-        String query = "SELECT contractor_period_id, name, start_date, end_date FROM contractor_period WHERE name = ?";
+    public Optional<ContractPeriod> findByName(String name) throws SQLException {
+        String query = "SELECT * FROM contractor_period WHERE name = ?";
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement stmt = con.prepareStatement(query)) {
@@ -63,13 +62,13 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
         return Optional.empty();
     }
     @Override
-    public Optional<ContractPeriod> findContractPeriodById(long contractPeriodId) throws SQLException {
-        String query = "SELECT contractor_period_id, name, start_date, end_date FROM contractor_period WHERE  contractor_period_id = ?";
+    public Optional<ContractPeriod> findById(ContractPeriod contractPeriod) throws SQLException {
+        String query = "SELECT * FROM contractor_period WHERE  contractor_period_id = ?";
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement stmt = con.prepareStatement(query)) {
 
-            stmt.setLong(1, contractPeriodId);
+            stmt.setLong(1, contractPeriod.getContractPeriodId());
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -87,7 +86,7 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
         return Optional.empty();
     }
     @Override
-    public Optional<ContractPeriod> updateContractPeriod(ContractPeriod contractPeriod) throws SQLException {
+    public Optional<ContractPeriod> update(ContractPeriod contractPeriod) throws SQLException {
         String query = "UPDATE contractor_period SET name = ?, start_date = ?, end_date = ? WHERE contractor_period_id = ?";
 
         try (Connection con = DBConfig.getCon()) {
@@ -98,7 +97,6 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
                 stmt.setString(1, contractPeriod.getName());
                 stmt.setDate(2, Date.valueOf(contractPeriod.getStartDate()));
                 stmt.setDate(3, Date.valueOf(contractPeriod.getEndDate()));
-                stmt.setLong(4, contractPeriod.getContractPeriodId());
 
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows > 0) {

@@ -16,7 +16,7 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the added contract period, if successful
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<com.j148.backend.contractPeriod.model.ContractPeriod> saveContractPeriod(com.j148.backend.contractPeriod.model.ContractPeriod contractPeriod) throws SQLException;
+    Optional<ContractPeriod> save(ContractPeriod contractPeriod) throws SQLException;
     /**
      * Finds a contract period by its name.
      *
@@ -24,16 +24,16 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the contract period if found, or an empty Optional if not
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<com.j148.backend.contractPeriod.model.ContractPeriod> findContractPeriodByName(String name) throws SQLException;
+    Optional<ContractPeriod> findByName(String name) throws SQLException;
     /**
      * Finds a contract period by its name.
      *
-     * @param contractPeriodId the id of the contract period to be retrieved
+     * @param contractPeriod the id of the contract period to be retrieved
      * @return an Optional containing the contract period if found, or an empty Optional if not
      * @throws SQLException if there is an error accessing the database
      */
 
-    Optional<ContractPeriod> findContractPeriodById(long contractPeriodId) throws SQLException;
+    Optional<ContractPeriod> findById(ContractPeriod contractPeriod) throws SQLException;
     /**
      * Updates an existing contract period in the database.
      *
@@ -41,6 +41,6 @@ public interface ContractPeriodRepo {
      * @return an Optional containing the updated contract period, if successful
      * @throws SQLException if there is an error accessing the database
      */
-    Optional<com.j148.backend.contractPeriod.model.ContractPeriod> updateContractPeriod(com.j148.backend.contractPeriod.model.ContractPeriod contractPeriod) throws SQLException;
+    Optional<ContractPeriod> update(ContractPeriod contractPeriod) throws SQLException;
     
 }
