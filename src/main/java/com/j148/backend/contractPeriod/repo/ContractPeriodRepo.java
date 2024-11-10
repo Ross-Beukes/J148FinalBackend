@@ -1,6 +1,5 @@
 package com.j148.backend.contract_period.repo;
 
-import com.j148.backend.contract_period.model.ContractPeriod;
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -9,7 +8,6 @@ import java.util.Optional;
  * find and update contract periods in the database.
  */
 public interface ContractPeriodRepo {
-
     /**
      * Adds a new contract period to the database.
      *

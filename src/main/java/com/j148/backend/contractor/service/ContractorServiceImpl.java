@@ -1,4 +1,3 @@
-package com.j148.backend.contractor.service;
 
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
@@ -75,5 +74,15 @@ public class ContractorServiceImpl implements ContractorService {
 
         return contractorRepo.updateStatus(contractor).orElseThrow(() -> new Exception("Failed to change contractor status"));
 
+    }
+
+    public Contractor updateContractor(Contractor contractor) throws Exception{
+        if(contractor == null){
+            throw new UserNotFoundException("User not found, update failed");
+
+        } else {
+            Optional<Contractor> updatedContractor = contractorRepo.update(contractor);
+            return updatedContractor.orElseThrow(() -> new UserNotFoundException("User not found, update failed"));
+        }
     }
 }

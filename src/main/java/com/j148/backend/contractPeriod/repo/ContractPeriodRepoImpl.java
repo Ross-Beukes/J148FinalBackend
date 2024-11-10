@@ -5,17 +5,15 @@ import com.j148.backend.contract_period.model.ContractPeriod;
 
 import java.sql.*;
 import java.util.Optional;
+/**Martinez*/
 
-/**
- * Martinez
- */
 public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRepo {
 
     @Override
     public Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException {
         String query = "INSERT INTO contractor_period (name, start_date, end_date) VALUES (?, ?, ?)";
 
-        try (Connection con = DBConfig.getCon()) {
+        try (Connection con = getCon()) {
             con.setAutoCommit(false);
 
             try (PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -52,12 +50,38 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    com.j148.backend.contract_period.model.ContractPeriod contractPeriod = new com.j148.backend.contract_period.model.ContractPeriod();
-                    contractPeriod.setContractPeriodId(rs.getLong("contractor_period_id"));
-                    contractPeriod.setName(rs.getString("name"));
-                    contractPeriod.setStartDate(rs.getDate("start_date").toLocalDate());
-                    contractPeriod.setEndDate(rs.getDate("end_date").toLocalDate());
-                    return Optional.of(contractPeriod);
+                    return Optional.of(
+                            ContractPeriod.builder()
+                                    .contractPeriodId(rs.getLong("contractor_period_id"))
+                                    .name(rs.getString("name"))
+                                    .startDate(rs.getDate("start_date").toLocalDate())
+                                    .endDate(rs.getDate("end_date").toLocalDate())
+                            .build()
+                    );
+                }
+            }
+        }
+        return Optional.empty();
+    }
+    @Override
+    public Optional<ContractPeriod> findById(ContractPeriod contractPeriod) throws SQLException {
+        String query = "SELECT * FROM contractor_period WHERE  contractor_period_id = ?";
+
+        try (Connection con = DBConfig.getCon();
+             PreparedStatement stmt = con.prepareStatement(query)) {
+
+            stmt.setLong(1, contractPeriod.getContractPeriodId());
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(
+                            ContractPeriod.builder()
+                                    .contractPeriodId(rs.getLong("contractor_period_id"))
+                                    .name(rs.getString("name"))
+                                    .startDate(rs.getDate("start_date").toLocalDate())
+                                    .endDate(rs.getDate("end_date").toLocalDate())
+                                    .build()
+                    );
                 }
             }
         }
@@ -82,7 +106,8 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
                 if (affectedRows > 0) {
                     con.commit();
                     return Optional.of(contractPeriod);
-                } else {
+                }
+                else{
                     con.rollback(savepoint);
                 }
             }
@@ -127,6 +152,6 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
         }
         return Optional.empty();
     }
-    
-    
+
+
 }
