@@ -11,7 +11,7 @@ public class ContractorServiceImpl implements ContractorService {
     @Override
     public Contractor changeContractorStatus(Contractor contractor) throws Exception {
 
-        if (contractorRepo.findByID(contractor).isEmpty()) {
+        if (contractorRepo.findById(contractor).isEmpty()) {
 
             throw new Exception("The contractor does not exist.");
 

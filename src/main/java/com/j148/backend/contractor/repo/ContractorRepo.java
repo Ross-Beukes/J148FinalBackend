@@ -23,7 +23,8 @@ public interface ContractorRepo {
      * @return an Optional containing the found contractor if it exists, otherwise an empty Optional
      * @throws SQLException if a database access error occurs
      */
-    Optional<Contractor> findByID(Contractor contractor) throws SQLException;
+
+    Optional<Contractor> findById(Contractor contractor) throws SQLException;
 
     /**
      * Updates an existing contractor record in the database.

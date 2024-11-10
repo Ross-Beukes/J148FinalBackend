@@ -36,7 +36,7 @@ public class WarningServiceImpl implements WarningService{
             throw new IllegalArgumentException("Contractor id is null");
         }
 
-        if (contractorRepo.findById(contractor.getContractorId()).isEmpty()){
+        if (contractorRepo.findById(contractor).isEmpty()){
             throw new IllegalArgumentException("Could not find contractor");
         }
 
