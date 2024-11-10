@@ -6,19 +6,19 @@ package com.j148.backend.Exceptions;
 
 /**
  *
- * @author Tshireletso
+ * @author arshr
  */
-public class AptitudeTestNotFoundException extends Exception {
-
-    public AptitudeTestNotFoundException() {
+public class ContractorPerformanceNotFoundException extends Exception{
+    public ContractorPerformanceNotFoundException() {
     }
 
-    public AptitudeTestNotFoundException(String message) {
+    public ContractorPerformanceNotFoundException(String message) {
         super(message);
     }
 
-    public AptitudeTestNotFoundException(String message, Throwable cause) {
+    public ContractorPerformanceNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-
+    
+    
 }

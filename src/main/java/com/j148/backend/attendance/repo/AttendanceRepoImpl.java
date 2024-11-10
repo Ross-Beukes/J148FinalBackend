@@ -101,17 +101,12 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 con.commit();
                 return Optional.of(attendance);
 
-            }else {
+            } else {
                 con.rollback(save);
                 return Optional.empty();
-
             }
-
         }
     }
-
-
-
 
 
     @Override
@@ -123,12 +118,38 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
             while (rs.next()) {
                 Attendance attendance = Attendance.builder()
                         .attendanceId(rs.getLong("attendance_id")).timeIn(rs.getTimestamp("time_in").toLocalDateTime())
-                                .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
-                                        .register(Attendance.Register.valueOf("register")).build();
-                                        Contractor contractor = Contractor.builder().contractorId(rs.getLong("`contractor_id`")).build();
-                                        attendance.setContractor(contractor);
-                                        attendanceList.add(attendance);
+                        .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
+                        .register(Attendance.Register.valueOf("register")).build();
+                Contractor contractor = Contractor.builder().contractorId(rs.getLong("`contractor_id`")).build();
+                                        Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractor_id")).build();
+                attendance.setContractor(contractor);
+                attendanceList.add(attendance);
 
+            }
+
+
+        }
+        return attendanceList;
+    }
+
+    @Override
+    public List<Attendance> FindAllAttendanceForContractor(Contractor contractor) throws SQLException {
+        List<Attendance> attendanceList = new ArrayList<>();
+        String query = "SELECT * FROM attendance WHERE contractor_id = ?";
+        try (Connection con = getCon();
+             PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setLong(1, contractor.getContractorId());
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Attendance attendance = Attendance.builder().build();
+                attendance.setAttendanceId(rs.getLong("attendance_id"));
+                attendance.setTimeIn(rs.getTimestamp("time_in").toLocalDateTime());
+                attendance.setTimeOut(rs.getTimestamp("time_out").toLocalDateTime());
+                attendance.setRegister(Attendance.Register.valueOf(rs.getString("register")));
+
+                attendance.setContractor(contractor);
+                attendanceList.add(attendance);
             }
 
 
