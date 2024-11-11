@@ -13,7 +13,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService{
     @Override
     public ContractPeriod saveContractPeriod(ContractPeriod contractPeriod) throws Exception {
         if (contractPeriod == null) {
-            throw new IllegalArgumentException("Contract period must not be null.");
+            throw new IllegalArgumentException("Contract period must not be empty.");
         }
 
         Optional<ContractPeriod> savedContractPeriod = contractPeriodRepo.save(contractPeriod);
@@ -37,30 +37,30 @@ public class ContractPeriodServiceImpl implements ContractPeriodService{
     @Override
     public ContractPeriod findContractPeriodById(ContractPeriod contractPeriod) throws Exception {
         if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
-            throw new IllegalArgumentException("Contract period or contract period ID cannot be null.");
+            throw new IllegalArgumentException("Contract period cannot be empty.");
         }
         Optional<ContractPeriod> foundContractPeriod = contractPeriodRepo.findById(contractPeriod);
 
         return foundContractPeriod.orElseThrow(() ->
-                new NoSuchElementException("No contract period found with ID: " + contractPeriod.getContractPeriodId())
+                new NoSuchElementException("No contract period found.")
         );
     }
 
     @Override
     public ContractPeriod updateContractPeriod(ContractPeriod contractPeriod) throws Exception {
         if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
-            throw new IllegalArgumentException("Contract period cannot be null.");
+            throw new IllegalArgumentException("Contract period cannot be empty.");
         }
         Optional<ContractPeriod> existingContractPeriod = contractPeriodRepo.findById(contractPeriod);
 
         if (existingContractPeriod.isPresent()) {
             Optional<ContractPeriod> updatedContractPeriod = contractPeriodRepo.update(contractPeriod);
             return updatedContractPeriod.orElseThrow(() ->
-                    new IllegalStateException("Failed to update contract period with ID: " + contractPeriod.getContractPeriodId())
+                    new IllegalStateException("Failed to update contract period.")
             );
 
         } else {
-            throw new NoSuchElementException("No contract period found with ID: " + contractPeriod.getContractPeriodId());
+            throw new NoSuchElementException("No contract period found.");
         }
     }
 
