@@ -1,4 +1,4 @@
-package com.j148.backend.ContractorPerformance.model;
+package com.j148.backend.contractor_performance.model;
 
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.attendance.model.Attendance;
