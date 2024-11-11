@@ -26,30 +26,26 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
         String sql = "INSERT INTO aptitude_tests (test_mark, test_date, user_id) VALUES (?, ?, ?)";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-             
-            Savepoint beforeTestSave = conn.setSavepoint(); 
-            
-           try{ stmt.setInt(1, aptitudeTest.getTestMark());
+
+            stmt.setInt(1, aptitudeTest.getTestMark());
             stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
             stmt.setLong(3, aptitudeTest.getUser().getUserId());
 
+            Savepoint beforeUserInsert = conn.setSavepoint();
+
             int affectedRows = stmt.executeUpdate();
             if (affectedRows > 0) {
-                try (ResultSet rs = stmt.getGeneratedKeys()) { 
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         aptitudeTest.setAptitudeTestId(rs.getLong(1));
-                        conn.commit();
-                        return Optional.of(aptitudeTest);
-                        
                     }
                 }
+                return Optional.of(aptitudeTest);
+            }else {
+                conn.rollback(beforeUserInsert);
             }
-        } catch (SQLException e) {
-            conn.rollback(beforeTestSave);
-            throw e;
+
         }
-        }
-        
         return Optional.empty();
     }
 
@@ -80,34 +76,31 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
             while (rs.next()) {
                 aptitudeTests.add(mapRowToAptitudeTest(rs));
             }
-        } 
+        }
         return aptitudeTests;
     }
 
     @Override
     public Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException {
-        String sql = "UPDATE aptitude_tests SET test_mark = ?, test_date = ?, user_id = ? WHERE aptitude_test_id = ?";
+        String sql = "UPDATE aptitude_tests SET test_mark = ?, test_date = ?, WHERE aptitude_test_id = ?";
         try (Connection conn = DBConfig.getCon();
-             PreparedStatement stmt = conn.prepareStatement(sql)){ 
-            Savepoint beforeTestSave = conn.setSavepoint();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-           try{
-               stmt.setInt(1, aptitudeTest.getTestMark());
+            stmt.setInt(1, aptitudeTest.getTestMark());
             stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-            stmt.setLong(3, aptitudeTest.getUser().getUserId());
-            stmt.setLong(4, aptitudeTest.getAptitudeTestId());
+            stmt.setLong(3, aptitudeTest.getAptitudeTestId());
+            Savepoint beforeUserInsert = conn.setSavepoint();
 
-          if(stmt.executeUpdate()>0){
-              conn.commit();
-              return Optional.of(aptitudeTest);
-          }
-        } catch (SQLException e) {
-            conn.rollback(beforeTestSave);
-            throw e;
+            if (stmt.executeUpdate() > 0) {
+                conn.commit();
+
+                return Optional.of(aptitudeTest);
+            } else {
+                conn.rollback(beforeUserInsert);
+                return Optional.empty();
+            }
         }
-           
-        }
-        return Optional.empty();
+
     }
 
     @Override

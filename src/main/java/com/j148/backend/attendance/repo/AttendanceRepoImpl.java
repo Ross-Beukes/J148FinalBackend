@@ -1,31 +1,27 @@
+
 package com.j148.backend.attendance.repo;
 
 import com.j148.backend.attendance.model.Attendance;
-import com.j148.backend.attendance.model.Attendance.Register;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
-
     private static final String url = "jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false";
-    private Timestamp timestamp;
 
     private Connection getConnection() throws SQLException {
         return DriverManager.getConnection(url, "root", "root");
     }
 
     /**
-     * Inserts a attendance record into the database
+     * Inserts an attendance record into the database
      *
      * @param attendance the attendance object containing details to be saved.
-     * @return Optional of attendance if Insertion is successful, or return an
-     * Empty Optional if the Insertion was not successful
+     * @return Optional of attendance if Insertion is successful, or return an Empty Optional if the Insertion was not successful
      */
     @Override
     public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
@@ -45,7 +41,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 con.commit();
                 return Optional.of(attendance);
             } else {
-                con.rollback();
+                con.rollback(save);
                 return Optional.empty();
 
             }
@@ -68,13 +64,13 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
                 Attendance attendance = Attendance.builder().build();
-                attendance.setAttendanceId(rs.getLong("attendanceId"));
+                attendance.setAttendanceId(rs.getLong("attendance_id"));
                 attendance.setTimeIn(rs.getTimestamp("time_in").toLocalDateTime());
                 attendance.setTimeOut(rs.getTimestamp("time_out").toLocalDateTime());
                 attendance.setRegister(Attendance.Register.valueOf(rs.getString("register")));
 
                 Contractor contractor = Contractor.builder().build();
-                contractor.setContractorId(rs.getLong("contractorId"));
+                contractor.setContractorId(rs.getLong("contractor_id"));
                 attendance.setContractor(contractor);
 
                 return Optional.of(attendance);
@@ -93,6 +89,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
      * @return Optional of attendance if the Update is successful, or return an
      * empty Optional if Update was not successful.
      */
+
     @Override
     public Optional<Attendance> updateAttendance(Attendance attendance) throws SQLException {
         String query = "UPDATE attendance SET timeIn = ?, timeOut = ?, register = ?, contractor_id = ? WHERE attendanceId = ?";
@@ -111,18 +108,21 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 con.commit();
                 return Optional.of(attendance);
 
+            }else {
+                con.rollback(save);
+                return Optional.empty();
+
             }
 
         }
-
-        return Optional.empty();
     }
 
     @Override
     public List<Attendance> getAllAttendance() throws SQLException {
         List<Attendance> attendanceList = new ArrayList<>();
         String query = "SELECT * FROM attendance";
-        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query); ResultSet rs = statement.executeQuery()) {
+        try (Connection con = getConnection(); PreparedStatement statement = con.prepareStatement(query);
+             ResultSet rs = statement.executeQuery()) {
             while (rs.next()) {
                 Attendance attendance = Attendance.builder()
                         .attendanceId(rs.getLong("attendance_id")).timeIn(rs.getTimestamp("time_in").toLocalDateTime())
@@ -133,6 +133,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 attendanceList.add(attendance);
 
             }
+
 
         }
         return attendanceList;

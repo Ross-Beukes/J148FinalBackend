@@ -16,13 +16,13 @@ import java.util.Optional;
 public interface AptitudeRepo {
     
      /**
-     * Saves a new AptitudeTest to the database.
-     * 
-     * @param aptitudeTest the AptitudeTest entity to save
-     * @return the saved AptitudeTest entity, with any generated fields populated
-     */
+      * Saves a new AptitudeTest to the database.
+      *
+      * @param aptitudeTest the AptitudeTest entity to save
+      * @return the saved AptitudeTest entity, with any generated fields populated
+      */
     Optional<AptitudeTest> create (AptitudeTest aptitudeTest) throws SQLException;
-    
+
      
     /**
      * Retrieves an AptitudeTest from the database by its ID.

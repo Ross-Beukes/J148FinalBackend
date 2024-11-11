@@ -46,7 +46,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public Optional<Contractor> findById(Long contractorId) throws SQLException {
-        String sql = "SELECT contractor_id, status, user_id FROM contractor WHERE contractor_id = ?";
+        String sql = "SELECT * FROM contractor WHERE contractor_id = ?";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, contractorId);
