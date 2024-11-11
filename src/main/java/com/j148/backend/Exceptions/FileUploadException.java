@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author Tshireletso
  */
-public class FileUploadException extends Exception{
+public class FileUploadException extends RuntimeException{
     
     public FileUploadException() {}
     
