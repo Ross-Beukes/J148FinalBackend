@@ -10,8 +10,8 @@ public class EmailService {
     public static void sendEmail(String recipientEmail, String token) throws MessagingException {
         String host = "smtp.gmail.com"; // or use any SMTP server
         String port = "587"; // For Gmail
-        String from = "naledimodika7@gmail.com"; // Use environment variable
-        String password = "qtef wdud zzax qdat"; // Use environment variable using Gmail)
+        String from = "naledimodika7@gmail.com"; // preferably Use environment variable
+        String password = "qtef wdud zzax qdat"; // preferably Use environment variable)
 
         System.out.println(from + '\n' + password);
         System.out.println(recipientEmail);
@@ -41,7 +41,7 @@ public class EmailService {
         message.setSubject("Your Admin Registration Token");
 
         // Create the body of the email
-        String emailContent = "Hello,\n\nHere is your admin registration token: \n\n" +
+        String emailContent = "Hello,\n\nHere is your registration token: \n\n" +
                 "Token: " + token + "\n\n" +
                 "Use this token to complete your registration.\n\n" +
                 "Best regards,\nYour Application Team";

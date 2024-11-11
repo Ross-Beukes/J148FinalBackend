@@ -4,11 +4,11 @@ import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 
-import javax.mail.MessagingException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +28,7 @@ public class UserResource {
      *This map is used to temporarily store the generated admin keys.
      */
     private static final Map<String, String> adminTokens = new HashMap<>();
+    private static final Map<String, String> instructorTokens = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
     @GET
@@ -44,8 +45,24 @@ public class UserResource {
         try{
             EmailService.sendEmail(adminEmail, token);
             System.out.println("Token sent to email: " + adminEmail);
-        }catch (MessagingException e){
+        } catch (MessagingException e) {
             LOG.log(Level.SEVERE, "Unable to send an email to this email address " + adminEmail);
+            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        }
+        return Response.ok(token).build();
+    }
+
+    @POST
+    @Path("generate-instructor-token")
+    public Response generateTokenForInstructor(@QueryParam("instructorEmail")String instructorEmail){
+        String token = UserService.generateInstructorToken();
+        adminTokens.put(token, instructorEmail);
+
+        try{
+            EmailService.sendEmail(instructorEmail, token);
+            System.out.println("Token sent to email: " + instructorEmail);
+        } catch (MessagingException e) {
+            LOG.log(Level.SEVERE, "Unable to send an email to this email address " + instructorEmail);
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
         return Response.ok(token).build();
@@ -102,9 +119,14 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("register-instructor")
-    public Response registerInstructor(User user) {
+    public Response registerInstructor(@QueryParam("instructorToken") String instructorToken, User user) {
         try {
+            if (instructorToken == null || !instructorTokens.containsKey(instructorToken)){
+                return Response.status(Response.Status.FORBIDDEN).entity("Invalid admin token.").build();
+            }
             user.setRole(User.Role.INSTRUCTOR);
+
+            instructorTokens.remove(instructorToken);
             return Response.ok(this.UserService.registerUser(user)).build();
         } catch (SQLException e){
             LOG.log(Level.SEVERE, "Unable to add instructor to the database.  Check for duplicates");
@@ -201,8 +223,9 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("promote-user")
-    public Response promoteUser(User user){
+    public Response promoteUser(@QueryParam("idNumber")String idNumber){
         try{
+            User user = User.builder().idNumber(idNumber).build();
             return Response.ok(this.UserService.promoteApplicant(user)).build();
         }catch (SQLException e){
             LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");

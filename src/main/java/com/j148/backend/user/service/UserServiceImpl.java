@@ -42,16 +42,6 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User promoteUser(User user) throws SQLException, Exception {
-        if (user != null && user.getIdNumber() != null) {
-            user.setRole(User.Role.CONTRACTOR);
-            return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("Applicant was not promoted to Contractor"));
-        } else {
-            throw new IllegalArgumentException("The user is null");
-        }
-    }
-
-    @Override
     public User LogIn(User user) throws SQLException, Exception {
         if (user != null) {
             if (user.getEmail() != null && user.getPassword() != null) {

@@ -41,22 +41,6 @@ public interface UserService {
     String generateInstructorToken();
 
     /**
-     * Promotes a user to the role of contractor.
-     *
-     * <p>
-     * This method updates the user's role to {@link User.Role#CONTRACTOR} and
-     * saves the update in the database. If the promotion fails, an exception is
-     * thrown.
-     *
-     * @param user The {@link User} object representing the user to be promoted.
-     * @return The updated {@link User} object with the new role.
-     * @throws SQLException if an error occurs during database access.
-     * @throws Exception if the promotion fails or if the user is null.
-     * @throws IllegalArgumentException if the user is null.
-     */
-    User promoteUser(User user) throws SQLException, Exception;
-
-    /**
      * Attempts to log in a user by verifying the provided email and password.
      *
      * @param user A User object containing the email and plain-text password
@@ -97,11 +81,18 @@ public interface UserService {
     User findUserByEmail(User user) throws Exception;
 
     /**
-     *Promotes Applicant to Contractor
+     * Promotes a user to the role of contractor.
      *
-     * @param user the user entity to be promoted
-     * @return Optional containing the user that is promoted, empty otherwise
-     * @throws Exception if an error occurs
+     * <p>
+     * This method updates the user's role to {@link User.Role#CONTRACTOR} and
+     * saves the update in the database. If the promotion fails, an exception is
+     * thrown.
+     *
+     * @param user The {@link User} object representing the user to be promoted.
+     * @return The updated {@link User} object with the new role.
+     * @throws SQLException if an error occurs during database access.
+     * @throws Exception if the promotion fails or if the user is null.
+     * @throws IllegalArgumentException if the user is null.
      */
     User promoteApplicant(User user) throws Exception;
 
