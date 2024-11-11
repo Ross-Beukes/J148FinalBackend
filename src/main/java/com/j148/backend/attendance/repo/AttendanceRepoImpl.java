@@ -4,8 +4,9 @@ package com.j148.backend.attendance.repo;
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
-
+import com.j148.backend.attendance.model.Attendance.Register;
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -153,7 +154,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                             contractor(contractor).
                             timeIn(rs.getTimestamp("time_in").toLocalDateTime()).
                             timeOut(rs.getTimestamp("time_out").toLocalDateTime()).
-                            register(Register.valueOf(rs.getString("register"))).
+                            register(Attendance.Register.valueOf(rs.getString("register"))).
                             build();
                     todaysAttendances.add(attendance);
                 }

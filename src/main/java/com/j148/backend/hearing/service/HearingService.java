@@ -3,6 +3,8 @@ package com.j148.backend.hearing.service;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
 
+import java.time.LocalDateTime;
+
 public interface HearingService {
 
     /**
@@ -10,7 +12,7 @@ public interface HearingService {
      * wether a Contractor has more than 3 or more warnings. One Hearing is
      * issued per Three Warnings
      *
-     @param Contractor
+     @param contractor
      * @return Hearing
      */
     public Hearing IssueHearing(Contractor contractor) throws Exception;
@@ -22,7 +24,6 @@ public interface HearingService {
      *
      *
      *
-     @param none
      *@return LocalDateTime
      */
     public LocalDateTime scheduleHearing() throws Exception ;

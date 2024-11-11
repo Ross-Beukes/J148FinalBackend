@@ -6,8 +6,9 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepo;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
-import java.sql.SQLException;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,17 +19,17 @@ public class HearingServiceImpl implements HearingService {
     private final ContractorRepo contractorRepo = new ContractorRepoImpl();
 
     @Override
-    public LocalDateTime scheduleHearing() throws Exception{
+    public LocalDateTime scheduleHearing() throws Exception {
         // get one week to the current date and time
         LocalDateTime hearingDate = LocalDateTime.now().plusWeeks(1);
 
-       return hearingDate;
+        return hearingDate;
     }
 
     @Override
-    public Hearing IssueHearing(Contractor contractor) throws Exception{
+    public Hearing IssueHearing(Contractor contractor) throws Exception {
 
-        if(contractor != null){
+        if (contractor != null) {
             int hearingCount = 0;
             long warningCount = 0l;
             HearingRepoImpl hri = new HearingRepoImpl();
@@ -42,15 +43,15 @@ public class HearingServiceImpl implements HearingService {
             WarningRepoImpl wri = new WarningRepoImpl();
             //Obtain count based on a Contractors amount of active warnings
             try {
-                warningCount = wri.countActiveWarningsByContractor(contractor).get() ;
+                warningCount = wri.countActiveWarningsByContractor(contractor).get();
             } catch (SQLException ex) {
                 Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing warning history", ex);
             }
 
 
-            if(warningCount % 3 == 0 && warningCount > 0){
+            if (warningCount % 3 == 0 && warningCount > 0) {
 
-                if(hearingCount * 3 != warningCount){
+                if (hearingCount * 3 != warningCount) {
                     Hearing hearing = Hearing.builder()
                             .scheduleDate(scheduleHearing())
                             .hearingsId(0L)
@@ -58,34 +59,36 @@ public class HearingServiceImpl implements HearingService {
                             .reason("Contractor has received three or more warnings for being late or absent")
                             .outcome(Hearing.Outcome.NULL)
                             .build();
-                     return hearing;
+                    return hearing;
                 }
 
-             }
             }
-            return null;
+        }
+        return null;
+    }
+
     public Hearing rescheduleHearing(Hearing hearing, Contractor contractor) throws Exception {
 
-        if (hearing == null){
+        if (hearing == null) {
             throw new IllegalArgumentException("User is null");
         }
-        if (contractor == null){
+        if (contractor == null) {
             throw new IllegalArgumentException("Contractor is null");
         }
 
-        if (hearing.getHearingsId() == null || hearing.getScheduleDate() == null ){
+        if (hearing.getHearingsId() == null || hearing.getScheduleDate() == null) {
             throw new IllegalArgumentException("Hearing schedule date or id is null");
         }
 
-        if (contractor.getContractorId() == null){
+        if (contractor.getContractorId() == null) {
             throw new IllegalArgumentException("Contractor id is null");
         }
 
-        if (contractorRepo.findById(contractor.getContractorId()).isEmpty()){
+        if (contractorRepo.findById(contractor.getContractorId()).isEmpty()) {
             throw new IllegalArgumentException("Could not find contractor");
         }
 
-        if (hearingRepo.getHearing(hearing).isEmpty()){
+        if (hearingRepo.getHearing(hearing).isEmpty()) {
             throw new IllegalArgumentException("Could not find hearing");
         }
 
@@ -95,8 +98,6 @@ public class HearingServiceImpl implements HearingService {
 
         return hearingRepo.updateHearing(hearing)
                 .orElseThrow(() -> new Exception("Failed to reschedule hearing"));
-
-
 
 
     }
