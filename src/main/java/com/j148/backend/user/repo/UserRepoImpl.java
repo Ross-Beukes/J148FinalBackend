@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,7 +24,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
 
     @Override
     public Optional<User> register(User user) throws SQLException {
-        String query = "INSERT INTO user(name, surname, email, gender, id_number, role, race, loaction, age, password) VALUES (?,?,?,?,?,?,?,?,?,?)";
+        String query = "INSERT INTO user(name, surname, email, gender, id_number, role, race, location, age, password) VALUES (?,?,?,?,?,?,?,?,?,?)";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             con.setAutoCommit(false);
             ps.setString(1, user.getName());
@@ -42,7 +43,8 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                 con.commit();
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
-                        user.setUserId(rs.getLong("user_id"));
+                        //the testing throws a sql error when using the column name for this field.
+                        user.setUserId(rs.getLong(1)); //1 is the user_id in the user table.
                     }
                 }
                 return Optional.of(user);
@@ -63,8 +65,8 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
             ps.setString(3, user.getEmail());
             ps.setString(4, user.getGender());
             ps.setString(5, user.getLocation());
-            ps.setString(6, user.getIdNumber());
-            ps.setString(7, user.getPassword());
+            ps.setString(6, user.getPassword());
+            ps.setString(7, user.getIdNumber());
 
             Savepoint beforeUserEdit = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
@@ -80,6 +82,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> retreiveUserFromEmail(User user) throws SQLException {
         String query = "SELECT * FROM user WHERE email = ?";
+        User foundUser;
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getEmail());
             try (ResultSet rs = ps.executeQuery()) {
@@ -94,7 +97,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     String race = rs.getString("race");
                     String location = rs.getString("location");
                     int age = rs.getInt("age");
-                    user.builder().userId(userID).
+                    foundUser = User.builder().userId(userID).
                             name(name).
                             surname(surname).
                             email(email).
@@ -103,7 +106,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                             role(role).race(race).
                             location(location).
                             age(age).build();
-                    return Optional.of(user);
+                    return Optional.of(foundUser);
 
                 }
             }
@@ -133,6 +136,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> retreiveUserFromUserID(User user) throws SQLException {
         String query = "SELECT * FROM user WHERE user_id = ?";
+        User foundUser;
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, user.getUserId());
             try (ResultSet rs = ps.executeQuery()) {
@@ -147,7 +151,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     String race = rs.getString("race");
                     String location = rs.getString("location");
                     int age = rs.getInt("age");
-                    user.builder().userId(userID).
+                    foundUser = User.builder().userId(userID).
                             name(name).
                             surname(surname).
                             email(email).
@@ -156,7 +160,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                             role(role).race(race).
                             location(location).
                             age(age).build();
-                    return Optional.of(user);
+                    return Optional.of(foundUser);
 
                 }
             }
