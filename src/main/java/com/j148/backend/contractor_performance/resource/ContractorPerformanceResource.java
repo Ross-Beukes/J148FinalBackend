@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.j148.backend.ContractorPerformance.resource;
+package com.j148.backend.contractor_performance.resource;
 
-import com.j148.backend.ContractorPerformance.model.ContractorPerformance;
-import com.j148.backend.ContractorPerformance.service.ContractorPerformanceService;
-import com.j148.backend.ContractorPerformance.service.ContractorPerformanceServiceImpl;
+import com.j148.backend.contractor_performance.model.ContractorPerformance;
+import com.j148.backend.contractor_performance.service.ContractorPerformanceService;
+import com.j148.backend.contractor_performance.service.ContractorPerformanceServiceImpl;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
@@ -82,7 +82,7 @@ public Response getAllContractorPerformance(){
 
 @GET
 @Produces(APPLICATION_JSON)
-@Path("get-all-contractor-performance")
+@Path("get-all-filtered-contractor-performance")
 public Response getFilteredContractorPerformance(@QueryParam("filters") String filters){
     try{
         List<ContractorPerformance> cp = this.contractorPerformanceService.getAllContractorPerformance();
@@ -104,7 +104,7 @@ public Response getFilteredContractorPerformance(@QueryParam("filters") String f
 
 @GET
 @Produces(APPLICATION_JSON)
-@Path("get-all-contractor-performance")
+@Path("get-contrator-list")
 public Response getListOfContractors(){
     try{
         return Response.ok(this.contractorPerformanceService.getAllContractors()).build();
