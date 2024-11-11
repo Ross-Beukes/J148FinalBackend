@@ -8,6 +8,7 @@ import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.leave_request.model.LeaveRequest;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,10 +27,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author yusuf
  */
-public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo {
+public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
 
     @Override
     public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException {
@@ -37,7 +37,6 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo {
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             con.setAutoCommit(false);
-
             ps.setLong(1, leaveRequest.getContractor().getContractorId());
             ps.setLong(2, leaveRequest.getFile().getFileId());
             ps.setString(3, String.valueOf(leaveRequest.getStartDate()));
@@ -45,7 +44,6 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo {
             ps.setString(5, "PENDING");
 
             Savepoint beforeReservationInput = con.setSavepoint();
-
             if (ps.executeUpdate() > 0) {
                 con.commit();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
@@ -161,9 +159,11 @@ public class LeaveReqeustRepoImpl extends DBConfig implements LeaveRequestRepo {
                             .build());
 
                 }
+
             }
         }
         return requestMap;
     }
+
 
 }
