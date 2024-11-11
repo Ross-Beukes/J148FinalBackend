@@ -1,8 +1,8 @@
-package com.j148.backend.contractPeriod.resource;
+package com.j148.backend.contract_period.resource;
 
-import com.j148.backend.contractPeriod.model.ContractPeriod;
-import com.j148.backend.contractPeriod.service.ContractPeriodService;
-import com.j148.backend.contractPeriod.service.ContractPeriodServiceImpl;
+import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.contract_period.service.ContractPeriodService;
+import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PUT;

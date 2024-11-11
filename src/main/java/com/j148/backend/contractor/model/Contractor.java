@@ -1,11 +1,11 @@
 package com.j148.backend.contractor.model;
-import com.j148.backend.contractPeriod.model.ContractPeriod;
+import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

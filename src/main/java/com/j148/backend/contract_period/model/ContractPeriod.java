@@ -1,4 +1,4 @@
-package com.j148.backend.contractPeriod.model;
+package com.j148.backend.contract_period.model;
 import lombok.*;
 import java.time.LocalDate;
 

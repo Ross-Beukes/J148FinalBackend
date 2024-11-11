@@ -1,8 +1,8 @@
-package com.j148.backend.contractPeriod.service;
+package com.j148.backend.contract_period.service;
 
-import com.j148.backend.contractPeriod.model.ContractPeriod;
-import com.j148.backend.contractPeriod.repo.ContractPeriodRepo;
-import com.j148.backend.contractPeriod.repo.ContractPeriodRepoImpl;
+import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.contract_period.repo.ContractPeriodRepo;
+import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
