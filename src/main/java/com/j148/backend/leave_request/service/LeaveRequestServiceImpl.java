@@ -50,6 +50,12 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         if (leaveRequest.getEndDate().compareTo(LocalDate.now()) < 0) {
             throw new IllegalArgumentException("Leave request end date cannot be smaller than current date");
         }
+        if(leaveRequest.getEndDate().isBefore(leaveRequest.getStartDate())){
+            throw new IllegalArgumentException("End date of leave request cannot be smaller than start date");
+        }
+        if((leaveRequest.getEndDate().getDayOfYear() - leaveRequest.getStartDate().getDayOfYear()) > 14){
+            throw new IllegalArgumentException("Leave day requests cannot be a date range greater than 14 days");
+        }
         if (leaveRequest.getEndDate() == null) {
             throw new DateNotFoundException("No date found for end date on leave request");
         }
