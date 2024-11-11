@@ -14,6 +14,7 @@ import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -32,10 +33,16 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in
+
         if (attendance != null && attendance.getContractor().getContractorId() != null) {
-            Attendance foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).
-                    orElseThrow(() -> new Exception("Unable to find attendance in the database"));
+            Attendance foundAttendance;
+            foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).orElse(null);
+            
+            if (foundAttendance == null) {
+                foundAttendance = new Attendance();
+            }
             if (foundAttendance != null) {
+                attendance.setTimeIn(LocalDateTime.now());
                 LocalTime targetTime = LocalTime.of(8, 30);
                 LocalTime currentTime = LocalTime.now();
                 if (currentTime.isAfter(targetTime)) {
@@ -70,9 +77,9 @@ public class AttendanceServiceImpl implements AttendanceService {
             if (timeOut != null) {
                 throw new Exception("Contractor already checked out");
             }
-            if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L ) {
-                attendance.setTimeOut(LocalDateTime.now());
-                return this.attendanceRepo.updateAttendance(attendance).
+            if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L) {
+                foundAttendance.setTimeOut(LocalDateTime.now());
+                return this.attendanceRepo.updateAttendance(foundAttendance).
                         orElseThrow(() -> new Exception("Unable to update database"));
             }
         }

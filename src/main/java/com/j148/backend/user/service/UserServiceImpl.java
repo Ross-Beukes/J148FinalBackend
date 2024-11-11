@@ -51,10 +51,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User LogIn(User user) throws SQLException, Exception {
         if (user != null) {
+            System.out.println(user);
             if (user.getEmail() != null && user.getPassword() != null) {
                 String email = user.getEmail();
                 String password = user.getPassword();
                 User foundUser = userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User email not recognised"));
+                System.out.println(foundUser);
                 if (email.equalsIgnoreCase(foundUser.getEmail()) && password.equals(foundUser.getPassword())) {
                     return foundUser;
                 } else {

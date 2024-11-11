@@ -19,13 +19,14 @@ public class UserResource {
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
     @GET
+    @Path("ping")
     public Response pingUserResource() {
         return Response.ok("Successfully pinged User Resource").build();
     }
 
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("login")
+    @Path("/login")
     public Response login(User user) {
         try {
             return Response.ok(this.userService.LogIn(user)).build();
