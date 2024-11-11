@@ -88,6 +88,16 @@ public interface ContractPeriodRepo {
      * @throws SQLException if a database access error occurs.
      */
     Optional<ContractPeriod> getNextContractPeriod() throws SQLException;
-
+    /**
+     * Retrieves a {@link ContractPeriod} record from the database based on the provided {@code contractPeriod}.
+     *
+     * <p>This method takes a {@link ContractPeriod} object containing an ID and attempts to retrieve
+     * the corresponding record from the database. If a match is found, an {@link Optional} containing
+     * the record is returned. If no record matches the given ID, an empty {@link Optional} is returned.</p>
+     *
+     * @param contractPeriod the {@link ContractPeriod} object containing the ID of the contract period to find
+     * @return an {@link Optional} containing the found {@link ContractPeriod}, or an empty {@link Optional} if no record is found
+     * @throws SQLException if a database access error occurs
+     */
     Optional<ContractPeriod> findById(ContractPeriod contractPeriod) throws SQLException;
 }
