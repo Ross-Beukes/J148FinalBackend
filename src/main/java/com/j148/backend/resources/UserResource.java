@@ -4,11 +4,11 @@ import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 
-import javax.mail.MessagingException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
