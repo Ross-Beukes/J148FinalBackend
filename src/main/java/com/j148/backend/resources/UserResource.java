@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.Response;
 
 
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -89,6 +88,22 @@ public class UserResource {
 
     @POST
     @Consumes(APPLICATION_JSON)
+    @Path("login")
+    public Response login(User user){
+        try{
+            return Response.ok(this.UserService.LogIn(user)).build();
+        }catch(IllegalArgumentException e){
+            LOG.log(Level.SEVERE, "The user model passed to the server is invalid", e);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }catch(Exception e){
+            LOG.log(Level.SEVERE, "Unable to process user login", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+        }
+    }
+
+
+    @POST
+    @Consumes(APPLICATION_JSON)
     @Path("update-user")
     public Response updateUser(User user) {
         try {
@@ -106,7 +121,6 @@ public class UserResource {
     }
 
     @GET
-    //@Consumes(APPLICATION_JSON)
     @Path("get-user/{userEmail}")
     public Response getUserFromEmail(@PathParam("userEmail")String userEmail) {
         try {
@@ -153,14 +167,14 @@ public class UserResource {
         try{
             return Response.ok(this.UserService.promoteApplicant(user)).build();
         }catch (SQLException e){
-            LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
+            LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
         } catch (IllegalArgumentException e){
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unable to register user", e);
+            LOG.log(Level.SEVERE, "Unable to promote user", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
