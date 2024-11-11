@@ -91,6 +91,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     String name = rs.getString("name");
                     String surname = rs.getString("surname");
                     String email = rs.getString("email");
+                    String password = rs.getString("password");
                     String gender = rs.getString("gender");
                     String id_number = rs.getString("id_number");
                     Role role = Role.valueOf(rs.getString("role"));
@@ -101,6 +102,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                             name(name).
                             surname(surname).
                             email(email).
+                            password(password).
                             gender(gender).
                             idNumber(id_number).
                             role(role).race(race).

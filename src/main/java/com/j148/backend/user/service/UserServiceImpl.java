@@ -5,11 +5,17 @@ import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
 
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 public class UserServiceImpl implements UserService{
 
     private UserRepo userRepo = new UserRepoImpl();
+    /**
+     *This map is used to temporarily store the generated admin keys.
+     */
+    private static final Map<String, String> adminTokens = new HashMap<>();
     private Random random = new Random();
 
     @Override
@@ -22,6 +28,7 @@ public class UserServiceImpl implements UserService{
         }
         return token.toString();
     }
+
 
     @Override
     public String generateInstructorToken() {
