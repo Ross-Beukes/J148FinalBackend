@@ -132,4 +132,86 @@ public class ContractPeriodResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
         }
     }
+    /**
+     * Endpoint to retrieve the current contract period.
+     * @return HTTP Response containing the current contract period or error message.
+     */
+    @GET
+    @Path("current")
+    @Produces(APPLICATION_JSON)
+    public Response getCurrentContractPeriod() {
+        try {
+            ContractPeriod contractPeriod = contractPeriodService.getCurrentContractPeriod();
+            return Response.ok(contractPeriod).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error retrieving current contract period", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving current contract period").build();
+        }
+    }
+
+    /**
+     * Endpoint to retrieve the next contract period.
+     * @return HTTP Response containing the next contract period or error message.
+     */
+    @GET
+    @Path("next")
+    @Produces(APPLICATION_JSON)
+    public Response getNextContractPeriod() {
+        try {
+            ContractPeriod contractPeriod = contractPeriodService.getNextContractPeriod();
+            return Response.ok(contractPeriod).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error retrieving next contract period", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving next contract period").build();
+        }
+    }
+
+    /**
+     * Endpoint to retrieve the enrollment averages for a specific year.
+     * @param year The year for which the average enrollment is calculated.
+     * @return HTTP Response containing the enrollment average or error message.
+     */
+    @GET
+    @Path("enrollment-averages")
+    @Produces(APPLICATION_JSON)
+    public Response getEnrollmentAveragesForYear(int year) {
+        try {
+            double average = contractPeriodService.enrollmentAveragesForYear(year);
+            return Response.ok(average).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "SQL error retrieving enrollment average", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving enrollment averages for year " + year).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unexpected error", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred while retrieving enrollment averages").build();
+        }
+    }
+
+    /**
+     * Endpoint to retrieve the enrollment averages for a range of years.
+     * @param startYear The start year of the range.
+     * @param endYear The end year of the range.
+     * @return HTTP Response containing the enrollment average or error message.
+     */
+    @GET
+    @Path("enrollment-averages-range")
+    @Produces(APPLICATION_JSON)
+    public Response getEnrollmentAverageForPeriodOfYears(int startYear, int endYear) {
+        try {
+            double average = contractPeriodService.enrollmentAverageForPeriodOfYears(startYear, endYear);
+            return Response.ok(average).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "SQL error retrieving enrollment average for year range", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving enrollment averages for the period " + startYear + " to " + endYear).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unexpected error", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred while retrieving enrollment averages for the period").build();
+        }
+    }
 }
