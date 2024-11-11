@@ -1,6 +1,5 @@
 package com.j148.backend.contractPeriod.service;
-
-import com.j148.backend.contractPeriod.model.ContractPeriod;
+import com.j148.backend.contract_period.model.ContractPeriod;
 
 public interface ContractPeriodService {
     /**

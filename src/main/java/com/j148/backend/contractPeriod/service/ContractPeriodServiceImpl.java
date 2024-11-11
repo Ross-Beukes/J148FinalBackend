@@ -1,8 +1,8 @@
 package com.j148.backend.contractPeriod.service;
+import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.contract_period.repo.ContractPeriodRepo;
+import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
 
-import com.j148.backend.contractPeriod.model.ContractPeriod;
-import com.j148.backend.contractPeriod.repo.ContractPeriodRepo;
-import com.j148.backend.contractPeriod.repo.ContractPeriodRepoImpl;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService{
             throw new IllegalArgumentException("Contract period must not be null.");
         }
 
-        Optional<ContractPeriod> savedContractPeriod = contractPeriodRepo.save(contractPeriod);
+        Optional<ContractPeriod> savedContractPeriod = contractPeriodRepo.saveContractPeriod(contractPeriod);
         return savedContractPeriod.orElseThrow(() ->
                 new IllegalStateException("Failed to save contract period. Please ensure all fields are correctly filled and formatted.")
         );
@@ -28,7 +28,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService{
             throw new IllegalArgumentException("Contract period name must not be null or empty.");
         }
 
-        Optional<ContractPeriod> contractPeriod = contractPeriodRepo.findByName(name);
+        Optional<ContractPeriod> contractPeriod = contractPeriodRepo.findContractPeriodByName(name);
         return contractPeriod.orElseThrow(() ->
                 new NoSuchElementException("No contract period found with name: " + name)
         );
@@ -54,7 +54,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService{
         Optional<ContractPeriod> existingContractPeriod = contractPeriodRepo.findById(contractPeriod);
 
         if (existingContractPeriod.isPresent()) {
-            Optional<ContractPeriod> updatedContractPeriod = contractPeriodRepo.update(contractPeriod);
+            Optional<ContractPeriod> updatedContractPeriod = contractPeriodRepo.updateContractPeriod(contractPeriod);
             return updatedContractPeriod.orElseThrow(() ->
                     new IllegalStateException("Failed to update contract period with ID: " + contractPeriod.getContractPeriodId())
             );
