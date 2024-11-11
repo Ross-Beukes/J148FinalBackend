@@ -70,36 +70,37 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
 
     @Override
     public Optional<Contract> findContract(long contractId) throws SQLException{
-         String sql = "SELECT * FROM contract WHERE contract_id = ? ";
-         
-         try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
-         
-             ps.setLong(1,contractId);
-             
-             try(ResultSet rs = ps.executeQuery()){
-               if(rs.next()){  
-                 ContractPeriod c = cpri.findContract(rs.getLong(2)).get() ;
-                 User user = new User();
-                 user.setUserId(rs.getLong(3));
-                 user = uri.retreiveUserFromUserID(user).get();
-                 
-                 Contract contract = Contract.builder().
-                         contractId(contractId)
-                         .contractPeriod(c)
-                         .offerDate(rs.getDate(4).toLocalDate())
-                         .decisionDate(rs.getDate(5).toLocalDate())
-                         .expirationDate(rs.getDate(6).toLocalDate())
-                         .user(user)
-                         .decision(Contract.Decision.valueOf(rs.getString(7)))
-                         .isDeleted(rs.getBoolean(8))
-                         .build();
-                 
-                 return Optional.of(contract);
-               }
-             }
-         }
-         
-        return Optional.empty();
+//         String sql = "SELECT * FROM contract WHERE contract_id = ? ";
+//
+//         try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
+//
+//             ps.setLong(1,contractId);
+//
+//             try(ResultSet rs = ps.executeQuery()){
+//               if(rs.next()){
+//                 ContractPeriod c = cpri.findContract(rs.getLong(2)).get() ;
+//                 User user = new User();
+//                 user.setUserId(rs.getLong(3));
+//                 user = uri.retreiveUserFromUserID(user).get();
+//
+//                 Contract contract = Contract.builder().
+//                         contractId(contractId)
+//                         .contractPeriod(c)
+//                         .offerDate(rs.getDate(4).toLocalDate())
+//                         .decisionDate(rs.getDate(5).toLocalDate())
+//                         .expirationDate(rs.getDate(6).toLocalDate())
+//                         .user(user)
+//                         .decision(Contract.Decision.valueOf(rs.getString(7)))
+//                         .isDeleted(rs.getBoolean(8))
+//                         .build();
+//
+//                 return Optional.of(contract);
+//               }
+//             }
+//         }
+//
+//        return Optional.empty();
+        return null;
     }
 
     @Override
