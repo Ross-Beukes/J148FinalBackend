@@ -10,8 +10,9 @@ import com.j148.backend.Exceptions.FileNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
-import com.j148.backend.leave_request.repo.LeaveReqeustRepoImpl;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
+import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
+
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -22,7 +23,7 @@ import java.util.HashMap;
  */
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-    private LeaveRequestRepo leaveRequestRepo = new LeaveReqeustRepoImpl();
+    private LeaveRequestRepo leaveRequestRepo = new LeaveRequestRepoImpl();
 
     @Override
     public LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) throws Exception {

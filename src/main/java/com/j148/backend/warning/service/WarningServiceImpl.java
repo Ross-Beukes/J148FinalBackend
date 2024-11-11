@@ -1,95 +1,143 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.j148.backend.warning.service;
 
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.WarningNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
+import com.j148.backend.contractor.repo.ContractorRepo;
+import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 /**
- *
- * @author arshr
+ * @author glenl
  */
 public class WarningServiceImpl implements WarningService {
 
-    private WarningRepo warningRepo = new WarningRepoImpl();
+    private final WarningRepo warningRepo = new WarningRepoImpl();
+    private final ContractorRepo contractorRepo = new ContractorRepoImpl();
 
     @Override
-    public Optional<Warning> save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException {
-        // Check if the warning object is null and throw exception if it is
+    public Warning lateComingWarning(Contractor contractor) throws SQLException, Exception {
+        if (contractor != null) {
+            if (contractor.getContractorId() != null) {
+                return warningRepo.createLateWarning(contractor).orElseThrow(() -> new Exception("Warning could not be issued"));
+            } else {
+                throw new IllegalArgumentException("Contract ID is null");
+            }
+        } else {
+            throw new IllegalArgumentException("Contractor is null");
+        }
+    }
+
+    @Override
+    public Warning absentWarning(Contractor contractor) throws SQLException, Exception {
+        if (contractor != null) {
+            if (contractor.getContractorId() != null) {
+                return warningRepo.createAbsentWarning(contractor).orElseThrow(() -> new Exception("Warning could not be issued"));
+            } else {
+                throw new IllegalArgumentException("Contract ID is null");
+            }
+        } else {
+            throw new IllegalArgumentException("Contractor is null");
+        }
+    }
+
+    @Override
+    public Warning save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException {
+        return null;
+    }
+
+
+    @Override
+    public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
+
         if (warning == null) {
-            throw new WarningNotFoundException("Warning returned a null");
-        } else if (warning.getContractor() == null || warning.getContractor().getContractorId() == 0) {
-            throw new ContractorNotFoundException("Warning does not contain contractor");
-        }else if(warning.getReason() == null){
-            throw new WarningNotFoundException("Reason not found");
+            throw new IllegalArgumentException("Warning is null");
+        }
+        if (contractor == null) {
+            throw new IllegalArgumentException("Contractor is null");
         }
 
-        return Optional.empty();
+        if (warning.getWarningId() == null) {
+            throw new IllegalArgumentException("Warning id is null");
+        }
+
+        if (contractor.getContractorId() == null) {
+            throw new IllegalArgumentException("Contractor id is null");
+        }
+
+        if (contractorRepo.findById(contractor).isEmpty()) {
+            throw new IllegalArgumentException("Could not find contractor");
+        }
+
+        if (warningRepo.findById(warning).isEmpty()) {
+            throw new IllegalArgumentException("Could not find warning");
+        }
+
+        return warningRepo.updateState(warning)
+                .orElseThrow(() -> new Exception("Failed to appeal warning"));
+
     }
 
     @Override
-    public Optional<Warning> findById(Warning warning) throws SQLException {
-        return Optional.empty();
+    public Warning findById(Warning warning) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<Warning> updateState(Warning warning) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Warning> findByContractor(Contractor contractor) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<List<Warning>> findByContractor(Contractor contractor) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<List<Warning>> findAllActiveByContractor(Contractor contractor) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Warning> findAppealedByContractor(Contractor contractor) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<List<Warning>> findAppealedByContractor(Contractor contractor) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Warning updateState(Warning warning) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<Warning> createLateWarning(Contractor contractor) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Warning createLateWarning(Contractor contractor) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<List<Warning>> findWarningsByDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Warning> findWarningsByDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<List<Warning>> findFinalWarningsByContractor(Contractor contractor) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Warning> findFinalWarningsByContractor(Contractor contractor) throws SQLException {
+        return null;
     }
 
     @Override
     public Optional<Long> countActiveWarningsByContractor(Contractor contractor) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return Optional.empty();
     }
 
     @Override
-    public Optional<Boolean> existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public List<Warning> findWarningsByReason(Warning warning) throws SQLException {
+        return null;
     }
 
     @Override
-    public Optional<List<Warning>> findWarningsByReason(Warning warning) throws SQLException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Boolean existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException {
+        return null;
     }
-
 }
+

@@ -1,6 +1,7 @@
 package com.j148.backend.contractor.repo;
 
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.user.model.User;
 
@@ -13,14 +14,14 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public Optional<Contractor> save(Contractor contractor) throws SQLException {
-        String sql = "INSERT INTO contractor (contractor_id, status, user_id) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO contractor (contractor_period_id, status, user_id) VALUES (?, ?, ?)";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             con.setAutoCommit(false);
             Savepoint beforeSave = con.setSavepoint();
 
             try {
-                ps.setLong(1, contractor.getContractorId());
+                ps.setLong(1, contractor.getContractPeriod().getContractPeriodId());
                 ps.setString(2, contractor.getStatus().toString());
                 ps.setLong(3, contractor.getUser().getUserId());
 
@@ -44,23 +45,23 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
     }
 
     @Override
-    public Optional<Contractor> findById(Long contractorId) throws SQLException {
-        String sql = "SELECT contractor_id, status, user_id FROM contractor WHERE contractor_id = ?";
+    public Optional<Contractor> findById(Contractor contractor) throws SQLException {
+        String sql = "SELECT * FROM contractor WHERE contractor_id = ?";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, contractorId);
+            ps.setLong(1, contractor.getContractorId());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     User user = new User();
                     user.setUserId(rs.getLong("user_id"));
 
-                    Contractor contractor = Contractor.builder()
+                    Contractor returnedContractor = Contractor.builder()
                             .contractorId(rs.getLong("contractor_id"))
                             .status(Contractor.Status.valueOf(rs.getString("status")))
                             .user(user)
                             .build();
 
-                    return Optional.of(contractor);
+                    return Optional.of(returnedContractor);
                 }
                 return Optional.empty();
             }
@@ -68,8 +69,9 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
     }
 
     @Override
-    public Optional<Contractor> update(Contractor contractor) throws SQLException {
-        String sql = "UPDATE contractor SET status = ?, user_id = ? WHERE contractor_id = ?";
+    public Optional<Contractor> updateStatus(Contractor contractor) throws SQLException {
+
+        String sql = "UPDATE contractor SET status = ? WHERE contractor_id = ?";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             con.setAutoCommit(false);
@@ -77,8 +79,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
             try {
                 ps.setString(1, contractor.getStatus().toString());
-                ps.setLong(2, contractor.getUser().getUserId());
-                ps.setLong(3, contractor.getContractorId());
+                ps.setLong(2, contractor.getContractorId());
 
                 if (ps.executeUpdate() > 0) {
                     con.commit();
@@ -96,24 +97,55 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public List<Contractor> findAll() throws SQLException {
-        String sql = "SELECT contractor_id, status, user_id FROM contractor";
+        String sql = "SELECT * FROM contractor";
+
         List<Contractor> contractors = new ArrayList<>();
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 User user = new User();
                 user.setUserId(rs.getLong("user_id"));
+                ContractPeriod contractPeriod = ContractPeriod.builder().
+                        contractPeriodId(rs.getLong("contract_period_id")).build();
+
 
                 Contractor contractor = Contractor.builder()
                         .contractorId(rs.getLong("contractor_id"))
                         .status(Contractor.Status.valueOf(rs.getString("status")))
                         .user(user)
+                        .contractPeriod(contractPeriod)
                         .build();
 
                 contractors.add(contractor);
             }
         }
         return contractors;
+    }
+
+    @Override
+    public List<Contractor> findCurrentContractor(ContractPeriod contractPeriod) throws SQLException {
+        String query = "SELECT * FROM contractor WHERE contract_period_id = ?";
+        List<Contractor> currentContractors = new ArrayList<>();
+        
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            User user = new User();
+            ContractPeriod currentContractPeriod = new ContractPeriod();
+            
+            try (ResultSet rs = ps.executeQuery()) {
+                user.setUserId(rs.getLong("user_id"));
+                currentContractPeriod.setContractPeriodId(rs.getLong("contractor_period_id"));
+                
+                Contractor contractor = Contractor.builder()
+                        .contractorId(rs.getLong("contractor_id"))
+                        .status(Contractor.Status.valueOf(rs.getString("status")))
+                        .user(user)
+                        .contractPeriod(currentContractPeriod)
+                        .build();
+                currentContractors.add(contractor);
+            }
+            
+        }
+        return currentContractors;
     }
 }
 

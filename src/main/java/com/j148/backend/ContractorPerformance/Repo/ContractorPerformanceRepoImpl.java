@@ -129,6 +129,8 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
         List<ContractorPerformance> contractorPerformances = new ArrayList<>();
         Map<Long, ContractorPerformance> contractorMap = new HashMap<>();
 
+        //Might need to play around with this join statement(Consider which is the left table)
+        //Might need to null check in the function
         String query = "SELECT "
                 + "user.user_id, user.name AS user_name, user.surname, user.email, "
                 + "contractor.contractor_id, contractor.user_id AS contractor_user_id, contractor.status, contractor.contractor_period_id, "
@@ -238,7 +240,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
     }
 
     @Override
-    public List<ContractorPerformance> filterContractorPerformance(String filters, List<ContractorPerformance> cp) {
+    public List<ContractorPerformance> filterContractorPerformance(String filters, List<ContractorPerformance> cp) throws SQLException {
 //        String[] filterList = filters.toLowerCase().split(",");
 //        for (int i = 0; i < filterList.length; i++) {
 //            int operatorPos = 0;
@@ -481,7 +483,8 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
     }
 
     /**
-     * The following methods are helper methods used for specific filtering based on filter names, operators and values  
+     * The following methods are helper methods used for specific filtering
+     * based on filter names, operators and values
      */
     private void filterByAttendanceTime(List<ContractorPerformance> cp, LocalDateTime timeIn, char operator) {
         for (int i = cp.size() - 1; i >= 0; i--) {
@@ -631,8 +634,8 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
 
     private void filterByAptitudeTestMark(List<ContractorPerformance> cp, int mark, char operator) {
         for (int i = cp.size() - 1; i >= 0; i--) {
-            AptitudeTest at = cp.get(i).getAptitudeTest();
-            if (at == null || !compare(at.getTestMark(), mark, operator)) {
+            AptitudeTest aptitudeTest = cp.get(i).getAptitudeTest();
+            if (aptitudeTest == null || !compare(aptitudeTest.getTestMark(), mark, operator)) {
                 cp.remove(i);
             }
         }
@@ -658,6 +661,42 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 return actual.compareTo(target) < 0;
             default:
                 return false;
+        }
+
+    }
+
+    @Override
+    public List<ContractorPerformance> getAllContractors() throws SQLException {
+        String query = "SELECT "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, "
+                + "contractor.contractor_id, contractor.status"
+                + "FROM user "
+                + "JOIN contractor ON user.user_id = contractor.user_id ";
+
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ContractorPerformance cp = new ContractorPerformance();
+            List<ContractorPerformance> cpList = new ArrayList<>();
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = User.builder()
+                            .userId(rs.getLong("user_id"))
+                            .name(rs.getString("user_name"))
+                            .surname(rs.getString("surname"))
+                            .email(rs.getString("email"))
+                            .build();
+
+                    Contractor contractor = Contractor.builder()
+                            .contractorId(rs.getLong("contractor_id"))
+                            .status(Contractor.Status.valueOf(rs.getString("status")))
+                            .build();
+
+                    cp.setUser(user);
+                    cp.setContractor(contractor);
+                    cpList.add(cp);
+                }
+                return cpList;
+            }
+
         }
 
     }

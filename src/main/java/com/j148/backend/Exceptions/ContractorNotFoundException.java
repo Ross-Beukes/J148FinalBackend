@@ -19,7 +19,6 @@ public class ContractorNotFoundException extends Exception {
 
     public ContractorNotFoundException(String message, Throwable cause) {
         super(message, cause);
-
     }
     
 }

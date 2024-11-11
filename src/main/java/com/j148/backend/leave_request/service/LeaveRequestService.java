@@ -22,7 +22,7 @@ public interface LeaveRequestService {
     AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequests() throws Exception;
 
     AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception;
-    
+
     AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws Exception;
 
     AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsBetweenDates(LocalDate startDate, LocalDate endDate) throws Exception;
