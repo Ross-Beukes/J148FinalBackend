@@ -4,6 +4,9 @@ import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
 
+import java.sql.SQLException;
+import java.util.Random;
+
 public class UserServiceImpl implements UserService{
 
     private UserRepo userRepo = new UserRepoImpl();
@@ -21,7 +24,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public String generateInstructotToken() {
+    public String generateInstructorToken() {
         StringBuilder token = new StringBuilder("I");
         char[] letters = new char[5];
         for (int i = 0; i < letters.length; i++) {
