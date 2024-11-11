@@ -56,6 +56,5 @@ public interface AptitudeRepo {
      * 
      * @param id the ID of the AptitudeTest to delete
      */
-    
-    void deleteById(Long id) throws SQLException;
+
 }

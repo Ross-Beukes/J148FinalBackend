@@ -1,5 +1,10 @@
-package com.j148.backend.contractPeriod.model;
-import lombok.*;
+package com.j148.backend.contract_period.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
 @Data

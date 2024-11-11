@@ -3,91 +3,116 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.j148.backend.leave_request.service;
-import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
+
+import com.j148.backend.Exceptions.ContractorNotFoundException;
+import com.j148.backend.Exceptions.DateNotFoundException;
+import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
+import com.j148.backend.leave_request.model.LeaveRequest.Decision;
+import com.j148.backend.leave_request.repo.LeaveReqeustRepoImpl;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
+import java.time.LocalDate;
+import java.util.AbstractMap;
+import java.util.HashMap;
 
-import java.sql.SQLException;
+/**
+ *
+ * @author yusuf
+ */
+public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-public abstract class LeaveRequestServiceImpl implements LeaveRequestServices {
+    private LeaveRequestRepo leaveRequestRepo = new LeaveReqeustRepoImpl();
 
-    private final LeaveRequestRepo leaveRequestRepo;
-
-    // Constructor to inject the LeaveRequestRepo dependency
-    public LeaveRequestServiceImpl(LeaveRequestRepo leaveRequestRepo) {
-        this.leaveRequestRepo = leaveRequestRepo;
-    }
-
-    /**
-     * Accepts a leave request, changes its status to APPROVED.
-     * @param leaveRequest The leave request to be approved.
-     * @return The updated leave request object.
-     * @throws SQLException If a database error occurs.
-     * @throws LeaveRequestNotFoundException If the leave request is not found or already processed.
-     * @throws IllegalArgumentException If the leave request ID is null.
-     */
     @Override
-    public LeaveRequest acceptLeaveRequest(LeaveRequest leaveRequest) throws SQLException, LeaveRequestNotFoundException {
-        if (leaveRequest == null || leaveRequest.getLeaveRequestId() == null) {
-            throw new IllegalArgumentException("Leave request or leave request ID cannot be null");
-        }
-
-        // Fetch leave request by ID
-        LeaveRequest leaveRequestOpt = leaveRequestRepo.retrieveById(leaveRequest.getLeaveRequestId())
-                .orElseThrow(() -> new LeaveRequestNotFoundException("Leave request not found with ID: " + leaveRequest.getLeaveRequestId()));
-
-        // Check if the leave request is already approved or denied
-        if (leaveRequestOpt.getDecision() == LeaveRequest.Decision.PENDING) {
-            leaveRequestOpt.setDecision(LeaveRequest.Decision.APPROVED); // Set the decision to APPROVED
-            return leaveRequestRepo.updateLeaveRequest(leaveRequestOpt)
-                    .orElseThrow(() -> new SQLException("Failed to update leave request in the database."));
+    public LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) throws Exception {
+        if (leaveRequest != null) {
+            validateLeaveRequest(leaveRequest);
+            return leaveRequestRepo.createLeaveRequest(leaveRequest).orElseThrow(()
+                    -> new IllegalStateException("Could not create leave request"));
         } else {
-            throw new LeaveRequestNotFoundException("Leave request with ID " + leaveRequest.getLeaveRequestId() + " is already processed.");
+            throw new NullPointerException("Leave request entry is null");
+        }
+
+    }
+
+    public void validateLeaveRequest(LeaveRequest leaveRequest) throws Exception {
+        if (leaveRequest.getContractor() == null) {
+            throw new ContractorNotFoundException("No contractor assigned to leave request");
+        }
+        if (leaveRequest.getStartDate() == null) {
+            throw new DateNotFoundException("No date found for start date on leave request");
+        }
+        if (leaveRequest.getStartDate().compareTo(LocalDate.now()) < 0) {
+            throw new IllegalArgumentException("Leave request start date cannot be smaller than current date");
+        }
+        if (leaveRequest.getEndDate().compareTo(LocalDate.now()) < 0) {
+            throw new IllegalArgumentException("Leave request end date cannot be smaller than current date");
+        }
+        if (leaveRequest.getEndDate() == null) {
+            throw new DateNotFoundException("No date found for end date on leave request");
+        }
+        if (leaveRequest.getFile() == null) {
+            throw new FileNotFoundException("No file found for leave request");
         }
     }
 
-    /**
-     * Declines a leave request, changing its status to DENIED.
-     * @param leaveRequest The leave request to be declined.
-     * @return The updated leave request object.
-     * @throws SQLException If a database error occurs.
-     * @throws LeaveRequestNotFoundException If the leave request is not found or already processed.
-     * @throws IllegalArgumentException If the leave request ID is null.
-     */
     @Override
-    public LeaveRequest declineLeaveRequest(LeaveRequest leaveRequest) throws SQLException, LeaveRequestNotFoundException {
-        if (leaveRequest == null || leaveRequest.getLeaveRequestId() == null) {
-            throw new IllegalArgumentException("Leave request or leave request ID cannot be null");
+    public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequests() throws Exception {
+        HashMap<Long, LeaveRequest> copyMap = (HashMap<Long, LeaveRequest>) leaveRequestRepo.retrieveAll();
+        for(Long l : copyMap.keySet()){
+            if(l == 0 || l == null){
+                throw new IllegalArgumentException("Invalid ID in key set (null or 0) for retrieve all leave requests map");
+            }
+            if(copyMap.get(l) == null){
+                throw new IllegalArgumentException("Leave Request Map cannot have null values");
+            }
         }
+        return copyMap;
+    }
 
-        // Fetch leave request by ID
-        LeaveRequest leaveRequestOpt = leaveRequestRepo.retrieveById(leaveRequest.getLeaveRequestId())
-                .orElseThrow(() -> new LeaveRequestNotFoundException("Leave request not found with ID: " + leaveRequest.getLeaveRequestId()));
-
-        // Check if the leave request is already approved or denied
-        if (leaveRequestOpt.getDecision() == LeaveRequest.Decision.PENDING) {
-            leaveRequestOpt.setDecision(LeaveRequest.Decision.DENIED); // Set the decision to DENIED
-            return leaveRequestRepo.updateLeaveRequest(leaveRequestOpt)
-                    .orElseThrow(() -> new SQLException("Failed to update leave request in the database."));
+    @Override
+    public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception {
+        if (contractor != null) {
+            return leaveRequestRepo.retrieveAllPendingContractorLeaveRequests(contractor);
         } else {
-            throw new LeaveRequestNotFoundException("Leave request with ID " + leaveRequest.getLeaveRequestId() + " is already processed.");
+            throw new NullPointerException("Contractor cannot be null when retrieving all contractor leave requests");
         }
     }
 
-    /**
-     * Fetches a leave request by its ID.
-     * @param leaveRequest The leave request to retrieve.
-     * @return The retrieved leave request.
-     * @throws SQLException If a database error occurs.
-     * @throws LeaveRequestNotFoundException If the leave request is not found.
-     * @throws IllegalArgumentException If the leave request ID is null.
-     */
     @Override
-    public LeaveRequest getLeaveRequestById(LeaveRequest leaveRequest) throws SQLException, LeaveRequestNotFoundException {
-        if (leaveRequest == null || leaveRequest.getLeaveRequestId() == null) {
-            throw new IllegalArgumentException("Leave request or leave request ID cannot be null");
+    public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsBetweenDates(LocalDate startDate, LocalDate endDate) throws Exception {
+        if (startDate != null || endDate != null) {
+            return leaveRequestRepo.retrieveLeaveRequestsByStartAndEndDate(startDate, endDate);
+        } else {
+            throw new NullPointerException("Start and end dates cannot be null when retrieving leave requests in date range");
         }
-        return leaveRequestRepo.retrieveById(leaveRequest.getLeaveRequestId())
-                .orElseThrow(() -> new LeaveRequestNotFoundException("Leave request not found with ID: " + leaveRequest.getLeaveRequestId()));
     }
+
+    @Override
+    public LeaveRequest updateLeaveRequestDecision(LeaveRequest leaveRequest) throws Exception {
+        if (leaveRequest != null) {
+            validateUpdateLeaveRequestDecision(leaveRequest);
+            return leaveRequestRepo.updateLeaveRequestToApprovedOrDenied(leaveRequest).orElseThrow(()
+                    -> new Exception("There was an error updating the leave request decision"));
+        } else {
+            throw new NullPointerException("Leave request cannot be null in updating");
+        }
+    }
+
+    public void validateUpdateLeaveRequestDecision(LeaveRequest leaveRequest) {
+        if (!(leaveRequest.getDecision().equals(Decision.APPROVED) || leaveRequest.getDecision().equals(Decision.DENIED))) {
+            throw new IllegalArgumentException("Invalid entry for leave request decision");
+        }
+    }
+
+    @Override
+    public AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws Exception {
+        if (contractor != null) {
+            return leaveRequestRepo.retrieveAllPendingContractorLeaveRequests(contractor);
+        } else {
+            throw new NullPointerException("Contractor cannot be null when retrieving all pending leave requests");
+        }
+    }
+
 }

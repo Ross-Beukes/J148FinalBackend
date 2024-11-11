@@ -1,7 +1,5 @@
 package com.j148.backend.contract.model;
-
-import com.j148.backend.contractPeriod.model.ContractPeriod;
-import com.j148.backend.contractor.model.Contractor;
+import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

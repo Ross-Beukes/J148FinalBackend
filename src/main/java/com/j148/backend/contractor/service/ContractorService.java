@@ -5,7 +5,6 @@
  */
 package com.j148.backend.contractor.service;
 
-import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.user.model.User;
 import java.sql.SQLException;

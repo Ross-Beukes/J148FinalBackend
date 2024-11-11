@@ -1,16 +1,20 @@
+package com.j148.backend.contractor.service;
 
+import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.repo.ContractorRepo;
 import com.j148.backend.contractor.repo.ContractorRepoImpl;
+import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author glenl
@@ -18,7 +22,7 @@ import java.util.List;
 public class ContractorServiceImpl implements ContractorService {
 
     private ContractorRepo contractorRepo = new ContractorRepoImpl();
-    private ContractPeriodService contractPeriodService = new ContractPeriodServiceImpl();
+    private final ContractPeriodService contractPeriodService = new ContractPeriodServiceImpl();
     private UserRepo userRepo = new UserRepoImpl();
 
     @Override
@@ -81,7 +85,7 @@ public class ContractorServiceImpl implements ContractorService {
             throw new UserNotFoundException("User not found, update failed");
 
         } else {
-            Optional<Contractor> updatedContractor = contractorRepo.update(contractor);
+            Optional<Contractor> updatedContractor = contractorRepo.updateStatus(contractor);
             return updatedContractor.orElseThrow(() -> new UserNotFoundException("User not found, update failed"));
         }
     }
