@@ -1,6 +1,6 @@
-package com.j148.backend.ContractorPerformance.service;
+package com.j148.backend.contractor_performance.service;
 
-import com.j148.backend.ContractorPerformance.model.ContractorPerformance;
+import com.j148.backend.contractor_performance.model.ContractorPerformance;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;

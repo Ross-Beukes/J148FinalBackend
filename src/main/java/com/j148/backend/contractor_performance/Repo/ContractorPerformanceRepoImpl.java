@@ -1,6 +1,6 @@
-package com.j148.backend.ContractorPerformance.Repo;
+package com.j148.backend.contractor_performance.repo;
 
-import com.j148.backend.ContractorPerformance.model.ContractorPerformance;
+import com.j148.backend.contractor_performance.model.ContractorPerformance;
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.config.DBConfig;
