@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("user")
+@Path("reschedule-hearings")
 public class RescheduleHearingResource {
     private HearingService hearingService = new HearingServiceImpl();
     private static final Logger LOG = Logger.getLogger(RescheduleHearingResource.class.getName());
