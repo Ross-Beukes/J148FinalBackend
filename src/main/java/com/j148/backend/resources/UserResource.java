@@ -35,11 +35,11 @@ public class UserResource {
             user.setRole(User.Role.APPLICANT);
             System.out.println(user.toString());
             return Response.ok(this.userService.registerUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -55,13 +55,13 @@ public class UserResource {
         try {
             user.setRole(User.Role.ADMIN);
             return Response.ok(this.userService.registerUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add admin to the database.  Check for duplicates");
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
-        return Response.status(Response.Status.BAD_REQUEST).build();
-            } catch(Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to register user", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
@@ -74,10 +74,10 @@ public class UserResource {
         try {
             user.setRole(User.Role.INSTRUCTOR);
             return Response.ok(this.userService.registerUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add instructor to the database.  Check for duplicates");
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -92,10 +92,10 @@ public class UserResource {
     public Response updateUser(User user) {
         try {
             return Response.ok(this.userService.updateUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to update user details in the database");
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -107,16 +107,16 @@ public class UserResource {
     @GET
     //@Consumes(APPLICATION_JSON)
     @Path("get-user/{userEmail}")
-    public Response getUserFromEmail(@PathParam("userEmail")String userEmail) {
+    public Response getUserFromEmail(@PathParam("userEmail") String userEmail) {
         try {
             User user = User.builder().email(userEmail).build();
             User found = userService.findUserByEmail(user);
             return Response.ok(found).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to retrieve user from the database.");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -127,16 +127,16 @@ public class UserResource {
 
     @GET
     @Path("get-user-by-id/{userId}")
-    public Response getUserById(@PathParam("userId")long userId){
-        try{
+    public Response getUserById(@PathParam("userId") long userId) {
+        try {
             User user = User.builder().userId(userId).build();
             User found = userService.findUserById(user);
             return Response.ok(found).build();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to retrieve user from the database.");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -148,14 +148,14 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("promote-user")
-    public Response promoteUser(User user){
-        try{
+    public Response promoteUser(User user) {
+        try {
             return Response.ok(this.userService.promoteApplicant(user)).build();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -165,7 +165,7 @@ public class UserResource {
 }
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("/login")
+    @Path("login")
     public Response login(User user) {
         try {
             return Response.ok(this.userService.LogIn(user)).build();
@@ -177,4 +177,6 @@ public class UserResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
+    
+    
 }

@@ -1,7 +1,7 @@
 package com.j148.backend.files.repo;
 
 import com.j148.backend.config.DBConfig;
-import com.j148.backend.files.model.Files;
+import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.user.model.User;
 
 import java.sql.*;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 public class FileRepoImpl extends DBConfig implements FileRepo {
 
     @Override
-    public Optional<Files> saveFile(Files file) {
+    public Optional<FileEntity> saveFile(FileEntity file) {
         String query = "INSERT INTO files(fileType, category, dateAdded, path, user, verified) Values(?, ?, ?, ?, ?, ?)";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -46,7 +46,7 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
     }
 
     @Override
-    public Optional<Files> updateFile(long fileId, Files file) {
+    public Optional<FileEntity> updateFile(long fileId, FileEntity file) {
         String query = "UPDATE files SET fileType = ?, category = ?, dateAdded = ?, path = ?, user = ?, verified = ? WHERE fileId = ?";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             con.setAutoCommit(false);
@@ -75,22 +75,22 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
     }
 
     @Override
-    public List<Files> findById(long fileId) {
+    public List<FileEntity> findById(long fileId) {
         String query = "SELECT * FROM files WHERE fileId = ?";
-        List<Files> files = new ArrayList<>();
+        List<FileEntity> files = new ArrayList<>();
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, fileId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    files.add(new Files(
-                            rs.getLong("file_id"),
-                            rs.getString("file_type"),
-                            Files.Category.valueOf(rs.getString("category")),
-                            rs.getTimestamp("date_added").toLocalDateTime(),
-                            rs.getString("path"),
-                            User.builder().userId(rs.getLong("user_id")).build(),
-                            Files.Verified.valueOf(rs.getString("verified"))
+                    files.add(new FileEntity(
+                            rs.getLong(1),
+                            rs.getString(2),
+                            FileEntity.Category.valueOf(rs.getString(3)),
+                            rs.getTimestamp(4).toLocalDateTime(),
+                            rs.getString(5),
+                            User.builder().userId(rs.getLong(6)).build(),
+                            FileEntity.Verified.valueOf(rs.getString(7))
                     ));
                 }
             }
@@ -102,22 +102,22 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
     }
 
     @Override
-    public List<Files> findByCategory(Files.Category category) {
+    public List<FileEntity> findByCategory(FileEntity.Category category) {
         String query = "SELECT * FROM files WHERE category = ?";
-        List<Files> files = new ArrayList<>();
+        List<FileEntity> files = new ArrayList<>();
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, category.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    files.add(new Files(
-                            rs.getLong("file_id"),
-                            rs.getString("file_type"),
-                            Files.Category.valueOf(rs.getString("category")),
-                            rs.getTimestamp("date_added").toLocalDateTime(),
-                            rs.getString("path"),
-                            User.builder().userId(rs.getLong("user_id")).build(),
-                            Files.Verified.valueOf(rs.getString("verified"))
+                    files.add(new FileEntity(
+                            rs.getLong(1),
+                            rs.getString(2),
+                            FileEntity.Category.valueOf(rs.getString(3)),
+                            rs.getTimestamp(4).toLocalDateTime(),
+                            rs.getString(5),
+                            User.builder().userId(rs.getLong(6)).build(),
+                            FileEntity.Verified.valueOf(rs.getString(7))
                     ));
                 }
             }
@@ -129,22 +129,22 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
     }
 
     @Override
-    public List<Files> findByStatus(Files.Verified verified) {
+    public List<FileEntity> findByStatus(FileEntity.Verified verified) {
         String query = "SELECT * FROM files WHERE verified = ?";
-        List<Files> files = new ArrayList<>();
+        List<FileEntity> files = new ArrayList<>();
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, verified.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    files.add(new Files(
-                            rs.getLong("file_id"),
-                            rs.getString("file_type"),
-                            Files.Category.valueOf(rs.getString("category")),
-                            rs.getTimestamp("date_added").toLocalDateTime(),
-                            rs.getString("path"),
-                            User.builder().userId(rs.getLong("user_id")).build(),
-                            Files.Verified.valueOf(rs.getString("verified"))
+                    files.add(new FileEntity(
+                            rs.getLong(1),
+                            rs.getString(2),
+                            FileEntity.Category.valueOf(rs.getString(3)),
+                            rs.getTimestamp(4).toLocalDateTime(),
+                            rs.getString(5),
+                            User.builder().userId(rs.getLong(6)).build(),
+                            FileEntity.Verified.valueOf(rs.getString(7))
                     ));
                 }
             }
@@ -156,21 +156,21 @@ public class FileRepoImpl extends DBConfig implements FileRepo {
     }
 
     @Override
-    public List<Files> getAllFiles() {
+    public List<FileEntity> getAllFiles() {
         String query = "SELECT * FROM files";
-        List<Files> files = new ArrayList<>();
+        List<FileEntity> files = new ArrayList<>();
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    files.add(new Files(
-                            rs.getLong("file_id"),
-                            rs.getString("file_type"),
-                            Files.Category.valueOf(rs.getString("category")),
-                            rs.getTimestamp("date_added").toLocalDateTime(),
-                            rs.getString("path"),
-                            User.builder().userId(rs.getLong("user_id")).build(),
-                            Files.Verified.valueOf(rs.getString("verified"))
+                    files.add(new FileEntity(
+                            rs.getLong(1),
+                            rs.getString(2),
+                            FileEntity.Category.valueOf(rs.getString(3)),
+                            rs.getTimestamp(4).toLocalDateTime(),
+                            rs.getString(5),
+                            User.builder().userId(rs.getLong(6)).build(),
+                            FileEntity.Verified.valueOf(rs.getString(7))
                     ));
                 }
             }

@@ -9,8 +9,8 @@ package com.j148.backend.aptitude_test.repo;
  */
 
 import com.j148.backend.aptitude_test.model.AptitudeTest;
-import com.j148.backend.user.model.User;
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.user.model.User;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -53,7 +53,7 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
     }
 
     @Override
-    public Optional<AptitudeTest> findById(Long id) throws SQLException  {
+    public Optional<AptitudeTest> findById(Long id) throws SQLException {
         String sql = "SELECT * FROM aptitude_tests WHERE aptitude_test_id = ?";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -64,7 +64,7 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
                     return Optional.of(mapRowToAptitudeTest(rs));
                 }
             }
-        } 
+        }
         return Optional.empty();
     }
 
@@ -88,23 +88,21 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
         String sql = "UPDATE aptitude_test SET test_mark = ?, test_date = ?, user_id = ? WHERE aptitude_test_id = ?";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            conn.setAutoCommit(false);
+            stmt.setInt(1, aptitudeTest.getTestMark());
+            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
+            stmt.setLong(3, aptitudeTest.getUser().getUserId());
+            stmt.setLong(4, aptitudeTest.getAptitudeTestId());
+            Savepoint beforeTestSave = conn.setSavepoint();
 
-
-            try {
-                stmt.setInt(1, aptitudeTest.getTestMark());
-                stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-                stmt.setLong(3, aptitudeTest.getUser().getUserId());
-                stmt.setLong(4, aptitudeTest.getAptitudeTestId());
-                Savepoint beforeTestSave = conn.setSavepoint();
-
-                if (stmt.executeUpdate() > 0) {
-                    conn.commit();
-                    return Optional.of(aptitudeTest);
-                } else {
-                    conn.rollback(beforeTestSave);
-                }
-                return Optional.empty();
+            if (stmt.executeUpdate() > 0) {
+                conn.commit();
+                return Optional.of(aptitudeTest);
+            } else {
+                conn.rollback(beforeTestSave);
             }
+            return Optional.empty();
+
         }
     }
 

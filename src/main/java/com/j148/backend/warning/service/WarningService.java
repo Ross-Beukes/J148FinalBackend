@@ -1,5 +1,7 @@
 package com.j148.backend.warning.service;
 
+import com.j148.backend.Exceptions.ContractorNotFoundException;
+import com.j148.backend.Exceptions.WarningNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.warning.model.Warning;
 import java.sql.SQLException;

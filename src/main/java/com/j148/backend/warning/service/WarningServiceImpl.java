@@ -1,5 +1,7 @@
 package com.j148.backend.warning.service;
 
+import com.j148.backend.Exceptions.ContractorNotFoundException;
+import com.j148.backend.Exceptions.WarningNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.repo.ContractorRepo;
 import com.j148.backend.contractor.repo.ContractorRepoImpl;
@@ -69,7 +71,7 @@ public class WarningServiceImpl implements WarningService {
             throw new IllegalArgumentException("Contractor id is null");
         }
 
-        if (contractorRepo.findById(contractor.getContractorId()).isEmpty()) {
+        if (contractorRepo.findById(contractor).isEmpty()) {
             throw new IllegalArgumentException("Could not find contractor");
         }
 
