@@ -54,9 +54,9 @@ public class LeaveRequestResource {
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests/{start-date}/{end-date}")
-    public Response getLeaveRequestsInDateRange(@PathParam("start-date") LocalDate startDate, @PathParam("end-date") LocalDate endDate){
+    public Response getLeaveRequestsInDateRange(@PathParam("start-date") String startDate, @PathParam("end-date") String endDate){
         try {
-            return Response.ok(this.leaveRequestService.retrieveAllLeaveRequestsBetweenDates(startDate, endDate)).build();
+            return Response.ok(this.leaveRequestService.retrieveAllLeaveRequestsBetweenDates(LocalDate.parse(startDate), LocalDate.parse(endDate))).build();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, null, ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();

@@ -165,5 +165,26 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         return requestMap;
     }
 
+    @Override
+    public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws SQLException {
+        HashMap<Long, LeaveRequest> requestMap = new HashMap<>();
+        String query = "SELECT * FROM leave_request WHERE decision = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, LeaveRequest.Decision.valueOf(decision).toString());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
+                            .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
+                            .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
+                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
+                            .build());
+
+                }
+
+            }
+        }
+        return requestMap;
+    }
+
 
 }

@@ -20,12 +20,14 @@ import jakarta.mail.Authenticator;
  
 
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
-public class EmailSender extends EmailConfig {
+public class EmailSender {
     
     
-    public static void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
+    public void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
         String email = "xavierdovah124";
         String password = "evba attv nsgw ymlz";
         

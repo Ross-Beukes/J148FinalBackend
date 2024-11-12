@@ -71,4 +71,12 @@ public interface LeaveRequestRepo {
      */
     AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws SQLException;
     
+    /**
+     *  Retrieves all leave requests based on their respective decision, i.e. "PENDING", "APPROVED", "DENIED" 
+     * @param decision
+     * @return
+     * @throws SQLException 
+     */
+    AbstractMap<Long,LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws SQLException;
+    
 }

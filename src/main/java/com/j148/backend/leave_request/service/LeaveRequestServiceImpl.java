@@ -50,10 +50,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         if (leaveRequest.getEndDate().compareTo(LocalDate.now()) < 0) {
             throw new IllegalArgumentException("Leave request end date cannot be smaller than current date");
         }
-        if(leaveRequest.getEndDate().isBefore(leaveRequest.getStartDate())){
+        if (leaveRequest.getEndDate().isBefore(leaveRequest.getStartDate())) {
             throw new IllegalArgumentException("End date of leave request cannot be smaller than start date");
         }
-        if((leaveRequest.getEndDate().getDayOfYear() - leaveRequest.getStartDate().getDayOfYear()) > 14){
+        if ((leaveRequest.getEndDate().getDayOfYear() - leaveRequest.getStartDate().getDayOfYear()) > 14) {
             throw new IllegalArgumentException("Leave day requests cannot be a date range greater than 14 days");
         }
         if (leaveRequest.getEndDate() == null) {
@@ -67,11 +67,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequests() throws Exception {
         HashMap<Long, LeaveRequest> copyMap = (HashMap<Long, LeaveRequest>) leaveRequestRepo.retrieveAll();
-        for(Long l : copyMap.keySet()){
-            if(l == 0 || l == null){
+        for (Long l : copyMap.keySet()) {
+            if (l == 0 || l == null) {
                 throw new IllegalArgumentException("Invalid ID in key set (null or 0) for retrieve all leave requests map");
             }
-            if(copyMap.get(l) == null){
+            if (copyMap.get(l) == null) {
                 throw new IllegalArgumentException("Leave Request Map cannot have null values");
             }
         }
@@ -119,6 +119,15 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             return leaveRequestRepo.retrieveAllPendingContractorLeaveRequests(contractor);
         } else {
             throw new NullPointerException("Contractor cannot be null when retrieving all pending leave requests");
+        }
+    }
+
+    @Override
+    public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws Exception {
+        if (decision != null) {
+            return leaveRequestRepo.retrieveAllLeaveRequestsByDecision(decision);
+        } else {
+            throw new NullPointerException("Decision cannot be null when retrieving all leave requests of a specific decision");
         }
     }
 
