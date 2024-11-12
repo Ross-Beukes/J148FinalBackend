@@ -5,6 +5,7 @@ import com.j148.backend.user.model.User;
 import jakarta.servlet.http.Part;
 import com.j148.backend.files.model.FileEntity;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -20,16 +21,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
-
     private static final Logger LOGGER = Logger.getLogger(FileEntityRepoImpl.class.getName());
-    private static final String UPLOAD_DIR = "/opt/hrms/uploads/";
+    private static final Path UPLOAD_DIR;
+
+    static {
+        try {
+            // Initialize upload directory in user's home directory
+            UPLOAD_DIR = Paths.get(
+                    System.getProperty("hrms.upload.dir",
+                            Paths.get(System.getProperty("user.home"), "hrms", "uploads").toString()
+                    )
+            );
+            Files.createDirectories(UPLOAD_DIR);
+            LOGGER.info("Upload directory initialized at: " + UPLOAD_DIR);
+        } catch (IOException e) {
+            LOGGER.severe("Failed to create upload directory: " + e.getMessage());
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     @Override
     public Optional<FileEntity> saveFile(FileEntity fileEntity) {
         String query = "INSERT INTO files(fileType, category, dateAdded, path, user, verified) Values(?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = getCon();
+             PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
             con.setAutoCommit(false);
+            Savepoint beforeUserInsert = con.setSavepoint();
+
             ps.setString(1, fileEntity.getFileType());
             ps.setString(2, String.valueOf(fileEntity.getCategory()));
             ps.setTimestamp(3, Timestamp.valueOf(fileEntity.getDateAdded()));
@@ -37,26 +57,26 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
             ps.setLong(5, fileEntity.getUser().getUserId());
             ps.setString(6, fileEntity.getVerified().toString());
 
-
-            Savepoint beforeUserInsert = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         fileEntity.setFileId(rs.getLong(1));
+                        con.commit();
+                        return Optional.of(fileEntity);
                     }
                 }
-                return Optional.of(fileEntity);
-            } else {
-                con.rollback(beforeUserInsert);
             }
+
+            con.rollback(beforeUserInsert);
         } catch (SQLException e) {
-            Logger.getLogger(FileEntityRepoImpl.class.getName()).log(Level.SEVERE, null, e);
+            LOGGER.log(Level.SEVERE, "Error saving file entity", e);
         }
         return Optional.empty();
     }
+
     @Override
-    public Optional<FileEntity> save(Part filePart, User user, FileEntity.Category category) throws SQLException {
+    public Optional<FileEntity> save(Part filePart, User user, FileEntity.Category category)
+            throws SQLException {
         String fileName = "";
 
         try (Connection con = getCon()) {
@@ -64,20 +84,14 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
             Savepoint beforeFileSave = con.setSavepoint();
 
             try {
-                // Create upload directory if it doesn't exist
-                Path uploadPath = Paths.get(UPLOAD_DIR);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-
                 // Generate unique filename
                 fileName = generateUniqueFileName(filePart);
-                String filePath = UPLOAD_DIR + fileName;
+                Path fullPath = UPLOAD_DIR.resolve(fileName);
 
                 // Save physical file
-                savePhysicalFile(filePart, filePath);
+                savePhysicalFile(filePart, fileName);
 
-                // Save to database
+                // Save to database using normalized path
                 String sql = """
                     INSERT INTO files (user_id, file_type, category, date_added, path, verified) 
                     VALUES (?, ?, ?, ?, ?, ?)
@@ -88,7 +102,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                     ps.setString(2, filePart.getContentType());
                     ps.setString(3, category.toString());
                     ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
-                    ps.setString(5, filePath);
+                    ps.setString(5, fullPath.normalize().toString());
                     ps.setString(6, FileEntity.Verified.WAITING.toString());
 
                     if (ps.executeUpdate() > 0) {
@@ -100,7 +114,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                                         .fileType(filePart.getContentType())
                                         .category(category)
                                         .dateAdded(LocalDateTime.now())
-                                        .path(filePath)
+                                        .path(fullPath.normalize().toString())
                                         .verified(FileEntity.Verified.WAITING)
                                         .build();
 
@@ -202,16 +216,18 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                 + "_" + getSubmittedFileName(filePart);
     }
 
-    private void savePhysicalFile(Part filePart, String filePath) throws IOException {
+    private void savePhysicalFile(Part filePart, String fileName) throws IOException {
+        Path filePath = UPLOAD_DIR.resolve(fileName);
         try (InputStream input = filePart.getInputStream()) {
-            Files.copy(input, Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
         }
     }
 
     private void handleSaveError(String fileName, Exception e) {
         try {
             if (!fileName.isEmpty()) {
-                Files.deleteIfExists(Paths.get(UPLOAD_DIR + fileName));
+                Path filePath = UPLOAD_DIR.resolve(fileName);
+                Files.deleteIfExists(filePath);
             }
         } catch (IOException deleteError) {
             LOGGER.severe("Failed to delete file after error: " + deleteError.getMessage());
@@ -261,7 +277,9 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE fileId = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = getCon();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
             ps.setLong(1, fileId);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -276,9 +294,8 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                     ));
                 }
             }
-
         } catch (SQLException ex) {
-            Logger.getLogger(FileEntityRepoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error finding files by ID", ex);
         }
         return files;
     }
@@ -288,7 +305,9 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE category = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = getCon();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
             ps.setString(1, category.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -303,9 +322,8 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                     ));
                 }
             }
-
         } catch (SQLException ex) {
-            Logger.getLogger(FileEntityRepoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error finding files by category", ex);
         }
         return files;
     }
@@ -315,7 +333,9 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE verified = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = getCon();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
             ps.setString(1, verified.toString());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -330,9 +350,8 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                     ));
                 }
             }
-
         } catch (SQLException ex) {
-            Logger.getLogger(FileEntityRepoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error finding files by status", ex);
         }
         return files;
     }
@@ -342,7 +361,9 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = getCon();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     files.add(new FileEntity(
@@ -356,9 +377,8 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                     ));
                 }
             }
-
         } catch (SQLException ex) {
-            Logger.getLogger(FileEntityRepoImpl.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "Error retrieving all files", ex);
         }
         return files;
     }

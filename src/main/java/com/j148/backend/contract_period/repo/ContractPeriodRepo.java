@@ -1,6 +1,7 @@
 package com.j148.backend.contract_period.repo;
 
 import com.j148.backend.contract_period.model.ContractPeriod;
+
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -9,7 +10,6 @@ import java.util.Optional;
  * find and update contract periods in the database.
  */
 public interface ContractPeriodRepo {
-
     /**
      * Adds a new contract period to the database.
      *
@@ -28,6 +28,26 @@ public interface ContractPeriodRepo {
      * @throws SQLException if there is an error accessing the database
      */
     Optional<ContractPeriod> findContractPeriodByName(String name) throws SQLException;
+
+    /**
+     * Calculates the average number of enrollments for a specific year.
+     *
+     * @param year The year for which to calculate the average enrollment.
+     * @return The average enrollment count for the specified year.
+     * @throws SQLException If a database access error occurs.
+     */
+    double enrollmentAveragesForYear(int year) throws SQLException;
+
+    /**
+     * Calculates the average number of enrollments over a period of years.
+     *
+     * @param startYear The starting year of the period.
+     * @param endYear The ending year of the period.
+     * @return The average enrollment count per year for the specified period.
+     * @throws SQLException If a database access error occurs.
+     */
+
+    double enrollmentAverageForPeriodOfYears(int startYear, int endYear) throws SQLException;
 
     /**
      * Updates an existing contract period in the database.
@@ -68,4 +88,6 @@ public interface ContractPeriodRepo {
      * @throws SQLException if a database access error occurs.
      */
     Optional<ContractPeriod> getNextContractPeriod() throws SQLException;
+
+    Optional<ContractPeriod> findById(ContractPeriod contractPeriod) throws SQLException;
 }

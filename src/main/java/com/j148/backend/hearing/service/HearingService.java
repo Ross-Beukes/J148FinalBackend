@@ -2,7 +2,6 @@ package com.j148.backend.hearing.service;
 
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
-
 import java.time.LocalDateTime;
 
 public interface HearingService {
@@ -13,7 +12,7 @@ public interface HearingService {
      * issued per Three Warnings
      *
      @param contractor
-     * @return Hearing
+      * @return Hearing
      */
     public Hearing IssueHearing(Contractor contractor) throws Exception;
 

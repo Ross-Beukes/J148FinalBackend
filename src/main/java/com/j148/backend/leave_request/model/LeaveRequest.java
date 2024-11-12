@@ -16,6 +16,7 @@ public class LeaveRequest {
     private Contractor contractor;
     private FileEntity file;
 
+
     public enum Decision {
         APPROVED, DENIED, PENDING
     }

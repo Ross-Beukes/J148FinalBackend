@@ -8,18 +8,17 @@ package com.j148.backend.Exceptions;
  *
  * @author Tshireletso
  */
-public class AptitudeTestNotFoundException extends RuntimeException{
-    
-    public AptitudeTestNotFoundException(){}
-    
-    
-     public AptitudeTestNotFoundException(String message){
-         super(message);
-     }
-     
-      public AptitudeTestNotFoundException(String message, Throwable cause){
-          super(message, cause);
-      }
-    
-    
+public class AptitudeTestNotFoundException extends Exception {
+
+    public AptitudeTestNotFoundException() {
+    }
+
+    public AptitudeTestNotFoundException(String message) {
+        super(message);
+    }
+
+    public AptitudeTestNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

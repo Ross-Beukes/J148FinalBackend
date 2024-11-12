@@ -6,9 +6,14 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
-
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
+/**
+ * @author glenl
+ */
 public class WarningServiceImpl implements WarningService {
 
     private final WarningRepo warningRepo = new WarningRepoImpl();
@@ -38,9 +43,15 @@ public class WarningServiceImpl implements WarningService {
         } else {
             throw new IllegalArgumentException("Contractor is null");
         }
-
     }
 
+    @Override
+    public Warning save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException {
+        return null;
+    }
+
+
+    @Override
     public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
 
         if (warning == null) {
@@ -70,4 +81,60 @@ public class WarningServiceImpl implements WarningService {
                 .orElseThrow(() -> new Exception("Failed to appeal warning"));
 
     }
+
+    @Override
+    public Warning findById(Warning warning) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Warning> findByContractor(Contractor contractor) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Warning> findAppealedByContractor(Contractor contractor) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Warning updateState(Warning warning) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Warning createLateWarning(Contractor contractor) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Warning> findWarningsByDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public List<Warning> findFinalWarningsByContractor(Contractor contractor) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Optional<Long> countActiveWarningsByContractor(Contractor contractor) throws SQLException {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<Warning> findWarningsByReason(Warning warning) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public Boolean existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException {
+        return null;
+    }
 }
+

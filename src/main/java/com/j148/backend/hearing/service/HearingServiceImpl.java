@@ -6,9 +6,10 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepo;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
-import com.j148.backend.warning.repo.WarningRepoImpl;
-
 import java.sql.SQLException;
+
+import com.j148.backend.warning.repo.WarningRepo;
+import com.j148.backend.warning.repo.WarningRepoImpl;
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,9 +18,10 @@ public class HearingServiceImpl implements HearingService {
 
     private final HearingRepo hearingRepo = new HearingRepoImpl();
     private final ContractorRepo contractorRepo = new ContractorRepoImpl();
+    private final WarningRepo warningRepo = new WarningRepoImpl();
 
     @Override
-    public LocalDateTime scheduleHearing() throws Exception {
+    public LocalDateTime scheduleHearing() throws Exception{
         // get one week to the current date and time
         LocalDateTime hearingDate = LocalDateTime.now().plusWeeks(1);
 
@@ -27,31 +29,30 @@ public class HearingServiceImpl implements HearingService {
     }
 
     @Override
-    public Hearing IssueHearing(Contractor contractor) throws Exception {
+    public Hearing IssueHearing(Contractor contractor) throws Exception{
 
-        if (contractor != null) {
+        if(contractor != null){
             int hearingCount = 0;
             long warningCount = 0l;
             HearingRepoImpl hri = new HearingRepoImpl();
 
             //Obtain count based on a Contractors amount of hearings already
             try {
-                hearingCount = hri.findContractorHearingHistory(contractor).size();
+                hearingCount = hearingRepo.findContractorHearingHistory(contractor).size();
             } catch (SQLException ex) {
-                Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                throw ex;
             }
-            WarningRepoImpl wri = new WarningRepoImpl();
             //Obtain count based on a Contractors amount of active warnings
             try {
-                warningCount = wri.countActiveWarningsByContractor(contractor).get();
+                warningCount = warningRepo.countActiveWarningsByContractor(contractor).get() ;
             } catch (SQLException ex) {
                 Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing warning history", ex);
             }
 
 
-            if (warningCount % 3 == 0 && warningCount > 0) {
+            if(warningCount % 3 == 0 && warningCount > 0){
 
-                if (hearingCount * 3 != warningCount) {
+                if(warningCount * 3L != hearingCount){
                     Hearing hearing = Hearing.builder()
                             .scheduleDate(scheduleHearing())
                             .hearingsId(0L)
@@ -67,6 +68,7 @@ public class HearingServiceImpl implements HearingService {
         return null;
     }
 
+    @Override
     public Hearing rescheduleHearing(Hearing hearing, Contractor contractor) throws Exception {
 
         if (hearing == null) {
@@ -99,11 +101,5 @@ public class HearingServiceImpl implements HearingService {
         return hearingRepo.updateHearing(hearing)
                 .orElseThrow(() -> new Exception("Failed to reschedule hearing"));
 
-
     }
 }
-
-
-
-
-

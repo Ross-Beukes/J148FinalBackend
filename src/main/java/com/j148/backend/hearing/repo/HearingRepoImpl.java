@@ -30,7 +30,7 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
         String query = "INSERT INTO hearings(contractor_id, schedule_date, outcome, reason) VALUES(?,?,?,?)";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, hearing.getContractor().getContractorId());
-            ps.setTimestamp(1, Timestamp.valueOf(hearing.getScheduleDate()));
+            ps.setTimestamp(2, Timestamp.valueOf(hearing.getScheduleDate()));
             ps.setString(3, hearing.getOutcome().name());
             ps.setString(4, hearing.getReason());
             Savepoint beforeHearingInsert = con.setSavepoint();
@@ -221,7 +221,7 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
 
         }
     }
-    
+
     @Override
     public List<Hearing> findUpcomingHearings() throws SQLException {
 
@@ -257,7 +257,7 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
 
         }
     }
-    
+
     @Override
     public List<Hearing> findHearingsWithinDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
 
@@ -318,17 +318,17 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
                             .outcome(outcome)
                             .reason(reason)
                             .build();
-                       // null checks in front end not there don't show
-                       hearingHistory.add(retrievedHearing);
+                    // null checks in front end not there don't show
+                    hearingHistory.add(retrievedHearing);
+                }
             }
         }
-    }
-    
-    return hearingHistory;
-        
+
+        return hearingHistory;
+
     }
 
-    
-   
+
+
 
 }

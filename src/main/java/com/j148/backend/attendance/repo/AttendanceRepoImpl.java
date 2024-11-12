@@ -11,11 +11,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
-//    private static final String url = "jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false";
-//
-//    private Connection getConnection() throws SQLException {
-//        return DriverManager.getConnection(url, "root", "root");
-//    }
 
     /**
      * Inserts an attendance record into the database
@@ -76,7 +71,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 Contractor contractor = Contractor.builder().build();
                 contractor.setContractorId(rs.getLong("contractor_id"));
                 attendance.setContractor(contractor);
-                
+
                 return Optional.of(attendance);
 
             } else {
@@ -97,7 +92,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     public Optional<Attendance> updateAttendance(Attendance attendance) throws SQLException {
         String query = "UPDATE attendance SET time_in = ?, time_out = ?, register = ?, contractor_id = ? WHERE attendance_id = ?";
         try (Connection con = getCon(); PreparedStatement statement = con.prepareStatement(query)) {
-            con.setAutoCommit(false);              
+            con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
             statement.setTimestamp(2, Timestamp.valueOf(attendance.getTimeOut()));
             statement.setString(3, attendance.getRegister().name());
@@ -111,12 +106,10 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 con.commit();
                 return Optional.of(attendance);
 
-            } else {
+            }else {
                 con.rollback(save);
                 return Optional.empty();
-
             }
-
         }
     }
 
@@ -141,29 +134,30 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     }
 
     @Override
-    public List<Attendance> todaysAttenance() throws SQLException {
-        String query = "SELECT * FROM attendance WHERE time_in = CURDATE()";
-        List<Attendance> todaysAttendances = new ArrayList<>();
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractor_id")).build();
-                    Attendance attendance;
-                    attendance = Attendance.builder().
-                            attendanceId(rs.getLong("attendance_id")).
-                            contractor(contractor).
-                            timeIn(rs.getTimestamp("time_in").toLocalDateTime()).
-                            timeOut(rs.getTimestamp("time_out").toLocalDateTime()).
-                            register(Attendance.Register.valueOf(rs.getString("register"))).
-                            build();
-                    todaysAttendances.add(attendance);
-                }
+    public List<Attendance> FindAllAttendanceForContractor(Contractor contractor) throws SQLException {
+        List<Attendance> attendanceList = new ArrayList<>();
+        String query = "SELECT * FROM attendance WHERE contractor_id = ?";
+        try (Connection con = getCon();
+             PreparedStatement statement = con.prepareStatement(query)) {
+            statement.setLong(1, contractor.getContractorId());
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                Attendance attendance = Attendance.builder().build();
+                attendance.setAttendanceId(rs.getLong("attendance_id"));
+                attendance.setTimeIn(rs.getTimestamp("time_in").toLocalDateTime());
+                attendance.setTimeOut(rs.getTimestamp("time_out").toLocalDateTime());
+                attendance.setRegister(Attendance.Register.valueOf(rs.getString("register")));
+
+                attendance.setContractor(contractor);
+                attendanceList.add(attendance);
             }
+
+
         }
-        return todaysAttendances;
+        return attendanceList;
     }
 
-    @Override
     public Optional<Attendance> retreiveAttendanceByContractor(Attendance attendance) throws SQLException {
         String query = "SELECT * FROM attendance WHERE contractor_id = ? AND time_in = CURDATE()";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
@@ -192,4 +186,28 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
 
     }
 
+
+
+    @Override
+    public List<Attendance> todaysAttenance() throws SQLException {
+        String query = "SELECT * FROM attendance WHERE time_in = CURDATE()";
+        List<Attendance> todaysAttendances = new ArrayList<>();
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractor_id")).build();
+                    Attendance attendance;
+                    attendance = Attendance.builder().
+                            attendanceId(rs.getLong("attendance_id")).
+                            contractor(contractor).
+                            timeIn(rs.getTimestamp("time_in").toLocalDateTime()).
+                            timeOut(rs.getTimestamp("time_out").toLocalDateTime()).
+                            register(Attendance.Register.valueOf(rs.getString("register"))).
+                            build();
+                    todaysAttendances.add(attendance);
+                }
+            }
+        }
+        return todaysAttendances;
+    }
 }

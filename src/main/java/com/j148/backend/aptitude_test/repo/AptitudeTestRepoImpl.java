@@ -5,7 +5,6 @@
 package com.j148.backend.aptitude_test.repo;
 
 /**
- *
  * @author MIANTSUMI
  */
 
@@ -19,32 +18,36 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class AptitudeTestRepoImpl implements AptitudeRepo {
+public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
 
     @Override
-    public Optional<AptitudeTest> create (AptitudeTest aptitudeTest) throws SQLException {
-        String sql = "INSERT INTO aptitude_tests (test_mark, test_date, user_id) VALUES (?, ?, ?)";
+    public Optional<AptitudeTest> create(AptitudeTest aptitudeTest) throws SQLException {
+        String sql = "INSERT INTO aptitude_test (test_mark, test_date, user_id) VALUES (?, ?, ?)";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setInt(1, aptitudeTest.getTestMark());
-            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-            stmt.setLong(3, aptitudeTest.getUser().getUserId());
+            Savepoint beforeTestSave = conn.setSavepoint();
 
-            Savepoint beforeUserInsert = conn.setSavepoint();
+            try {
+                stmt.setInt(1, aptitudeTest.getTestMark());
+                stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
+                stmt.setLong(3, aptitudeTest.getUser().getUserId());
 
-            int affectedRows = stmt.executeUpdate();
-            if (affectedRows > 0) {
-                try (ResultSet rs = stmt.getGeneratedKeys()) {
-                    if (rs.next()) {
-                        aptitudeTest.setAptitudeTestId(rs.getLong(1));
+                int affectedRows = stmt.executeUpdate();
+                if (affectedRows > 0) {
+                    try (ResultSet rs = stmt.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            aptitudeTest.setAptitudeTestId(rs.getLong(1));
+                            conn.commit();
+                            return Optional.of(aptitudeTest);
+
+                        }
                     }
                 }
-                return Optional.of(aptitudeTest);
-            }else {
-                conn.rollback(beforeUserInsert);
+            } catch (SQLException e) {
+                conn.rollback(beforeTestSave);
+                throw e;
             }
-
         }
         return Optional.empty();
     }
@@ -82,37 +85,26 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
 
     @Override
     public Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException {
-        String sql = "UPDATE aptitude_tests SET test_mark = ?, test_date = ?, WHERE aptitude_test_id = ?";
+        String sql = "UPDATE aptitude_test SET test_mark = ?, test_date = ?, user_id = ? WHERE aptitude_test_id = ?";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setInt(1, aptitudeTest.getTestMark());
-            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-            stmt.setLong(3, aptitudeTest.getAptitudeTestId());
-            Savepoint beforeUserInsert = conn.setSavepoint();
 
-            if (stmt.executeUpdate() > 0) {
-                conn.commit();
+            try {
+                stmt.setInt(1, aptitudeTest.getTestMark());
+                stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
+                stmt.setLong(3, aptitudeTest.getUser().getUserId());
+                stmt.setLong(4, aptitudeTest.getAptitudeTestId());
+                Savepoint beforeTestSave = conn.setSavepoint();
 
-                return Optional.of(aptitudeTest);
-            } else {
-                conn.rollback(beforeUserInsert);
+                if (stmt.executeUpdate() > 0) {
+                    conn.commit();
+                    return Optional.of(aptitudeTest);
+                } else {
+                    conn.rollback(beforeTestSave);
+                }
                 return Optional.empty();
             }
-        }
-
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        String sql = "DELETE FROM aptitude_tests WHERE aptitude_test_id = ?";
-        try (Connection conn = DBConfig.getCon();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setLong(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
