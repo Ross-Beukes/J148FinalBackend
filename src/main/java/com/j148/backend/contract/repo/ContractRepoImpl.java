@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //Author : TSHIRELETSO
 
@@ -20,6 +22,8 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
     
     private final ContractPeriodRepoImpl cpri = new ContractPeriodRepoImpl();
     private final UserRepoImpl uri = new UserRepoImpl();
+    private static final Logger LOG = Logger.getLogger(ContractRepoImpl.class.getName());
+    
 
     @Override
     public Optional<Contract> createContract(Contract contract) throws SQLException {
@@ -59,6 +63,7 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
             
         
         }catch(Exception e){
+            LOG.log(Level.SEVERE, "", e);
          System.out.println("Error while creating a new contract");
         }
             
