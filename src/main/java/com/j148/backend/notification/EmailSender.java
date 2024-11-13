@@ -22,7 +22,7 @@ import jakarta.mail.Authenticator;
 import java.util.Properties;
 
 
-public class EmailSender extends EmailConfig {
+public class EmailSender {
     
     
     public static void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
