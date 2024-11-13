@@ -20,106 +20,143 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Singleton
 public class TimesheetReminder extends DBConfig {
 
-    @Schedule(hour = "9", minute = "0", dayOfMonth = "1", persistent = false)
-    public void SevenDayReminder() throws SQLException, MessagingException {
-        // Get today's date
-        int daysToSubtract = 15;
-        LocalDate today = LocalDate.now();
-        List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-        StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
-
-        for (User user : remindUsers) {
-            StringBuilder msg = new StringBuilder();
-            msg.append(user.getName()).append(" ");
-            msg.append(user.getSurname()).append(" ");
-            msg.append(sb);
-
-            EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-
+    @Schedule(hour = "11", minute = "25", dayOfMonth = "13", persistent = false)
+    public void SevenDayReminder() {
+        try {
+            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
+            LocalDate today = LocalDate.now();
+            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
+            StringBuilder greetings = new StringBuilder("Dear ");
+            StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
+    
+            
+            for (User user : remindUsers) {
+                StringBuilder msg = new StringBuilder();
+                msg.append(user.getName()).append(" ");
+                msg.append(user.getSurname()).append(" ");
+                msg.append(sb);
+                System.out.println("Hello world");
+                
+                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                wait(1500);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    @Schedule(hour = "9", minute = "0", dayOfMonth = "3", persistent = false)
-    public void ThreeDayReminder() throws SQLException, MessagingException {
-        // Get today's date
-        int daysToSubtract = 5;
-        LocalDate today = LocalDate.now();
-        List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-        StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
-
-        for (User user : remindUsers) {
-            StringBuilder msg = new StringBuilder();
-            msg.append(user.getName()).append(" ");
-            msg.append(user.getSurname()).append(" ");
-            msg.append(sb);
-
-            EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-
+    @Schedule(hour = "11", minute = "26", dayOfMonth = "13", persistent = false)
+    public void ThreeDayReminder() {
+        try {
+            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
+            LocalDate today = LocalDate.now();
+            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
+            StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
+            
+            for (User user : remindUsers) {
+                StringBuilder msg = new StringBuilder();
+                msg.append(user.getName()).append(" ");
+                msg.append(user.getSurname()).append(" ");
+                msg.append(sb);
+                
+                System.out.println("Hello world 1");
+                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                wait(1500);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    @Schedule(hour = "9", minute = "0", dayOfMonth = "7", persistent = false)
-    public void OneDayReminder() throws SQLException, MessagingException {
-        // Get today's date
-        int daysToSubtract = 3;
-        LocalDate today = LocalDate.now();
-        List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-        StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
+    @Schedule(hour = "11", minute = "44", dayOfMonth = "13", persistent = false)
+    public void OneDayReminder() {
+        try {
+            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
+            LocalDate today = LocalDate.now();
+            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
+            StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
+            
+            for (User user : remindUsers) {
+                System.out.println(user);
+                StringBuilder msg = new StringBuilder();
+                msg.append(user.getName()).append(" ");
+                msg.append(user.getSurname()).append(" ");
+                msg.append(sb);
+                System.out.println(user.getEmail());
+                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+    }
 
-        for (User user : remindUsers) {
-            StringBuilder msg = new StringBuilder();
-            msg.append(user.getName()).append(" ");
-            msg.append(user.getSurname()).append(" ");
-            msg.append(sb);
-
-            EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-
+    @Schedule(hour = "11", minute = "30", dayOfMonth = "13", persistent = false)
+    public void AdminReminder() {
+        try {
+            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
+            LocalDate today = LocalDate.now();
+            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
+            List<User> emailAdmins = getAdmins();
+            StringBuilder sb = new StringBuilder();
+            int count = 0;
+            
+            for (User user : remindUsers) {
+                count++;
+                sb.append("Contractor " + count + "\n")
+                        .append("name: ")
+                        .append(user.getName())
+                        .append(" ")
+                        .append("surname: ")
+                        .append(user.getSurname())
+                        .append("\n")
+                        .append("email: ")
+                        .append(user.getEmail())
+                        .append("\n");
+                
+            }
+            
+            for (User admin : emailAdmins) {
+                System.out.println("Hello world admin");
+                EmailSender.sendNotification(admin.getEmail(), sb.toString(), "Timesheet not Uploaded");
+                wait(1500);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MessagingException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    @Schedule(hour = "9", minute = "0", dayOfMonth = "8", persistent = false)
-    public void AdminReminder() throws SQLException, MessagingException {
-        // Get today's date
-        int daysToSubtract = 0;
+    private int calculateDaysTo15thOfPreviousMonth() {
         LocalDate today = LocalDate.now();
-        List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-        List<User> emailAdmins = getAdmins();
-        StringBuilder sb = new StringBuilder();
-        int count = 0;
-
-        for (User user : remindUsers) {
-            count++;
-            sb.append("Contractor " + count + "\n")
-                    .append("name: ")
-                    .append(user.getName())
-                    .append(" ")
-                    .append("surname: ")
-                    .append(user.getSurname())
-                    .append("\n")
-                    .append("email: ")
-                    .append(user.getEmail())
-                    .append("\n");
-
-        }
-
-        for (User admin : emailAdmins) {
-            EmailSender.sendNotification(admin.getEmail(), sb.toString(), "Timesheet not Uploaded");
-
-        }
-
+        LocalDate fifteenthOfLastMonth = today.minusMonths(1).withDayOfMonth(15);
+        return (int) java.time.temporal.ChronoUnit.DAYS.between(fifteenthOfLastMonth, today);
     }
 
     List<User> TimesheetOutstanding(LocalDate currentDate, int days) throws SQLException {
         List<User> users = new ArrayList<>();
-        // Calculated date
         LocalDate calculatedDate = currentDate.minusDays(days);
         java.sql.Date sqlCalculatedDate = java.sql.Date.valueOf(calculatedDate);
 
-        // Update the query to compare with the calculated date
         String query = "SELECT user.name AS user_name, user.surname, user.email "
                 + "FROM contractor "
                 + "JOIN user ON user.user_id = contractor.user_id "
@@ -139,16 +176,13 @@ public class TimesheetReminder extends DBConfig {
                     User user = User.builder()
                             .name(rs.getString("user_name"))
                             .surname(rs.getString("surname"))
-                            .email("email")
+                            .email(rs.getString("email"))
                             .build();
                     users.add(user);
-
                 }
                 return users;
             }
-
         }
-
     }
 
     List<User> getAdmins() throws SQLException {
@@ -163,11 +197,8 @@ public class TimesheetReminder extends DBConfig {
                         .build();
 
                 admins.add(admin);
-
             }
             return admins;
         }
-
     }
-
 }
