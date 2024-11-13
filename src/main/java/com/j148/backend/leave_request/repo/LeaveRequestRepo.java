@@ -79,4 +79,11 @@ public interface LeaveRequestRepo {
      */
     AbstractMap<Long,LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws SQLException;
     
+    /**
+     * Retrieves a leave request by it's ID.
+     * @param leaveRequest
+     * @return
+     * @throws SQLException 
+     */
+    Optional<LeaveRequest> retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws SQLException;
 }

@@ -186,5 +186,25 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         return requestMap;
     }
 
+    @Override
+    public Optional<LeaveRequest> retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws SQLException {
+        String query = "SELECT * FROM leave_request WHERE leave_request_id = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setLong(1, leaveRequest.getLeaveRequestId());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    LeaveRequest foundRequest = LeaveRequest.builder().leaveRequestId(rs.getLong("leave_request_id")).startDate(rs.getDate("start_date").toLocalDate())
+                            .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
+                            .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
+                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
+                            .build();
+                    return Optional.of(foundRequest);
+                }
+
+            }
+        }
+        return Optional.empty();
+    }
+
 
 }

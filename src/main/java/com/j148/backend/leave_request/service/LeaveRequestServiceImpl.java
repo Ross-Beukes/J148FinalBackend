@@ -81,7 +81,13 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception {
         if (contractor != null) {
-            return leaveRequestRepo.retrieveAllPendingContractorLeaveRequests(contractor);
+            AbstractMap<Long, LeaveRequest> returnedMap = leaveRequestRepo.retrieveAllContractorLeaveRequests(contractor);
+            if (returnedMap != null) {
+                return returnedMap;
+            } else {
+                throw new NullPointerException("Returned list of contractor leave requests is null");
+            }
+
         } else {
             throw new NullPointerException("Contractor cannot be null when retrieving all contractor leave requests");
         }
@@ -99,6 +105,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Override
     public LeaveRequest updateLeaveRequestDecision(LeaveRequest leaveRequest) throws Exception {
         if (leaveRequest != null) {
+            LeaveRequest foundRequest = retrieveLeaveRequestByID(leaveRequest);
+            if (foundRequest.getDecision() == Decision.APPROVED || foundRequest.getDecision() == Decision.DENIED) {
+                throw new IllegalStateException("Leave request has already been approved or denied, cannot change value");
+            }
             validateUpdateLeaveRequestDecision(leaveRequest);
             return leaveRequestRepo.updateLeaveRequestToApprovedOrDenied(leaveRequest).orElseThrow(()
                     -> new Exception("There was an error updating the leave request decision"));
@@ -128,6 +138,23 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             return leaveRequestRepo.retrieveAllLeaveRequestsByDecision(decision);
         } else {
             throw new NullPointerException("Decision cannot be null when retrieving all leave requests of a specific decision");
+        }
+    }
+
+    @Override
+    public LeaveRequest retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws Exception {
+        if (leaveRequest != null) {
+            validateLeaveRequestRetrievalByID(leaveRequest);
+            return leaveRequestRepo.retrieveLeaveRequestByID(leaveRequest).orElseThrow(()
+                    -> new Exception("There was an error in retrieving leave request by ID"));
+        } else {
+            throw new NullPointerException("Leave request parameter cannot be null when retrieving leave request by ID");
+        }
+    }
+
+    private void validateLeaveRequestRetrievalByID(LeaveRequest leaveRequest) {
+        if (leaveRequest.getLeaveRequestId() == 0) {
+            throw new NullPointerException("Cannot retrieve leave request without a valid ID, ID missing");
         }
     }
 
