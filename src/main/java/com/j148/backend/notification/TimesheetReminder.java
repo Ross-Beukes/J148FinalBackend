@@ -44,7 +44,7 @@ public class TimesheetReminder extends DBConfig {
      * @throws SQLException if there is an error retrieving user information from the database.
      * @throws MessagingException if there is an issue sending the email notification.
      * */
-    @Schedule(hour = "14", minute = "34", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "1", persistent = false)
     public void SevenDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
@@ -84,7 +84,7 @@ public class TimesheetReminder extends DBConfig {
      * @throws SQLException if there is an error retrieving user data from the database.
      * @throws MessagingException if an error occurs while sending email notification
      * */
-    @Schedule(hour = "13", minute = "52", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "3", persistent = false)
     public void ThreeDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
@@ -125,7 +125,7 @@ public class TimesheetReminder extends DBConfig {
      * @throws SQLException if there is an error retrieving user data from the database.
      * @throws MessagingException if an error occurs while sending email notifications
      **/
-    @Schedule(hour = "13", minute = "55", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "7", persistent = false)
     public void OneDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
@@ -165,7 +165,7 @@ public class TimesheetReminder extends DBConfig {
      * @throws SQLException if there is an error retrieving user or Admin data from the database.
      * @throws MessagingException if an error occurs while sending email notifications to Admins
      * */
-    @Schedule(hour = "14", minute = "28", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "8", persistent = false)
     public void AdminReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
