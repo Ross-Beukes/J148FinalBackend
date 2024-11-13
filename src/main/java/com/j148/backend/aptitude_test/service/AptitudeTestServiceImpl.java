@@ -28,7 +28,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
-        if (userRepo.retreiveUserFromUserID(user).isEmpty()){
+        if (userRepo.retrieveUserFromUserID(user).isEmpty()){
             throw new IllegalArgumentException("User not found");
         }
 
@@ -52,7 +52,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
-        if (userRepo.retreiveUserFromUserID(user).isEmpty()){
+        if (userRepo.retrieveUserFromUserID(user).isEmpty()){
             throw new IllegalArgumentException("User not found");
         }
 

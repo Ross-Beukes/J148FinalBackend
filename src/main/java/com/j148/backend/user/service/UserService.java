@@ -12,6 +12,20 @@ import java.sql.SQLException;
 public interface UserService {
 
     /**
+     * Generates a unique verification token.
+     *
+     * <p>
+     * The token is composed of the prefix "V" followed by a sequence of five
+     * random characters. Characters are selected randomly from the ASCII range
+     * between uppercase 'A' (65) and lowercase 'z' (122), which includes
+     * uppercase letters, lowercase letters, and some punctuation characters.
+     *
+     * @return A generated verification token in the format "Vxxxxx" where xxxxx
+     * are random characters.
+     */
+    String generateVerificationToken();
+
+    /**
      * Generates a unique admin token.
      *
      * <p>
@@ -20,7 +34,7 @@ public interface UserService {
      * between uppercase 'A' (65) and lowercase 'z' (122), which includes
      * uppercase letters, lowercase letters, and some punctuation characters.
      *
-     * @return A generated instructor token in the format "Axxxxx" where xxxxx
+     * @return A generated admin token in the format "Axxxxx" where xxxxx
      * are random characters.
      */
     String generateAdminToken();

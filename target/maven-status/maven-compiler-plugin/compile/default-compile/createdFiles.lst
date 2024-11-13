@@ -90,6 +90,7 @@ com\j148\backend\config\DBConfig.class
 com\j148\backend\contract\model\Contract$Decision.class
 com\j148\backend\aptitude_test\service\AptitudeTestServiceImpl.class
 com\j148\backend\contract_period\model\ContractPeriod.class
+com\j148\backend\user\EmailService$2.class
 com\j148\backend\contract_period\service\ContractPeriodService.class
 com\j148\backend\contractor_history\service\ContractorHistoryServiceImpl.class
 com\j148\backend\warning\model\Warning$WarningReason.class
