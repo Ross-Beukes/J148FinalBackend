@@ -27,7 +27,7 @@ public class ContractorPerformanceServiceImpl implements ContractorPerformanceSe
         }
 
         Optional<ContractorPerformance> contractorPerformanceOptional = contractorPerformanceRepo.getContractorPerformance(user);
-        ContractorPerformance contractorPerformance = contractorPerformanceOptional.orElseThrow(() -> new IllegalStateException("Contractor performance optional is empty"));
+        ContractorPerformance contractorPerformance = contractorPerformanceOptional.orElseThrow(() -> new IllegalStateException("Contractor performance optional is empty. Contractor not found"));
 
         validateContractorPerformance(contractorPerformance);
         return contractorPerformance;
@@ -70,7 +70,7 @@ public class ContractorPerformanceServiceImpl implements ContractorPerformanceSe
 
     @Override
     public List<ContractorPerformance> getAllContractors() throws ContractorPerformanceNotFoundException, UserNotFoundException, ContractorNotFoundException, SQLException {
-        List<ContractorPerformance> contractorPerformance = contractorPerformanceRepo.getAllContractorPerformance();
+        List<ContractorPerformance> contractorPerformance = contractorPerformanceRepo.getAllContractors();
 
         if (contractorPerformance.isEmpty()) {
             return List.of();//return empty list

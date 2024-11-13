@@ -30,7 +30,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 .build();
 
         String query = "SELECT "
-                + "user.user_id, user.name AS user_name, user.surname, user.email, "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race,"
                 + "contractor.contractor_id, contractor.status, contractor.contractor_period_id, "
                 + "contractor_period.contractor_period_id, contractor_period.name AS period_name, "
                 + "contractor_period.start_date, contractor_period.end_date, "
@@ -60,6 +60,9 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                                 .name(rs.getString("user_name"))
                                 .surname(rs.getString("surname"))
                                 .email(rs.getString("email"))
+                                .age(rs.getInt("age"))
+                                .race(rs.getString("race"))
+                                .gender(rs.getString("gender"))
                                 .build();
                         cp.setUser(dbUser);  // Set the singular user
                     }
@@ -132,7 +135,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
         //Might need to play around with this join statement(Consider which is the left table)
         //Might need to null check in the function
         String query = "SELECT "
-                + "user.user_id, user.name AS user_name, user.surname, user.email, "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race,"
                 + "contractor.contractor_id, contractor.user_id AS contractor_user_id, contractor.status, contractor.contractor_period_id, "
                 + "contractor_period.contractor_period_id, contractor_period.name AS period_name, "
                 + "contractor_period.start_date, contractor_period.end_date, "
@@ -164,6 +167,9 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                                 .name(rs.getString("user_name"))
                                 .surname(rs.getString("surname"))
                                 .email(rs.getString("email"))
+                                .age(rs.getInt("age"))
+                                .race(rs.getString("race"))
+                                .gender(rs.getString("gender"))
                                 .build();
                         cp.setUser(user);
 
@@ -668,36 +674,45 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
     @Override
     public List<ContractorPerformance> getAllContractors() throws SQLException {
         String query = "SELECT "
-                + "user.user_id, user.name AS user_name, user.surname, user.email, "
-                + "contractor.contractor_id, contractor.status"
+                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race, "
+                + "contractor.contractor_id, contractor.status "
                 + "FROM user "
-                + "JOIN contractor ON user.user_id = contractor.user_id ";
+                + "JOIN contractor ON user.user_id = contractor.user_id";
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            ContractorPerformance cp = new ContractorPerformance();
-            List<ContractorPerformance> cpList = new ArrayList<>();
+            List<ContractorPerformance> cpList = new ArrayList<>();  // Initialize list outside the loop
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
+                    // Create new ContractorPerformance object for each result
+                    ContractorPerformance cp = new ContractorPerformance();
+
+                    // Populate User
                     User user = User.builder()
                             .userId(rs.getLong("user_id"))
                             .name(rs.getString("user_name"))
                             .surname(rs.getString("surname"))
                             .email(rs.getString("email"))
+                            .age(rs.getInt("age"))
+                            .race(rs.getString("race"))
+                            .gender(rs.getString("gender"))
                             .build();
 
+                    // Populate Contractor
                     Contractor contractor = Contractor.builder()
                             .contractorId(rs.getLong("contractor_id"))
-                            .status(Contractor.Status.valueOf(rs.getString("status")))
+                            .status(Contractor.Status.valueOf(rs.getString("status"))) // Ensure "status" is a valid enum value
                             .build();
 
+                    // Set the user and contractor to the contractor performance object
                     cp.setUser(user);
                     cp.setContractor(contractor);
+
+                    // Add ContractorPerformance to the list
                     cpList.add(cp);
                 }
-                return cpList;
             }
-
+            return cpList;  // Return the list of contractor performances
         }
-
     }
+
 }

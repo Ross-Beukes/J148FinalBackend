@@ -104,7 +104,7 @@ public Response getFilteredContractorPerformance(@QueryParam("filters") String f
 
 @GET
 @Produces(APPLICATION_JSON)
-@Path("get-contrator-list")
+@Path("get-contractor-list")
 public Response getListOfContractors(){
     try{
         return Response.ok(this.contractorPerformanceService.getAllContractors()).build();
