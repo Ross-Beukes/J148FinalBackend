@@ -26,122 +26,131 @@ import java.util.logging.Logger;
 @Singleton
 public class TimesheetReminder extends DBConfig {
 
-    @Schedule(hour = "11", minute = "25", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "14", minute = "34", dayOfMonth = "13", persistent = false)
     public void SevenDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
             LocalDate today = LocalDate.now();
             List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
             StringBuilder greetings = new StringBuilder("Dear ");
-            StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
-    
-            
+            StringBuilder sb = new StringBuilder();
+            sb.append("We hope you are doing well!").append("\n")
+                    .append("We have noticed that you have not uploaded your timesheet for last month. ")
+                    .append("Please do so before the 8th of " + LocalDate.now().getMonth() + ".").append("\n\n")
+                    .append("Kind regards").append("\n")
+                    .append("The HR Department");
+
             for (User user : remindUsers) {
                 StringBuilder msg = new StringBuilder();
-                msg.append(user.getName()).append(" ");
-                msg.append(user.getSurname()).append(" ");
+                msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
                 System.out.println("Hello world");
-                
+
                 EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-                wait(1500);
+
             }
         } catch (SQLException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MessagingException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    @Schedule(hour = "11", minute = "26", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "13", minute = "52", dayOfMonth = "13", persistent = false)
     public void ThreeDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
             LocalDate today = LocalDate.now();
             List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-            StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
-            
+            StringBuilder greetings = new StringBuilder("Dear ");
+            StringBuilder sb = new StringBuilder();
+            sb.append("We hope you are doing well!").append("\n")
+                    .append("We have noticed that you have not uploaded your timesheet for last month.").append("\n")
+                    .append("Please do so before the 8th of " + LocalDate.now().getMonth() + ".").append("\n\n")
+                    .append("Kind regards").append("\n")
+                    .append("The HR Department");
+
             for (User user : remindUsers) {
                 StringBuilder msg = new StringBuilder();
-                msg.append(user.getName()).append(" ");
-                msg.append(user.getSurname()).append(" ");
+                msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
-                
-                System.out.println("Hello world 1");
+                System.out.println("Hello world");
+
                 EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-                wait(1500);
+
             }
         } catch (SQLException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MessagingException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    @Schedule(hour = "11", minute = "44", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "13", minute = "55", dayOfMonth = "13", persistent = false)
     public void OneDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
             LocalDate today = LocalDate.now();
             List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-            StringBuilder sb = new StringBuilder("You need to upload your timesheet before the end of the 7th of " + LocalDate.now().getMonth());
-            
+            StringBuilder greetings = new StringBuilder("Dear ");
+            StringBuilder sb = new StringBuilder();
+            sb.append("We hope you are doing well!").append("\n")
+                    .append("We have noticed that you have not uploaded your timesheet for last month.").append("\n")
+                    .append("Please do so before the 8th of " + LocalDate.now().getMonth() + ".").append("\n\n")
+                    .append("Kind regards").append("\n")
+                    .append("The HR Department");
+
             for (User user : remindUsers) {
-                System.out.println(user);
                 StringBuilder msg = new StringBuilder();
-                msg.append(user.getName()).append(" ");
-                msg.append(user.getSurname()).append(" ");
+                msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
-                System.out.println(user.getEmail());
+                System.out.println("Hello world");
+
                 EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-                
+
             }
         } catch (SQLException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MessagingException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
     }
 
-    @Schedule(hour = "11", minute = "30", dayOfMonth = "13", persistent = false)
+    @Schedule(hour = "14", minute = "28", dayOfMonth = "13", persistent = false)
     public void AdminReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
             LocalDate today = LocalDate.now();
             List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
             List<User> emailAdmins = getAdmins();
+
             StringBuilder sb = new StringBuilder();
             int count = 0;
-            
+
             for (User user : remindUsers) {
                 count++;
                 sb.append("Contractor " + count + "\n")
-                        .append("name: ")
-                        .append(user.getName())
-                        .append(" ")
-                        .append("surname: ")
-                        .append(user.getSurname())
-                        .append("\n")
-                        .append("email: ")
-                        .append(user.getEmail())
-                        .append("\n");
-                
+                        .append("Name: ")
+                        .append(user.getName()).append("\n")
+                        .append("Surname: ")
+                        .append(user.getSurname()).append("\n")
+                        .append("Email: ")
+                        .append(user.getEmail()).append("\n\n");
+                        
+
             }
-            
+
             for (User admin : emailAdmins) {
-                System.out.println("Hello world admin");
-                EmailSender.sendNotification(admin.getEmail(), sb.toString(), "Timesheet not Uploaded");
-                wait(1500);
+                StringBuilder email = new StringBuilder();
+                email.append("Dear ").append(admin.getName()).append(" ").append(admin.getSurname()).append("\n")
+                        .append("Please see the list of contractors who have not uploaded timesheets.").append("\n\n")
+                        .append(sb).append("\n")
+                        .append("System generated response");
+                EmailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
             }
         } catch (SQLException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MessagingException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (InterruptedException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -186,17 +195,19 @@ public class TimesheetReminder extends DBConfig {
     }
 
     List<User> getAdmins() throws SQLException {
-        String query = "SELECT * FROM user WHERE user.role = ADMIN";
+        String query = "SELECT * FROM user WHERE user.role = 'ADMIN'";
         List<User> admins = new ArrayList<>();
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
-                User admin = User.builder()
-                        .name(rs.getString("name"))
-                        .surname(rs.getString("surname"))
-                        .email(rs.getString("email"))
-                        .build();
+                while (rs.next()) {
+                    User admin = User.builder()
+                            .name(rs.getString("name"))
+                            .surname(rs.getString("surname"))
+                            .email(rs.getString("email"))
+                            .build();
 
-                admins.add(admin);
+                    admins.add(admin);
+                }
             }
             return admins;
         }
