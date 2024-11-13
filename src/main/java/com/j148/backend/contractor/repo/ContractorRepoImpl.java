@@ -108,7 +108,6 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
                 ContractPeriod contractPeriod = ContractPeriod.builder().
                         contractPeriodId(rs.getLong("contract_period_id")).build();
 
-
                 Contractor contractor = Contractor.builder()
                         .contractorId(rs.getLong("contractor_id"))
                         .status(Contractor.Status.valueOf(rs.getString("status")))
@@ -124,30 +123,28 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
     @Override
     public List<Contractor> findCurrentContractor(ContractPeriod contractPeriod) throws SQLException {
-        String query = "SELECT * FROM contractor WHERE contract_period_id = ?";
+        String query = "SELECT * FROM contractor WHERE contractor_period_id = ?";
         List<Contractor> currentContractors = new ArrayList<>();
-        
+        List<Contractor> contractors = new ArrayList<>();
+
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            User user = new User();
-            ContractPeriod currentContractPeriod = new ContractPeriod();
-            
+            ps.setLong(1, contractPeriod.getContractPeriodId());
             try (ResultSet rs = ps.executeQuery()) {
-                user.setUserId(rs.getLong("user_id"));
-                currentContractPeriod.setContractPeriodId(rs.getLong("contractor_period_id"));
-                
-                Contractor contractor = Contractor.builder()
-                        .contractorId(rs.getLong("contractor_id"))
-                        .status(Contractor.Status.valueOf(rs.getString("status")))
-                        .user(user)
-                        .contractPeriod(currentContractPeriod)
-                        .build();
-                currentContractors.add(contractor);
+                while (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getLong("user_id"));
+
+                    Contractor contractor = Contractor.builder()
+                            .contractorId(rs.getLong("contractor_id"))
+                            .status(Contractor.Status.valueOf(rs.getString("status")))
+                            .user(user)
+                            .contractPeriod(contractPeriod)
+                            .build();
+
+                    contractors.add(contractor);
+                }
             }
-            
         }
-        return currentContractors;
+        return contractors;
     }
 }
-
-
-

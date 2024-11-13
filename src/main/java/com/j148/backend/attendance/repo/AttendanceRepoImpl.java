@@ -1,9 +1,10 @@
 package com.j148.backend.attendance.repo;
 
 import com.j148.backend.attendance.model.Attendance;
+import com.j148.backend.attendance.model.Attendance.Register;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
-import com.j148.backend.attendance.model.Attendance.Register;
+
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                 con.commit();
                 return Optional.of(attendance);
 
-            }else {
+            } else {
                 con.rollback(save);
                 return Optional.empty();
             }
@@ -186,12 +187,10 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
 
     }
 
-
-
     @Override
-    public List<Attendance> todaysAttenance() throws SQLException {
-        String query = "SELECT * FROM attendance WHERE time_in = CURDATE()";
-        List<Attendance> todaysAttendances = new ArrayList<>();
+    public List<Attendance> todayAttendance() throws SQLException {
+        String query = "SELECT * FROM attendance WHERE DATE(time_in) = CURDATE()";
+        List<Attendance> todayAttendances = new ArrayList<>();
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -201,13 +200,15 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                             attendanceId(rs.getLong("attendance_id")).
                             contractor(contractor).
                             timeIn(rs.getTimestamp("time_in").toLocalDateTime()).
-                            timeOut(rs.getTimestamp("time_out").toLocalDateTime()).
                             register(Attendance.Register.valueOf(rs.getString("register"))).
                             build();
-                    todaysAttendances.add(attendance);
+                    if (rs.getTimestamp("time_out") != null) {
+                        attendance.setTimeOut(rs.getTimestamp("time_out").toLocalDateTime());
+                    }
+                    todayAttendances.add(attendance);
                 }
             }
         }
-        return todaysAttendances;
+        return todayAttendances;
     }
 }

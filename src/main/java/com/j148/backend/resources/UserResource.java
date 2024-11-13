@@ -6,7 +6,6 @@ import com.j148.backend.user.service.UserServiceImpl;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
-
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.logging.Level;
@@ -14,8 +13,8 @@ import java.util.logging.Logger;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Controller for User management
- * Includes end point tests for all user management
+ * Controller for User management Includes end point tests for all user
+ * management
  */
 @Path("user")
 public class UserResource {
@@ -24,11 +23,13 @@ public class UserResource {
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
     @GET
+    @Path("ping")
     public Response pingUserResource() {
         return Response.ok("Successfully pinged User Resource").build();
     }
 
-
+    @POST
+    @Consumes(APPLICATION_JSON)
     @Path("register-applicant")
     public Response registerApplicant(User user) {
         try {
@@ -161,11 +162,12 @@ public class UserResource {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to register user", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-}
-}
+        }
+    }
+
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("login")
+    @Path("/login")
     public Response login(User user) {
         try {
             return Response.ok(this.userService.LogIn(user)).build();
@@ -177,6 +179,5 @@ public class UserResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
-    
-    
+
 }

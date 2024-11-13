@@ -12,9 +12,10 @@ import com.j148.backend.hearing.service.HearingServiceImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Singleton;
 
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Objects;
 /**
  * @author glenl
  */
+@Singleton
 public class AttendanceServiceImpl implements AttendanceService {
 
     private AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
@@ -37,7 +39,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         if (attendance != null && attendance.getContractor().getContractorId() != null) {
             Attendance foundAttendance;
             foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).orElse(null);
-            
+
             if (foundAttendance == null) {
                 foundAttendance = new Attendance();
             }
@@ -105,9 +107,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public List<Attendance> contractorsNotCheckedIn(List<Contractor> contractors) throws SQLException, Exception {
-        List<Attendance> todayAttendances = attendanceRepo.todaysAttenance();
+        List<Attendance> todayAttendances = attendanceRepo.todayAttendance();
         List<Attendance> missingAttendances = new ArrayList<>();
-
         for (Attendance todayAttendance : todayAttendances) {
             for (int j = 0; j < contractors.size(); j++) {
                 if (!(contractors.get(j).getStatus().equals(Contractor.Status.ACTIVE))) {
@@ -130,4 +131,13 @@ public class AttendanceServiceImpl implements AttendanceService {
         return missingAttendances;
     }
 
+    @Schedule(dayOfWeek = "Mon-Fri", hour = "10", minute = "45", persistent = false)
+    public void checkContractorsAttendance(){
+        System.out.println("Hello World");
+        try {
+        createAbsentContractors();
+        } catch (Exception e) {
+            
+        }
+    }
 }
