@@ -4,8 +4,8 @@ import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
@@ -30,8 +30,8 @@ public class ContractPeriodResource {
      * @param contractPeriod New contract period details.
      * @return HTTP Response indicating the result of the save operation.
      */
-    @PUT
-    @Path("save")
+    @POST
+    @Path("save-contract-period")
     @Consumes(APPLICATION_JSON)
     public Response saveContractPeriod(ContractPeriod contractPeriod) {
         try {
@@ -58,8 +58,8 @@ public class ContractPeriodResource {
      * @param contractPeriod Updated contract period details.
      * @return HTTP Response indicating the result of the update operation.
      */
-    @PUT
-    @Path("update")
+    @POST
+    @Path("update-contract-period")
     @Consumes(APPLICATION_JSON)
     public Response updateContractPeriod(ContractPeriod contractPeriod) {
         try {
@@ -89,7 +89,7 @@ public class ContractPeriodResource {
      * @return HTTP Response containing the found contract period, or an error message.
      */
     @GET
-    @Path("find-by-name")
+    @Path("find-period-by-name")
     @Produces(APPLICATION_JSON)
     public Response findContractPeriodByName(@QueryParam("name") String name) {
         try {
@@ -114,7 +114,7 @@ public class ContractPeriodResource {
      * @return HTTP Response containing the found contract period, or an error message.
      */
     @GET
-    @Path("find-by-id")
+    @Path("find-period-by-id")
     @Produces(APPLICATION_JSON)
     public Response findContractPeriodById(ContractPeriod contractPeriod) {
         try {
@@ -137,7 +137,7 @@ public class ContractPeriodResource {
      * @return HTTP Response containing the current contract period or error message.
      */
     @GET
-    @Path("current")
+    @Path("current-contract-period")
     @Produces(APPLICATION_JSON)
     public Response getCurrentContractPeriod() {
         try {
@@ -155,7 +155,7 @@ public class ContractPeriodResource {
      * @return HTTP Response containing the next contract period or error message.
      */
     @GET
-    @Path("next")
+    @Path("next-contract-period")
     @Produces(APPLICATION_JSON)
     public Response getNextContractPeriod() {
         try {
@@ -165,53 +165,6 @@ public class ContractPeriodResource {
             LOG.log(Level.SEVERE, "Error retrieving next contract period", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving next contract period").build();
-        }
-    }
-
-    /**
-     * Endpoint to retrieve the enrollment averages for a specific year.
-     * @param year The year for which the average enrollment is calculated.
-     * @return HTTP Response containing the enrollment average or error message.
-     */
-    @GET
-    @Path("enrollment-averages")
-    @Produces(APPLICATION_JSON)
-    public Response getEnrollmentAveragesForYear(int year) {
-        try {
-            double average = contractPeriodService.enrollmentAveragesForYear(year);
-            return Response.ok(average).build();
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "SQL error retrieving enrollment average", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving enrollment averages for year " + year).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unexpected error", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred while retrieving enrollment averages").build();
-        }
-    }
-
-    /**
-     * Endpoint to retrieve the enrollment averages for a range of years.
-     * @param startYear The start year of the range.
-     * @param endYear The end year of the range.
-     * @return HTTP Response containing the enrollment average or error message.
-     */
-    @GET
-    @Path("enrollment-averages-range")
-    @Produces(APPLICATION_JSON)
-    public Response getEnrollmentAverageForPeriodOfYears(int startYear, int endYear) {
-        try {
-            double average = contractPeriodService.enrollmentAverageForPeriodOfYears(startYear, endYear);
-            return Response.ok(average).build();
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "SQL error retrieving enrollment average for year range", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving enrollment averages for the period " + startYear + " to " + endYear).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unexpected error", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Unexpected error occurred while retrieving enrollment averages for the period").build();
         }
     }
 }
