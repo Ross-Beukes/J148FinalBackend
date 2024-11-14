@@ -167,7 +167,7 @@ public class UserResource {
 
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("/login")
+    @Path("login")
     public Response login(User user) {
         try {
             return Response.ok(this.userService.LogIn(user)).build();

@@ -160,7 +160,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     }
 
     public Optional<Attendance> retreiveAttendanceByContractor(Attendance attendance) throws SQLException {
-        String query = "SELECT * FROM attendance WHERE contractor_id = ? AND time_in = CURDATE()";
+        String query = "SELECT * FROM attendance WHERE contractor_id = ? AND DATE(time_in = CURDATE()";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, attendance.getContractor().getContractorId());
 

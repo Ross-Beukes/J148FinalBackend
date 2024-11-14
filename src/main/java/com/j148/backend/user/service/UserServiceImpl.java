@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User promoteUser(User user) throws SQLException, Exception {
-        if (user != null && user.getIdNumber() != null) {
+    public User promoteUser(User user) throws SQLException, Exception { //promote Applicant to Contractor
+        if (user != null && user.getEmail() != null) {
             user.setRole(User.Role.CONTRACTOR);
             return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("Applicant was not promoted to Contractor"));
         } else {
@@ -47,12 +47,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public User LogIn(User user) throws SQLException, Exception {
         if (user != null) {
-            System.out.println(user);
             if (user.getEmail() != null && user.getPassword() != null) {
                 String email = user.getEmail();
                 String password = user.getPassword();
                 User foundUser = userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User email not recognised"));
-                System.out.println(foundUser);
                 if (email.equalsIgnoreCase(foundUser.getEmail()) && password.equals(foundUser.getPassword())) {
                     return foundUser;
                 } else {
@@ -78,6 +76,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User updateUser(User user) throws Exception {
         if (user != null){
+            System.out.println(user);
             return userRepo.updateUser(user).orElseThrow(() -> new Exception("Unable to update user."));
         }else {
             throw new IllegalArgumentException("ID number cannot be null.");
