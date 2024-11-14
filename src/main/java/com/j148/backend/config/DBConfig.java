@@ -1,13 +1,12 @@
 package com.j148.backend.config;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
-@Slf4j
+
 public abstract class DBConfig {
     private static BasicDataSource basicDataSource;
 
