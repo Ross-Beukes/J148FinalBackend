@@ -80,27 +80,27 @@ public Response getAllContractorPerformance(){
     }
 }
 
-@GET
-@Produces(APPLICATION_JSON)
-@Path("get-all-contractor-performance")
-public Response getFilteredContractorPerformance(@QueryParam("filters") String filters){
-    try{
-        List<ContractorPerformance> cp = this.contractorPerformanceService.getAllContractorPerformance();
-        return Response.ok(this.contractorPerformanceService.filterContractorPerformance(filters, cp)).build();
-    }catch(SQLException e){
-        LOG.log(Level.SEVERE, "There was an error retrieving the list from the database", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
-    }catch(ContractorPerformanceNotFoundException e){
-        LOG.log(Level.SEVERE, "ContractorPerformance was null", e);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();   
-    }catch(UserNotFoundException e){
-        LOG.log(Level.SEVERE, "User is null or userID is null", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
-    }catch(ContractorNotFoundException e){
-        LOG.log(Level.SEVERE, "Contractor is null or contractorID is null", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();  
-    }
-}
+//@GET
+//@Produces(APPLICATION_JSON)
+//@Path("get-all-contractor-performance")
+//public Response getFilteredContractorPerformance(@QueryParam("filters") String filters){
+//    try{
+//        List<ContractorPerformance> cp = this.contractorPerformanceService.getAllContractorPerformance();
+//        return Response.ok(this.contractorPerformanceService.filterContractorPerformance(filters, cp)).build();
+//    }catch(SQLException e){
+//        LOG.log(Level.SEVERE, "There was an error retrieving the list from the database", e);
+//        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+//    }catch(ContractorPerformanceNotFoundException e){
+//        LOG.log(Level.SEVERE, "ContractorPerformance was null", e);
+//            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+//    }catch(UserNotFoundException e){
+//        LOG.log(Level.SEVERE, "User is null or userID is null", e);
+//        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+//    }catch(ContractorNotFoundException e){
+//        LOG.log(Level.SEVERE, "Contractor is null or contractorID is null", e);
+//        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+//    }
+//}
 
 @GET
 @Produces(APPLICATION_JSON)
