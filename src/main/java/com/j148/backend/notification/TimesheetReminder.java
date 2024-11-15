@@ -6,7 +6,7 @@ package com.j148.backend.notification;
 
 /**
  *
- * @author arshr
+ * @author arshr and mulalo
  */
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 
 /**
  * TimeSheetReminder is scheduled service class for sending reminder emails to contractors
- * and notifying admins regarding outstanding timsheet submissions.
+ * and notifying admins regarding outstanding timesheet submissions.
  *
  * This class uses scheduled methods annotated with @Scheduled to automatically run at specific times,
  * sending reminders 7 days, 3 days and 1 day before the timesheet deadlines, as well as  notifying admins
