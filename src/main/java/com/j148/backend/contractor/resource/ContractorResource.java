@@ -3,7 +3,10 @@ package com.j148.backend.contractor.resource;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.sql.SQLException;
@@ -26,12 +29,11 @@ public class ContractorResource {
      * @param contractor   Updated contractor details.
      * @return HTTP Response indicating the result of the update operation.
      */
-    @POST
+    @PUT
     @Path("update")
     @Consumes(APPLICATION_JSON)
-    public Response updateContractor(@PathParam("contractorId") long contractorId, Contractor contractor) {
+    public Response updateContractor(Contractor contractor) {
         try {
-            contractor.setContractorId(contractorId);
 
             Contractor updatedContractor = contractorService.updateContractor(contractor);
             if (updatedContractor != null) {
@@ -49,15 +51,16 @@ public class ContractorResource {
     } /**
      * Updates the status of an existing contractor in the database.
      *
+     * @param contractorId ID of the contractor to update.
      * @param contractor   Contractor object containing the updated status.
      * @return HTTP Response indicating the result of the status update operation.
      */
-    @POST
-    @Path("change-status")
+    @PUT
+    @Path("changeStatus/{contractorId}")
     @Consumes(APPLICATION_JSON)
-    public Response changeContractorStatus( Contractor contractor) {
+    public Response changeContractorStatus(@PathParam("contractorId") long contractorId, Contractor contractor) {
         try {
-            System.out.println(contractor);
+            contractor.setContractorId(contractorId);
             Contractor updatedContractor = contractorService.changeContractorStatus(contractor);
             if (updatedContractor != null) {
                 return Response.ok(updatedContractor).build();
@@ -71,14 +74,6 @@ public class ContractorResource {
             LOG.log(Level.SEVERE, "An unexpected error occurred while changing contractor status", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
         }
-        /**
-         * ContractorResource handles HTTP requests related to contractor operations.
-         * <p>
-         * This class provides endpoints for updating contractor information, specifically
-         * for changing the contractor's status. It interacts with the ContractorService
-         * to perform these operations and returns HTTP responses indicating success or failure.
-         * </p>
-         */
     }
 }
 
