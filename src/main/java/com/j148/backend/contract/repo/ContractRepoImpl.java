@@ -20,8 +20,6 @@ import java.util.logging.Logger;
 
 public class ContractRepoImpl extends DBConfig  implements ContractRepo{
     
-    private final ContractPeriodRepoImpl cpri = new ContractPeriodRepoImpl();
-    private final UserRepoImpl uri = new UserRepoImpl();
     private static final Logger LOG = Logger.getLogger(ContractRepoImpl.class.getName());
     
 
@@ -63,8 +61,8 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
             
         
         }catch(Exception e){
-            LOG.log(Level.SEVERE, "", e);
-         System.out.println("Error while creating a new contract");
+            LOG.log(Level.SEVERE, "\"Error while creating a new contract\"", e);
+
         }
             
         }
@@ -75,37 +73,37 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
 
     @Override
     public Optional<Contract> findContract(long contractId) throws SQLException{
-//         String sql = "SELECT * FROM contract WHERE contract_id = ? ";
-//
-//         try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
-//
-//             ps.setLong(1,contractId);
-//
-//             try(ResultSet rs = ps.executeQuery()){
-//               if(rs.next()){
-//                 ContractPeriod c = cpri.findContract(rs.getLong(2)).get() ;
-//                 User user = new User();
-//                 user.setUserId(rs.getLong(3));
-//                 user = uri.retreiveUserFromUserID(user).get();
-//
-//                 Contract contract = Contract.builder().
-//                         contractId(contractId)
-//                         .contractPeriod(c)
-//                         .offerDate(rs.getDate(4).toLocalDate())
-//                         .decisionDate(rs.getDate(5).toLocalDate())
-//                         .expirationDate(rs.getDate(6).toLocalDate())
-//                         .user(user)
-//                         .decision(Contract.Decision.valueOf(rs.getString(7)))
-//                         .isDeleted(rs.getBoolean(8))
-//                         .build();
-//
-//                 return Optional.of(contract);
-//               }
-//             }
-//         }
-//
-//        return Optional.empty();
-        return null;
+        String sql = """
+                SELECT c.*, cp.*, u.*
+                FROM contract c  
+                JOIN user u ON c.user_id = u.user_id 
+                JOIN contractor_period cp ON c.contractor_period_id = cp.contractor_period_id
+                WHERE c.contract = ?
+                """;
+
+       try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
+
+             ps.setLong(1,contractId);
+
+             try(ResultSet rs = ps.executeQuery()){
+               if(rs.next()){
+                
+                
+                 Contract contract = Contract.builder().
+                         contractId(contractId)
+                         .contractPeriod(mapContractPeriodFromResultSet(rs))
+                         .offerDate(rs.getDate(4).toLocalDate())
+                         .decisionDate(rs.getDate(5).toLocalDate())
+                         .expirationDate(rs.getDate(6).toLocalDate())
+                         .user(mapUserFromResultSet(rs))
+                         .decision(Contract.Decision.valueOf(rs.getString(7)))
+                         .isDeleted(rs.getBoolean(8))
+                         .build();
+
+                 return Optional.of(contract);
+               }             }
+      }
+       return Optional.empty();
     }
 
     @Override
@@ -135,7 +133,7 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
             }
           
           }catch(Exception e){
-              System.out.println("Error while updating a contract, Try again later");
+               LOG.log(Level.SEVERE, "Error while updating a contract, Try again later", e);
           }
             
             
@@ -143,5 +141,28 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
         return Optional.empty();
     }
 
+        private ContractPeriod mapContractPeriodFromResultSet(ResultSet rs) throws SQLException {
+        return ContractPeriod.builder()
+                .contractPeriodId(rs.getLong("contractor_period_id"))
+                .name(rs.getString("name"))
+                .startDate(rs.getDate("start_date").toLocalDate())
+                .endDate(rs.getDate("end_date").toLocalDate())
+                .build();
+    }
+
+    private User mapUserFromResultSet(ResultSet rs) throws SQLException {
+        return User.builder()
+                .userId(rs.getLong("user_id"))
+                .name(rs.getString("name"))
+                .surname(rs.getString("surname"))
+                .email(rs.getString("email"))
+                .gender(rs.getString("gender"))
+                .idNumber(rs.getString("id_number"))
+                .role(User.Role.valueOf(rs.getString("role")))
+                .race(rs.getString("race"))
+                .location(rs.getString("location"))
+                .age(rs.getInt("age"))
+                .build();
+    }
     
 }

@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author arshr
  */
-public class ContractorNotFoundException extends Exception {
+public class ContractorNotFoundException extends RuntimeException {
 
     public ContractorNotFoundException() {
     }
