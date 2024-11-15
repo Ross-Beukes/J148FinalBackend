@@ -160,7 +160,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     }
 
     public Optional<Attendance> retreiveAttendanceByContractor(Attendance attendance) throws SQLException {
-        String query = "SELECT * FROM attendance WHERE contractor_id = ? AND DATE(time_in = CURDATE()";
+        String query = "SELECT * FROM attendance WHERE contractor_id = ? AND DATE(time_in) = CURDATE()";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, attendance.getContractor().getContractorId());
 
@@ -169,7 +169,11 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
                     Long attendanceID = rs.getLong("attendance_id");
                     Contractor contractor = Contractor.builder().contractorId(rs.getLong("contractor_id")).build();
                     LocalDateTime time_in = rs.getTimestamp("time_in").toLocalDateTime();
-                    LocalDateTime time_out = rs.getTimestamp("time_out").toLocalDateTime();
+                    LocalDateTime time_out = null;
+                    if (rs.getTimestamp("time_out") != null) {
+                         time_out = rs.getTimestamp("time_out").toLocalDateTime();
+                    }
+                    
                     Register register = Register.valueOf(rs.getString("register"));
                     Attendance foundAttendance = Attendance.builder().
                             attendanceId(attendanceID).

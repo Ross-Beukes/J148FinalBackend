@@ -41,9 +41,6 @@ public class AttendanceServiceImpl implements AttendanceService {
             foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).orElse(null);
 
             if (foundAttendance == null) {
-                foundAttendance = new Attendance();
-            }
-            if (foundAttendance != null) {
                 attendance.setTimeIn(LocalDateTime.now());
                 LocalTime targetTime = LocalTime.of(8, 30);
                 LocalTime currentTime = LocalTime.now();
@@ -68,7 +65,14 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public Attendance checkOut(Attendance attendance) throws SQLException, Exception { //check out
-        Attendance foundAttendance = attendanceRepo.getAttendanceByID(attendance.getAttendanceId()).orElseThrow(() -> new Exception("No attendance record found"));
+        Attendance foundAttendance;
+        if (attendance.getAttendanceId() != null) {
+            foundAttendance = attendanceRepo.getAttendanceByID(attendance.getAttendanceId()).orElse(null);
+        } else if (attendance.getContractor().getContractorId() != null) {
+            foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).orElse(null);
+        } else {
+            foundAttendance = null;
+        }
         if (foundAttendance != null) {
             Long attendanceId = foundAttendance.getAttendanceId();
             LocalDateTime timeIn = foundAttendance.getTimeIn();
@@ -131,13 +135,12 @@ public class AttendanceServiceImpl implements AttendanceService {
         return missingAttendances;
     }
 
-    @Schedule(dayOfWeek = "Mon-Fri", hour = "10", minute = "45", persistent = false)
-    public void checkContractorsAttendance(){
-        System.out.println("Hello World");
+    @Schedule(dayOfWeek = "Mon-Fri", hour = "15", minute = "45", persistent = false)
+    public void checkContractorsAttendance() {
         try {
-        createAbsentContractors();
+            createAbsentContractors();
         } catch (Exception e) {
-            
+
         }
     }
 }
