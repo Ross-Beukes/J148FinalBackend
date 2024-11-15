@@ -34,7 +34,6 @@ public class UserResource {
     public Response registerApplicant(User user) {
         try {
             user.setRole(User.Role.APPLICANT);
-            System.out.println(user.toString());
             return Response.ok(this.userService.registerUser(user)).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");

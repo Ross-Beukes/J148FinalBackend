@@ -21,7 +21,7 @@ public class HearingServiceImpl implements HearingService {
     private final WarningRepo warningRepo = new WarningRepoImpl();
 
     @Override
-    public LocalDateTime scheduleHearing() throws Exception{
+    public LocalDateTime scheduleHearing() throws Exception {
         // get one week to the current date and time
         LocalDateTime hearingDate = LocalDateTime.now().plusWeeks(1);
 
@@ -29,9 +29,9 @@ public class HearingServiceImpl implements HearingService {
     }
 
     @Override
-    public Hearing IssueHearing(Contractor contractor) throws Exception{
+    public Hearing IssueHearing(Contractor contractor) throws Exception {
 
-        if(contractor != null){
+        if (contractor != null) {
             int hearingCount = 0;
             long warningCount = 0l;
             HearingRepoImpl hri = new HearingRepoImpl();
@@ -44,15 +44,14 @@ public class HearingServiceImpl implements HearingService {
             }
             //Obtain count based on a Contractors amount of active warnings
             try {
-                warningCount = warningRepo.countActiveWarningsByContractor(contractor).get() ;
+                warningCount = warningRepo.countActiveWarningsByContractor(contractor).get();
             } catch (SQLException ex) {
                 Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing warning history", ex);
             }
 
+            if (warningCount % 3 == 0 && warningCount > 0) {
 
-            if(warningCount % 3 == 0 && warningCount > 0){
-
-                if(warningCount * 3L != hearingCount){
+                if (warningCount * 3L != hearingCount) {
                     Hearing hearing = Hearing.builder()
                             .scheduleDate(scheduleHearing())
                             .hearingsId(0L)
@@ -100,6 +99,6 @@ public class HearingServiceImpl implements HearingService {
 
         return hearingRepo.updateHearing(hearing)
                 .orElseThrow(() -> new Exception("Failed to reschedule hearing"));
-
+        
     }
 }
