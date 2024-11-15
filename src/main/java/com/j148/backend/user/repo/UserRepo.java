@@ -118,4 +118,8 @@ public interface UserRepo {
      * executing the SQL statement.
      */
     Optional<User> retreiveUserFromUserID(User user) throws SQLException;
+    
+    List<User> retreiveAllUsers() throws SQLException;
+    
+    Optional<User> updateAge(User user) throws SQLException;
 }

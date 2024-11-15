@@ -3,11 +3,20 @@ package com.j148.backend.user.service;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Singleton;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-public class UserServiceImpl implements UserService{
+@Singleton
+public class UserServiceImpl implements UserService {
 
     private UserRepo userRepo = new UserRepoImpl();
     private Random random = new Random();
@@ -66,47 +75,87 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User registerUser(User user) throws Exception {
-        if(user != null){
+        if (user != null) {
             return this.userRepo.register(user).orElseThrow(() -> new Exception("Unable to insert user into the database."));
-        }else{
+        } else {
             throw new IllegalArgumentException("User cannot be null");
         }
     }
 
     @Override
     public User updateUser(User user) throws Exception {
-        if (user != null){
+        if (user != null) {
             System.out.println(user);
             return userRepo.updateUser(user).orElseThrow(() -> new Exception("Unable to update user."));
-        }else {
+        } else {
             throw new IllegalArgumentException("ID number cannot be null.");
         }
     }
 
     @Override
     public User findUserByEmail(User user) throws Exception {
-        if (user.getEmail() != null){
+        if (user.getEmail() != null) {
             return userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User with this email address was not found."));
         } else {
-            throw  new IllegalArgumentException("Email cannot be null.");
+            throw new IllegalArgumentException("Email cannot be null.");
         }
     }
 
     @Override
     public User promoteApplicant(User user) throws Exception {
-        if (user != null){
+        if (user != null) {
             return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("User not found."));
         } else {
-            throw  new IllegalArgumentException("User cannot be null.");
+            throw new IllegalArgumentException("User cannot be null.");
         }
     }
 
     @Override
     public User findUserById(User user) throws Exception {
-        if (user != null && user.getUserId() != null){
+        if (user != null && user.getUserId() != null) {
             return userRepo.retreiveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
         } else {
-            throw  new IllegalArgumentException("User id cannot be null.");
+            throw new IllegalArgumentException("User id cannot be null.");
+        }
+    }
+
+    @Schedule(dayOfWeek = "Mon-Sun", hour = "13", minute = "48", persistent = false)
+    public void updateAge() throws Exception {
+        List<User> allUsers;
+        allUsers = userRepo.retreiveAllUsers();
+        for (int i = 0; i < allUsers.size(); i++) {
+            String birth = allUsers.get(i).getIdNumber().substring(0, 6);
+            String year = birth.substring(0, 2);
+            int yearBorn = 2000 + Integer.parseInt(year);
+            if (yearBorn < LocalDateTime.now().getYear()) {
+                year = "20" + year;
+            } else {
+                year = "19" + year;
+            }
+            String month = birth.substring(2, 4);
+            String day = birth.substring(4, 6);
+            String birthday = year + "-" + month + "-" + day;
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate date = LocalDate.parse(birthday, formatter);
+
+            // Get the MonthDay of the input date
+            MonthDay inputMonthDay = MonthDay.from(date);
+
+            // Get today's MonthDay
+            MonthDay todayMonthDay = MonthDay.from(LocalDate.now());
+
+            // Compare MonthDay values (ignoring the year)
+            if (inputMonthDay.equals(todayMonthDay)) {
+                if (2024 - Integer.parseInt(year) != allUsers.get(i).getAge()) {
+                    User user = allUsers.get(i);
+                   user.setAge(LocalDate.now().getYear() - Integer.parseInt(year));
+                   System.out.println(user);
+                   userRepo.updateAge(user).orElse(null);
+                    
+                }
+            } else {
+                System.out.println("The date is not the same day and month as today.");
+            }
         }
     }
 }

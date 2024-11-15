@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -164,6 +165,53 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     return Optional.of(foundUser);
 
                 }
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<User> retreiveAllUsers() throws SQLException {
+        List<User> allUsers = new ArrayList<>();
+        String query = "SELECT * FROM user";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+
+                user.setUserId(rs.getLong("user_id"));
+                user.setName(rs.getString("name"));
+                user.setSurname(rs.getString("surname"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setGender(rs.getString("gender"));
+                user.setIdNumber(rs.getString("id_number"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setRace(rs.getString("race"));
+                user.setLocation(rs.getString("location"));
+                user.setAge(rs.getInt("age"));
+
+                allUsers.add(user);
+            }
+        }
+        return allUsers;
+    }
+
+    @Override
+    public Optional<User> updateAge(User user) throws SQLException {
+        String query = "UPDATE user SET age = ? WHERE id_number = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareCall(query)) {
+            con.setAutoCommit(false);
+            ps.setInt(1, user.getAge());
+            ps.setString(2, user.getIdNumber());
+
+            Savepoint beforeUserEdit = con.setSavepoint();
+            if (ps.executeUpdate() > 0) {
+                con.commit();
+                return Optional.of(user);
+            } else {
+                con.rollback(beforeUserEdit);
             }
         }
         return Optional.empty();
