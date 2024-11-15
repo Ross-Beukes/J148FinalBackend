@@ -19,7 +19,21 @@ import java.util.Random;
 public class UserServiceImpl implements UserService {
 
     private UserRepo userRepo = new UserRepoImpl();
+    /**
+     *This map is used to temporarily store the generated admin keys.
+     */
     private Random random = new Random();
+
+    @Override
+    public String generateVerificationToken(){
+        StringBuilder token = new StringBuilder("V");
+        char[] letters = new char[5];
+        for (int i = 0; i < letters.length; i++) {
+            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
+            token.append(letters[i]);
+        }
+        return token.toString();
+    }
 
     @Override
     public String generateAdminToken() {
@@ -75,17 +89,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User registerUser(User user) throws Exception {
-        if (user != null) {
-            return this.userRepo.register(user).orElseThrow(() -> new Exception("Unable to insert user into the database."));
-        } else {
-            throw new IllegalArgumentException("User cannot be null");
+
+        //Checks the email format
+        if (!isValidEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format.");
         }
+
+        return this.userRepo.register(user).orElseThrow(() -> new Exception("Unable to insert user into the database."));
     }
 
     @Override
     public User updateUser(User user) throws Exception {
-        if (user != null) {
-            System.out.println(user);
+        if (user != null){
             return userRepo.updateUser(user).orElseThrow(() -> new Exception("Unable to update user."));
         } else {
             throw new IllegalArgumentException("ID number cannot be null.");
@@ -103,8 +118,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User promoteApplicant(User user) throws Exception {
-        if (user != null) {
-            return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("User not found."));
+        if (user != null){
+            return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("User not promoted to contractor."));
         } else {
             throw new IllegalArgumentException("User cannot be null.");
         }
@@ -117,6 +132,11 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new IllegalArgumentException("User id cannot be null.");
         }
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9._%+-]+@gmail\\.com$";
+        return email != null && email.matches(emailRegex);
     }
 
     @Schedule(dayOfWeek = "Mon-Sun", hour = "13", minute = "48", persistent = false)
@@ -151,7 +171,7 @@ public class UserServiceImpl implements UserService {
                    user.setAge(LocalDate.now().getYear() - Integer.parseInt(year));
                    System.out.println(user);
                    userRepo.updateAge(user).orElse(null);
-                    
+
                 }
             } else {
                 System.out.println("The date is not the same day and month as today.");

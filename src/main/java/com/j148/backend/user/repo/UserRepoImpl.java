@@ -5,6 +5,7 @@
 package com.j148.backend.user.repo;
 
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.model.User.Role;
 import java.sql.Connection;
@@ -136,9 +137,9 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     }
 
     @Override
-    public Optional<User> retreiveUserFromUserID(User user) throws SQLException {
-        User foundUser;
+    public Optional<User> retrieveUserFromUserID(User user) throws SQLException {
         String query = "SELECT * FROM user WHERE user_id = ?";
+        User foundUser;
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, user.getUserId());
             try (ResultSet rs = ps.executeQuery()) {
