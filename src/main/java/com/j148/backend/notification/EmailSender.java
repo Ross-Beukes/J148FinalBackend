@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 public class EmailSender {
     
     
-    public void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
+    public static void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
         String email = "xavierdovah124";
         String password = "evba attv nsgw ymlz";
         
