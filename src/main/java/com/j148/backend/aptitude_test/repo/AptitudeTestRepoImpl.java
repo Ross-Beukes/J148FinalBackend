@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -128,5 +129,22 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
                 .testDate(testDate)
                 .user(user)
                 .build();
+    }
+
+    @Override
+    public Optional<AptitudeTest> retrieveAptitudeTestByUserId(User user) throws SQLException {
+        String query = "SELECT * FROM aptitude_test WHERE user_id = ?";
+        try(Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)){
+            ps.setLong(1, user.getUserId());
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    AptitudeTest aptitudeTest = AptitudeTest.builder().aptitudeTestId(rs.getLong("aptitude_test_id"))
+                            .testDate(rs.getTimestamp("test_date").toLocalDateTime()).testMark(rs.getInt("test_mark"))
+                            .user(user).build();
+                    return Optional.of(aptitudeTest);
+                }
+            }
+        }
+        return Optional.empty();
     }
 }
