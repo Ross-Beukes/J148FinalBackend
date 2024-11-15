@@ -110,7 +110,7 @@ public interface FileEntityRepo {
      * your local machine
      *     
      * @param fileEntity
-     * @return     
+     * @return Optional of FileEntity
      * @throws java.sql.SQLException     
      */
     
@@ -119,4 +119,13 @@ public interface FileEntityRepo {
     
     
     
+
+    /**
+     * Retrieves a specific file from a specific user.
+     * @param user
+     * @param category
+     * @throws SQLException
+     * @return Optional containing file that corresponds to userID and category.
+     */
+    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
 }

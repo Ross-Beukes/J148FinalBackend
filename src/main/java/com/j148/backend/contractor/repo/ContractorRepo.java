@@ -59,4 +59,12 @@ public interface ContractorRepo {
  * @throws SQLException if there is an error connecting to the database or executing the SQL statement.
  */
     List<Contractor> findCurrentContractor(ContractPeriod contractPeriod) throws SQLException;
+    
+   /**
+     * Returns an optional of a contractor by it's associated user ID. Returns empty optional if no contractor is found.
+     * @param contractor
+     * @return
+     * @throws SQLException 
+     */
+    Optional<Contractor> retrieveContractorByUserID(Contractor contractor) throws SQLException;
 }

@@ -18,6 +18,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.jfree.chart.*;
+import org.jfree.data.*;
+import org.apache.commons.dbcp2.*;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.ss.usermodel.CellRange;
+import org.apache.poi.xssf.usermodel.XSSFChart;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ContractorPerformanceRepoImpl extends DBConfig implements ContractorPerformanceRepo {
 
@@ -135,13 +154,12 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
         //Might need to play around with this join statement(Consider which is the left table)
         //Might need to null check in the function
         String query = "SELECT "
-                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race,"
-                + "contractor.contractor_id, contractor.user_id AS contractor_user_id, contractor.status, contractor.contractor_period_id, "
-                + "contractor_period.contractor_period_id, contractor_period.name AS period_name, "
-                + "contractor_period.start_date, contractor_period.end_date, "
-                + "warning.date_issue, warning.reason AS warning_reason, warning.state AS warning_state, "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race, "
+                + "contractor.contractor_id, contractor.status, "
+                + "contractor_period.name AS period_name, contractor_period.start_date, contractor_period.end_date, "
+                + "warning.warning_id, warning.date_issue, warning.reason AS warning_reason, warning.state AS warning_state, "
                 + "attendance.attendance_id, attendance.time_in, attendance.time_out, attendance.register AS attendance_register, "
-                + "hearings.schedule_date AS hearing_schedule_date, hearings.outcome AS hearing_outcome, hearings.reason AS hearing_reason, "
+                + "hearings.hearings_id, hearings.schedule_date AS hearing_schedule_date, hearings.outcome AS hearing_outcome, hearings.reason AS hearing_reason, "
                 + "aptitude_test.aptitude_test_id, aptitude_test.test_mark, aptitude_test.test_date "
                 + "FROM user "
                 + "JOIN contractor ON user.user_id = contractor.user_id "
@@ -150,6 +168,11 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 + "LEFT JOIN attendance ON contractor.contractor_id = attendance.contractor_id "
                 + "LEFT JOIN hearings ON contractor.contractor_id = hearings.contractor_id "
                 + "LEFT JOIN aptitude_test ON user.user_id = aptitude_test.user_id;";
+
+        // HashMaps to track processed warning, hearing, and attendance IDs for each contractor
+        Map<Long, Set<Long>> warningIdsMap = new HashMap<>();
+        Map<Long, Set<Long>> hearingIdsMap = new HashMap<>();
+        Map<Long, Set<Long>> attendanceIdsMap = new HashMap<>();
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
@@ -176,7 +199,6 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                         // Populate Contractor
                         Contractor contractor = Contractor.builder()
                                 .contractorId(contractorId)
-                                .user(User.builder().userId(rs.getLong("contractor_user_id")).build())
                                 .status(Contractor.Status.valueOf(rs.getString("status")))
                                 .build();
                         cp.setContractor(contractor);
@@ -189,42 +211,52 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                                 .build();
                         cp.setContractPeriod(contractPeriod);
 
+                        // Initialize tracking maps for this contractor if not present
+                        warningIdsMap.putIfAbsent(contractorId, new HashSet<>());
+                        hearingIdsMap.putIfAbsent(contractorId, new HashSet<>());
+                        attendanceIdsMap.putIfAbsent(contractorId, new HashSet<>());
+
                         // Add to map for tracking
                         contractorMap.put(contractorId, cp);
                     }
 
                     // Populate Warning
-                    if (rs.getTimestamp("date_issue") != null) {
+                    long warningId = rs.getLong("warning_id");
+                    if (warningId != 0 && !warningIdsMap.get(contractorId).contains(warningId)) {
                         Warning warning = Warning.builder()
-                                .contractorId(contractorId)
+                                .warningId(warningId)
                                 .dateIssue(rs.getTimestamp("date_issue").toLocalDateTime())
                                 .reason(Warning.WarningReason.valueOf(rs.getString("warning_reason")))
                                 .state(Warning.WarningState.valueOf(rs.getString("warning_state")))
                                 .build();
                         cp.getWarningList().add(warning);
+                        warningIdsMap.get(contractorId).add(warningId); // Track processed warning ID
                     }
 
                     // Populate Attendance
-                    if (rs.getTimestamp("time_in") != null) {
+                    long attendanceId = rs.getLong("attendance_id");
+                    if (attendanceId != 0 && !attendanceIdsMap.get(contractorId).contains(attendanceId)) {
                         Attendance attendance = Attendance.builder()
-                                .contractor(Contractor.builder().contractorId(contractorId).build())
-                                .attendanceId(rs.getLong("attendance_id"))
+                                .attendanceId(attendanceId)
                                 .timeIn(rs.getTimestamp("time_in").toLocalDateTime())
                                 .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
                                 .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
                                 .build();
                         cp.getAttendanceList().add(attendance);
+                        attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
                     }
 
                     // Populate Hearing
-                    if (rs.getTimestamp("hearing_schedule_date") != null) {
+                    long hearingId = rs.getLong("hearings_id");
+                    if (hearingId != 0 && !hearingIdsMap.get(contractorId).contains(hearingId)) {
                         Hearing hearing = Hearing.builder()
-                                .contractor(Contractor.builder().contractorId(contractorId).build())
+                                .hearingsId(hearingId)
                                 .scheduleDate(rs.getTimestamp("hearing_schedule_date").toLocalDateTime())
                                 .outcome(Hearing.Outcome.valueOf(rs.getString("hearing_outcome")))
                                 .reason(rs.getString("hearing_reason"))
                                 .build();
                         cp.getHearingList().add(hearing);
+                        hearingIdsMap.get(contractorId).add(hearingId); // Track processed hearing ID
                     }
 
                     // Populate AptitudeTest if not already set (only one aptitude test per contractor)
@@ -712,6 +744,114 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 }
             }
             return cpList;  // Return the list of contractor performances
+        }
+    }
+
+    @Override
+    public String downloadReportFile(List<ContractorPerformance> contractorPerformanceList) throws IOException {
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            //Users
+            Sheet userSheet = workbook.createSheet("User details");
+            Row userHeaderRow = userSheet.createRow(0);
+            userHeaderRow.createCell(0).setCellValue("Name");
+            userHeaderRow.createCell(1).setCellValue("Surname");
+            userHeaderRow.createCell(2).setCellValue("Email");
+            userHeaderRow.createCell(3).setCellValue("Age");
+            userHeaderRow.createCell(4).setCellValue("Gender");
+            userHeaderRow.createCell(5).setCellValue("Race");
+            userHeaderRow.createCell(6).setCellValue("Status");
+            userHeaderRow.createCell(7).setCellValue("Contract Period");
+            userHeaderRow.createCell(8).setCellValue("Start date");
+            userHeaderRow.createCell(9).setCellValue("End date");
+            int userRowNum = 1;
+            for (ContractorPerformance cp : contractorPerformanceList) {
+                Row row = userSheet.createRow(userRowNum++);
+                row.createCell(0).setCellValue(cp.getUser().getName());
+                row.createCell(1).setCellValue(cp.getUser().getSurname());
+                row.createCell(2).setCellValue(cp.getUser().getEmail());
+                row.createCell(3).setCellValue(cp.getUser().getAge());
+                row.createCell(4).setCellValue(cp.getUser().getGender());
+                row.createCell(5).setCellValue(cp.getUser().getRace());
+                row.createCell(6).setCellValue(cp.getContractor().getStatus().toString());
+                row.createCell(7).setCellValue(cp.getContractPeriod().getName());
+                row.createCell(8).setCellValue(cp.getContractPeriod().getStartDate());
+                row.createCell(9).setCellValue(cp.getContractPeriod().getEndDate());
+            }
+            //Attendance
+            Sheet attendanceSheet = workbook.createSheet("Attendance list");
+            Row attHeaderRow = attendanceSheet.createRow(0);
+            attHeaderRow.createCell(0).setCellValue("User full name");
+            attHeaderRow.createCell(1).setCellValue("Time-in");
+            attHeaderRow.createCell(2).setCellValue("Time-out");
+            attHeaderRow.createCell(3).setCellValue("Register");
+            int attRowNum = 1;
+            for (ContractorPerformance cp : contractorPerformanceList) {
+
+                for (Attendance att : cp.getAttendanceList()) {
+                    Row row = attendanceSheet.createRow(attRowNum++);
+                    row.createCell(0).setCellValue(cp.getUser().getName() + " " + cp.getUser().getSurname());
+                    row.createCell(1).setCellValue(att.getTimeIn());
+                    row.createCell(2).setCellValue(att.getTimeOut());
+                    row.createCell(3).setCellValue(att.getRegister().toString());
+                }
+            }
+            //Hearings
+            Sheet hearingSheet = workbook.createSheet("Hearings");
+            Row hearHeaderRow = hearingSheet.createRow(0);
+            hearHeaderRow.createCell(0).setCellValue("User full name");
+            hearHeaderRow.createCell(1).setCellValue("Schedule date");
+            hearHeaderRow.createCell(2).setCellValue("Reason");
+            hearHeaderRow.createCell(3).setCellValue("Outcome");
+            int hearingRowNum = 1;
+            for (ContractorPerformance cp : contractorPerformanceList) {
+
+                for (Hearing h : cp.getHearingList()) {
+                    Row row = hearingSheet.createRow(hearingRowNum++);
+                    row.createCell(0).setCellValue(cp.getUser().getName() + " " + cp.getUser().getSurname());
+                    row.createCell(1).setCellValue(h.getScheduleDate());
+                    row.createCell(2).setCellValue(h.getReason());
+                    row.createCell(3).setCellValue(h.getOutcome().toString());
+                }
+            }
+            //Warnings
+            Sheet warningSheet = workbook.createSheet("Warnings");
+            Row warningHeaderRow = warningSheet.createRow(0);
+            warningHeaderRow.createCell(0).setCellValue("User full name");
+            warningHeaderRow.createCell(1).setCellValue("Date issued");
+            warningHeaderRow.createCell(2).setCellValue("Reason");
+            warningHeaderRow.createCell(3).setCellValue("State");
+            int warningRowNum = 1;
+            for (ContractorPerformance cp : contractorPerformanceList) {
+
+                for (Warning w : cp.getWarningList()) {
+                    Row row = warningSheet.createRow(warningRowNum++);
+                    row.createCell(0).setCellValue(cp.getUser().getName() + " " + cp.getUser().getSurname());
+                    row.createCell(1).setCellValue(w.getDateIssue());
+                    row.createCell(2).setCellValue(w.getReason().toString());
+                    row.createCell(3).setCellValue(w.getState().toString());
+                }
+            }
+            Sheet aptSheet = workbook.createSheet("Aptitude tests");
+            Row aptHeaderRow = aptSheet.createRow(0);
+            aptHeaderRow.createCell(0).setCellValue("User full name");
+            aptHeaderRow.createCell(1).setCellValue("Test mark");
+            aptHeaderRow.createCell(2).setCellValue("Test date");
+            int aptRowNum = 1;
+            for (ContractorPerformance cp : contractorPerformanceList) {
+                Row row = aptSheet.createRow(aptRowNum++);
+                row.createCell(0).setCellValue(cp.getUser().getName() + " " + cp.getUser().getSurname());
+                row.createCell(1).setCellValue(cp.getAptitudeTest().getTestMark());
+                row.createCell(2).setCellValue(cp.getAptitudeTest().getTestDate().toLocalDate());
+            }
+            File reportFile = new File("C:/Users/yusuf/OneDrive/Documents/reports.xlsx");
+            if (reportFile.exists() == false) {
+                reportFile.createNewFile();
+            }
+            try (FileOutputStream fileOut = new FileOutputStream(reportFile)) {
+                workbook.write(fileOut);
+            }
+            return reportFile.getPath();
         }
     }
 

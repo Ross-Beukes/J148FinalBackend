@@ -5,6 +5,7 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.user.model.User;
+import java.io.IOException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -68,4 +69,6 @@ public interface ContractorPerformanceService {
      */
     List<ContractorPerformance> getAllContractors() 
             throws ContractorPerformanceNotFoundException, UserNotFoundException, ContractorNotFoundException, SQLException;
+    
+    boolean downloadReportFile(List<ContractorPerformance> contractorPerformanceList) throws SQLException, IOException;
 }

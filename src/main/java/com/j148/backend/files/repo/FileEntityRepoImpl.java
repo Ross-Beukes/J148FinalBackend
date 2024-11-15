@@ -394,71 +394,71 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
 
     @Override
     public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
-      
+
      if(fileEntity != null){
         String accessKey = "";
         String SecretKey =  "";
         String bucketName = "";
         Region region = Region.AF_SOUTH_1;
-        
+
         //Uploading file to S3 File Storage , needs to be tested
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey,SecretKey );
         S3Client s3Client = S3Client.builder()
                 .region(region)
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
-        
+
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(Paths.get(fileEntity.getPath()).getFileName().toString())
                 .build();
-        
+
         s3Client.putObject(putRequest, Paths.get(fileEntity.getPath()));
         System.out.println("File has been successfully uploaded ");
-      
-    try{    
-        
+
+    try{
+
     //Add a file record to the Database
     return saveFile(fileEntity);
-    
+
     }catch(Exception e){
           LOGGER.log(Level.SEVERE, "Error saving uploaded file to Database", e);
     }
      }else {
          throw new FileNotFoundException("Error , it was not possible to find this file");
      }
-             
-            
+
+
         return Optional.empty();
-            
+
     }
-    
+
 
     @Override
     public Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException {
         if(fileEntity != null){
-            
+
         String accessKey = "";
         String SecretKey =  "";
         String bucketName = "";
         Region region = Region.AF_SOUTH_1;
-        
+
         //Find file Entity
         fileEntity = findById(fileEntity).get();
-        
-        if(fileEntity.getPath() != null){    
+
+        if(fileEntity.getPath() != null){
         //Download File Entity
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey,SecretKey );
         S3Client s3Client = S3Client.builder()
                 .region(region)
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
-        
+
          GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(Path.of(fileEntity.getPath()).getFileName().toString())
                 .build();
-         
+
          //Construct destination path
          String userHome = System.getProperty("user.home");
          String downloadsPath = userHome + "/Downloads/" + Path.of(fileEntity.getPath()).getFileName();
@@ -466,22 +466,53 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         s3Client.getObject(getRequest, Paths.get(downloadsPath));
         System.out.println("File downloaded successfully!");
         return Optional.of(fileEntity);
-        
+
         }//If statement end
         else{
-            
+
         throw new FileNotFoundException("The File Path does not exist, File was not found ");
-       
+
         }
-        
+
         }else{
             throw new FileNotFoundException("Sorry, The No such file Exists ");
         }
-        
-        
-      
+
+
+
     }
-    
-    
-    
+
+
+
+
+    @Override
+    public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException{
+        String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
+
+        try (Connection con = getCon();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setString(1, category.toString());
+            ps.setLong(2, user.getUserId());
+            try (ResultSet rs = ps.executeQuery()) {
+                if(rs.next()){
+                    FileEntity fileEntity = FileEntity.builder()
+                .fileId(rs.getLong(1))
+                .user(user)
+                .fileType(rs.getString(3))
+                .category(FileEntity.Category.valueOf(rs.getString(4)))
+                .dateAdded(rs.getTimestamp(5).toLocalDateTime())
+                .path(rs.getString(6))
+                .verified(FileEntity.Verified.valueOf(rs.getString(7)))
+                .build();
+
+                    return Optional.of(fileEntity);
+                }
+
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding file by category and user ID", ex);
+        }
+        return Optional.empty();
+    }
 }
