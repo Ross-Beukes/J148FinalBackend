@@ -19,6 +19,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         }
 
         Optional<ContractPeriod> savedContractPeriod = contractPeriodRepo.saveContractPeriod(contractPeriod);
+        System.out.println(savedContractPeriod);
         return savedContractPeriod.orElseThrow(() ->
                 new IllegalStateException("Failed to save contract period. Please ensure all fields are correctly filled and formatted.")
         );
