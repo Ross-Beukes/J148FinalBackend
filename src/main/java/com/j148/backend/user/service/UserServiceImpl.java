@@ -1,5 +1,6 @@
 package com.j148.backend.user.service;
 
+import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
@@ -11,18 +12,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 @Singleton
 public class UserServiceImpl implements UserService {
 
-    private UserRepo userRepo = new UserRepoImpl();
+    private final UserRepo userRepo = new UserRepoImpl();
     /**
      *This map is used to temporarily store the generated admin keys.
      */
-    private Random random = new Random();
+    private final Random random = new Random();
 
     @Override
     public String generateVerificationToken(){
@@ -128,7 +128,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(User user) throws Exception {
         if (user != null && user.getUserId() != null) {
-            return userRepo.retreiveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
+            return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
         } else {
             throw new IllegalArgumentException("User id cannot be null.");
         }
@@ -139,10 +139,11 @@ public class UserServiceImpl implements UserService {
         return email != null && email.matches(emailRegex);
     }
 
-    @Schedule(dayOfWeek = "Mon-Sun", hour = "13", minute = "48", persistent = false)
+    @Schedule(dayOfWeek = "Mon-Sun", hour = "16", minute = "12", persistent = false)
     public void updateAge() throws Exception {
         List<User> allUsers;
-        allUsers = userRepo.retreiveAllUsers();
+        String messageBody = "";
+        allUsers = userRepo.retrieveAllUsers();
         for (int i = 0; i < allUsers.size(); i++) {
             String birth = allUsers.get(i).getIdNumber().substring(0, 6);
             String year = birth.substring(0, 2);
@@ -171,11 +172,11 @@ public class UserServiceImpl implements UserService {
                    user.setAge(LocalDate.now().getYear() - Integer.parseInt(year));
                    System.out.println(user);
                    userRepo.updateAge(user).orElse(null);
-
+                   messageBody = messageBody + user.getName()+" "+ user.getSurname() + " : age: " + user.getAge()+ " , " + user.getEmail() + "\n";
                 }
-            } else {
-                System.out.println("The date is not the same day and month as today.");
             }
         }
+        User admin = userRepo.getAdmin().orElse(null);
+        EmailService.sendEmail(admin.getEmail(), "Birthdays today", messageBody);
     }
 }

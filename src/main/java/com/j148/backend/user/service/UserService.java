@@ -54,6 +54,8 @@ public interface UserService {
 
     String generateInstructorToken();
 
+    User promoteUser(User user) throws SQLException, Exception;
+            
     /**
      * Attempts to log in a user by verifying the provided email and password.
      *

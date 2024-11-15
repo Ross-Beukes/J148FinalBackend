@@ -122,4 +122,6 @@ public interface UserRepo {
     List<User> retrieveAllUsers() throws SQLException;
 
     Optional<User> updateAge(User user) throws SQLException;
+
+    Optional<User> getAdmin() throws SQLException;
 }

@@ -21,7 +21,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
  */
 @Path("user")
 public class UserResource {
-    private UserService UserService = new UserServiceImpl();
+    private UserService userService = new UserServiceImpl();
     /**
      *This map is used to temporarily store the generated admin keys.
      */
@@ -36,7 +36,7 @@ public class UserResource {
     @POST
     @Path("generate-verification-token")
     public Response generateVerificationToken(@QueryParam("applicantEmail")String applicantEmail){
-        String token = UserService.generateVerificationToken();
+        String token = userService.generateVerificationToken();
         verificationTokens.put(token, applicantEmail);
 
         String subject = "Your Email Verification Token";
@@ -59,7 +59,7 @@ public class UserResource {
     @POST
     @Path("generate-admin-token")
     public Response generateTokenForAdmin(@QueryParam("adminEmail")String adminEmail){
-        String token = UserService.generateAdminToken();
+        String token = userService.generateAdminToken();
         verificationTokens.put(token, adminEmail);
 
         String subject = "Your Admin Registration Token";
@@ -82,7 +82,7 @@ public class UserResource {
     @POST
     @Path("generate-instructor-token")
     public Response generateTokenForInstructor(@QueryParam("instructorEmail")String instructorEmail){
-        String token = UserService.generateInstructorToken();
+        String token = userService.generateInstructorToken();
         verificationTokens.put(token, instructorEmail);
 
         String subject = "Your Instructor Registration Token";
@@ -118,7 +118,7 @@ public class UserResource {
 
             verificationTokens.remove(applicantToken);
 
-            return Response.ok(this.UserService.registerUser(user)).build();
+            return Response.ok(this.userService.registerUser(user)).build();
         } catch (SQLException e){
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
@@ -146,7 +146,7 @@ public class UserResource {
 
             verificationTokens.remove(adminToken);
 
-            return Response.ok(this.UserService.registerUser(user)).build();
+            return Response.ok(this.userService.registerUser(user)).build();
         } catch (SQLException e){
             LOG.log(Level.SEVERE, "Unable to add admin to the database.  Check for duplicates");
             return Response.status(Response.Status.CONFLICT).build();
@@ -172,7 +172,7 @@ public class UserResource {
             user.setRole(User.Role.INSTRUCTOR);
 
             verificationTokens.remove(instructorToken);
-            return Response.ok(this.UserService.registerUser(user)).build();
+            return Response.ok(this.userService.registerUser(user)).build();
         } catch (SQLException e){
             LOG.log(Level.SEVERE, "Unable to add instructor to the database.  Check for duplicates");
             return Response.status(Response.Status.CONFLICT).build();
@@ -249,7 +249,7 @@ public class UserResource {
     public Response promoteUser(@QueryParam("idNumber")String idNumber){
         try{
             User user = User.builder().idNumber(idNumber).build();
-            return Response.ok(this.UserService.promoteApplicant(user)).build();
+            return Response.ok(this.userService.promoteApplicant(user)).build();
         }catch (SQLException e){
             LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");
             System.out.println("sqlException : " + e.getMessage());

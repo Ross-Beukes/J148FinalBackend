@@ -172,7 +172,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     }
 
     @Override
-    public List<User> retreiveAllUsers() throws SQLException {
+    public List<User> retrieveAllUsers() throws SQLException {
         List<User> allUsers = new ArrayList<>();
         String query = "SELECT * FROM user";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
@@ -213,6 +213,32 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                 return Optional.of(user);
             } else {
                 con.rollback(beforeUserEdit);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> getAdmin() throws SQLException {
+        String query = "SELECT * FROM user WHERE role = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, Role.ADMIN.name());
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getLong("user_id"));
+                user.setName(rs.getString("name"));
+                user.setSurname(rs.getString("surname"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setGender(rs.getString("gender"));
+                user.setIdNumber(rs.getString("id_number"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setRace(rs.getString("race"));
+                user.setLocation(rs.getString("location"));
+                user.setAge(rs.getInt("age"));
+                return Optional.of(user);
             }
         }
         return Optional.empty();
