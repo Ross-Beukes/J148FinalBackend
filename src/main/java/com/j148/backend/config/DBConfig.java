@@ -16,9 +16,9 @@ public abstract class DBConfig {
             basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
             // RDS Configuration - replace with your actual RDS details
-            basicDataSource.setUrl("jdbc:mysql://your-rds-endpoint.region.rds.amazonaws.com:3306/hrms?autoReconnect=true&useSSL=true");
-            basicDataSource.setUsername("admin");
-            basicDataSource.setPassword("Hangwelani");
+            basicDataSource.setUrl(System.getenv("RDS_URL"));
+            basicDataSource.setUsername(System.getenv("RDS_USERNAME"));
+            basicDataSource.setPassword(System.getenv("RDS_PASSWORD"));
 
             // Connection Pool Settings
             basicDataSource.setMinIdle(20);
