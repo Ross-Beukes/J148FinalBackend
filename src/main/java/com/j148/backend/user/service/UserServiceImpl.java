@@ -100,7 +100,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User promoteApplicant(User user) throws Exception {
-        if (user != null){
+        if (user != null && user.getIdNumber() != null){
             return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("User not promoted to contractor."));
         } else {
             throw  new IllegalArgumentException("User cannot be null.");
