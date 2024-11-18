@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 
 public class AptitudeTestServiceImpl implements AptitudeTestService {
 
-    private AptitudeRepo aptitudeRepo = new AptitudeTestRepoImpl();
-    private UserRepo userRepo = new UserRepoImpl();
+    private final AptitudeRepo aptitudeRepo = new AptitudeTestRepoImpl();
+    private final UserRepo userRepo = new UserRepoImpl();
 
     @Override
     public AptitudeTest scheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {
@@ -25,12 +25,12 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         }
 
         if (aptitudeTest.getAptitudeTestId() == null || aptitudeTest.getTestDate() == null) {
-        if (aptitudeTest.getTestDate() == null ){
+
 
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
-        if (userRepo.retreiveUserFromUserID(user).isEmpty()) {
+
         if (userRepo.retrieveUserFromUserID(user).isEmpty()){
             throw new IllegalArgumentException("User not found");
         }
@@ -53,9 +53,6 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         if (aptitudeTest.getAptitudeTestId() == null || aptitudeTest.getTestDate() == null) {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
-
-
-        if (userRepo.retreiveUserFromUserID(user).isEmpty()) {
 
         if (userRepo.retrieveUserFromUserID(user).isEmpty()){
 

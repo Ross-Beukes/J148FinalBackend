@@ -6,7 +6,7 @@ import com.j148.backend.user.model.User;
 import jakarta.servlet.http.Part;
 import com.j148.backend.files.model.FileEntity;
 
-
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -393,6 +393,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     }
 
     @Override
+
     public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
       
      if(fileEntity != null){
@@ -484,6 +485,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     
     
     
+
     public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException{
         String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
 
@@ -503,15 +505,16 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                 .path(rs.getString(6))
                 .verified(FileEntity.Verified.valueOf(rs.getString(7)))
                 .build();
-                
+
                     return Optional.of(fileEntity);
                 }
-               
+
             }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Error finding file by category and user ID", ex);
         }
         return Optional.empty();
     }
+
 
 }

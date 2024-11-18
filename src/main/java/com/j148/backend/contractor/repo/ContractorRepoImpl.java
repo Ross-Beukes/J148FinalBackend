@@ -147,15 +147,6 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
         }
         return contractors;
     }
-//<<<<<<< HEAD
-    
-
-    //Just to help me test @Tshire
-    public Optional<Contractor> findContractorById(long id) throws SQLException {
-        String sql = "SELECT * FROM contractor WHERE contractor_id = ?";
-
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, id);
 
     @Override
     public Optional<Contractor> retrieveContractorByUserID(Contractor contractor) throws SQLException {
@@ -178,12 +169,37 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
                     return Optional.of(returnedContractor);
                 }
 
+            }
+            
+        }
+        return Optional.empty();
+    }
+
+
+    //Just to help me test @Tshire
+    public Optional<Contractor> findContractorById(long id) throws SQLException {
+        String sql = "SELECT * FROM contractor WHERE contractor_id = ?";
+
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getLong("user_id"));
+
+                    Contractor returnedContractor = Contractor.builder()
+                            .contractorId(rs.getLong("contractor_id"))
+                            .status(Contractor.Status.valueOf(rs.getString("status")))
+                            .user(user)
+                            .build();
+
+                    return Optional.of(returnedContractor);
+                }
+
                 return Optional.empty();
             }
         }
     }
     
-
-  
 
 }

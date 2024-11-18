@@ -25,8 +25,6 @@ public class UserServiceImpl implements UserService {
 
     private Random random = new Random();
 
-    private final Random random = new Random();
-
     @Override
     public String generateVerificationToken(){
         StringBuilder token = new StringBuilder("V");

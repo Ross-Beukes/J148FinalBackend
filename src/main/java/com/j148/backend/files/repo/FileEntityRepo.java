@@ -36,7 +36,7 @@ public interface FileEntityRepo {
     Optional<FileEntity> save(Part filePart, User user, FileEntity.Category category) throws SQLException;
 
     /**
-     * Deletes a file from both the filesystem and database.
+     * Deletes a file from both the file system and database.
      *
      * @param fileEntity the file entity to be deleted
      * @return Optional containing true if deletion was successful, false otherwise
@@ -96,6 +96,7 @@ public interface FileEntityRepo {
     
     /**
 
+
      * Uploads a file from your local machine to the Amazon simple storage service
      * file storage 
      * 
@@ -121,12 +122,18 @@ public interface FileEntityRepo {
     
     
 
-     * Retrieves a specific file from a specific user.
+
+/**     
+ * Retrieves a specific file from a specific user.
      * @param user
      * @param category
      * @throws SQLException
      * @return Optional containing file that corresponds to userID and category.
      */
     Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
+
+
+
+
 
 }

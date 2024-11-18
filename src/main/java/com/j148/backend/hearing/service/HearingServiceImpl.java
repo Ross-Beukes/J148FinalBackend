@@ -50,13 +50,9 @@ public class HearingServiceImpl implements HearingService {
                 Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing warning history", ex);
             }
 
-            if (warningCount % 3 == 0 && warningCount > 0) {
-
             if(warningCount % 3 == 0 && warningCount > 0){
 
                 if(hearingCount * 3 != warningCount){
-
-                if (warningCount * 3L != hearingCount) {
 
                     Hearing hearing = Hearing.builder()
                             .scheduleDate(scheduleHearing())
@@ -108,7 +104,6 @@ public class HearingServiceImpl implements HearingService {
         }
 
         return hearingRepo.updateHearing(hearing)
-                .orElseThrow(() -> new Exception("Failed to reschedule hearing"));
-        
+                .orElseThrow(() -> new Exception("Failed to reschedule hearing"));      
     }
 }

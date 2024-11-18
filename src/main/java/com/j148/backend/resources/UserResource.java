@@ -1,5 +1,6 @@
 package com.j148.backend.resources;
 
+import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
@@ -21,7 +22,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 public class UserResource {
 
 
-    private UserService UserService = new UserServiceImpl();
+   /* private UserService UserService = new UserServiceImpl();
 
     private UserService userService = new UserServiceImpl();
 
@@ -30,7 +31,7 @@ public class UserResource {
      */
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
-    @GET
+  /*  @GET
     public Response pingUserResource() {
         return Response.ok("Successfully pinged User Resource").build();
     }
@@ -75,10 +76,10 @@ public class UserResource {
             LOG.log(Level.SEVERE, "Unable to promote user", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-    }
+    } 
 
-    @POST
-    @Consumes(APPLICATION_JSON)
+    
+  /*  @Consumes(APPLICATION_JSON)
 
     @Path("register-applicant")
     public Response registerApplicant(@Valid User user) {
@@ -291,5 +292,5 @@ public class UserResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
-
+*/
 }
