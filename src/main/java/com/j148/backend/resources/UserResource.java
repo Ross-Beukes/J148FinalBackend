@@ -5,7 +5,6 @@ import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
 import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -25,7 +24,7 @@ public class UserResource {
 
 
 
-   private UserService UserService = new UserServiceImpl();
+   private UserService userService = new UserServiceImpl();
 
 
     /**
@@ -37,32 +36,7 @@ public class UserResource {
     public Response pingUserResource() {
         return Response.ok("Successfully pinged User Resource").build();
     }
-
-    @POST
-
-
-    @Path("generate-verification-token")
-    public Response generateVerificationToken(@QueryParam("applicantEmail") String applicantEmail) {
-        String token = userService.generateVerificationToken();
-        verificationTokens.put(token, applicantEmail);
-
-        String subject = "Your Email Verification Token";
-
-        String messageBody = "Hello,\n\nHere is your email verification token: \n\n"
-                + "Token: " + token + "\n\n"
-                + "Use this token to complete your registration.\n\n"
-                + "Best regards,\nYour Application Team";
-
-        try {
-            EmailService.sendEmail(applicantEmail, subject, messageBody);
-            System.out.println("Token sent to email: " + applicantEmail);
-        } catch (MessagingException e) {
-            LOG.log(Level.SEVERE, "Unable to send an email to this email address " + applicantEmail);
-            return Response.status(Response.Status.EXPECTATION_FAILED).build();
-        }
-        return Response.ok(token).build();
-    }
-
+    
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("promote-staff")
@@ -82,30 +56,14 @@ public class UserResource {
     } 
 
     
-    @Path("register")
-    public Response registerUser(User user) {
-        try {
 
-            user.setRole(User.Role.APPLICANT);
-            return Response.ok(this.UserService.registerUser(user)).build();
-
-            String email = verificationTokens.get(applicantToken);
-            if (applicantToken == null || email == null || !email.equals(user.getEmail())) {
-                return Response.status(Response.Status.FORBIDDEN).entity("Invalid verificationToken token or email mismatch.").build();
-            }
-
-        }catch(Exception e){
-            //Message please
-        }
-    }
-
-
+    @POST
     @Consumes(APPLICATION_JSON)
     @Path("register")
     public Response registerUser(User user) {
         try {
             user.setRole(User.Role.APPLICANT);
-            return Response.ok(this.UserService.registerUser(user)).build();
+            return Response.ok(this.userService.registerUser(user)).build();
 
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
@@ -173,7 +131,7 @@ public class UserResource {
     public Response getUserById(@QueryParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
-            User found = UserService.findUserById(user);
+            User found = userService.findUserById(user);
             return Response.ok(found).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to retrieve user from the database.");
@@ -187,33 +145,6 @@ public class UserResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
-
-    @POST
-    @Consumes(APPLICATION_JSON)
-    @Path("promote-staff")
-    public Response promoteStaff(User user) {
-        try {
-
-            User user = User.builder().idNumber(idNumber).build();
-
-            return Response.ok(this.UserService.promoteApplicant(user)).build();
-
-            return Response.ok(this.userService.promoteApplicant(user)).build();
-
-
-            return Response.ok(this.UserService.PromoteStaff(user)).build();
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Unable to promote user details in the database");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "User object not complete.");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unable to promote user", e);
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-    }
-
 
     @POST
     @Consumes(APPLICATION_JSON)
