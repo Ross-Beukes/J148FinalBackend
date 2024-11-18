@@ -18,7 +18,7 @@ public class Warning {
     private Contractor contractor;
 
     public enum WarningReason {
-        LATE, ABSENT
+        LATE, ABSENT, MISCONDUCT
     }
 
     public enum WarningState {

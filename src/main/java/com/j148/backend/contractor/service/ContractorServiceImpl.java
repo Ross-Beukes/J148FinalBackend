@@ -1,5 +1,6 @@
 package com.j148.backend.contractor.service;
 
+import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
@@ -87,6 +88,25 @@ public class ContractorServiceImpl implements ContractorService {
         } else {
             Optional<Contractor> updatedContractor = contractorRepo.updateStatus(contractor);
             return updatedContractor.orElseThrow(() -> new UserNotFoundException("User not found, update failed"));
+        }
+    }
+
+    @Override
+    public Contractor retrieveContractorByUserID(Contractor contractor) throws Exception {
+        if(contractor != null){
+            verifyContractorWithUserReference(contractor);
+            return contractorRepo.retrieveContractorByUserID(contractor).orElseThrow(() 
+            -> new Exception("There was an error retrieving a contractor by user reference"));
+        } else {
+            throw new ContractorNotFoundException("Contractor not found or is returning a null");
+        }
+    }
+    private void verifyContractorWithUserReference(Contractor contractor){
+        if(contractor.getUser() == null){
+            throw new UserNotFoundException("Error retrieving user for reference to contractor");
+        }
+        if(contractor.getUser().getUserId() == 0){
+            throw new UserNotFoundException("User was not found when retrieving reference for contractor");
         }
     }
 }

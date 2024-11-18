@@ -147,6 +147,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
         }
         return currentContractors;
     }
+//<<<<<<< HEAD
     
 
     //Just to help me test @Tshire
@@ -155,6 +156,14 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
+
+    @Override
+    public Optional<Contractor> retrieveContractorByUserID(Contractor contractor) throws SQLException {
+        String sql = "SELECT * FROM contractor WHERE user_id = ?";
+
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setLong(1, contractor.getUser().getUserId());
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     User user = new User();
@@ -168,11 +177,15 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
                     return Optional.of(returnedContractor);
                 }
+
                 return Optional.empty();
             }
         }
     }
     
+
+  
+
 }
 
 

@@ -95,6 +95,7 @@ public interface FileEntityRepo {
     List<FileEntity> getAllFiles();
     
     /**
+
      * Uploads a file from your local machine to the Amazon simple storage service
      * file storage 
      * 
@@ -119,4 +120,13 @@ public interface FileEntityRepo {
     
     
     
+
+     * Retrieves a specific file from a specific user.
+     * @param user
+     * @param category
+     * @throws SQLException
+     * @return Optional containing file that corresponds to userID and category.
+     */
+    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
+
 }

@@ -9,6 +9,7 @@ package com.j148.backend.aptitude_test.repo;
  * @author MIANTSUMI
  */
 import com.j148.backend.aptitude_test.model.AptitudeTest;
+import com.j148.backend.user.model.User;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -52,9 +53,10 @@ public interface AptitudeRepo {
     
     
     /**
-     * Deletes an AptitudeTest from the database by its ID.
-     * 
-     * @param id the ID of the AptitudeTest to delete
+     * Retrieves an aptitude test by a user ID.
+     * @param user
+     * @return
+     * @throws SQLException 
      */
-
+    Optional<AptitudeTest> retrieveAptitudeTestByUserId (User user) throws SQLException;
 }

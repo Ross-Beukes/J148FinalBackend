@@ -24,7 +24,7 @@ public class AttendanceRepoImpl extends DBConfig implements AttendanceRepo {
     @Override
     public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
         String query = "INSERT into attendance (time_in,time_out, register, contractor_id) VALUES (?,?,?,?)";
-        try (Connection con = DBConfig.getCon(); PreparedStatement statement = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement statement = con.prepareStatement(query,Statement.RETURN_GENERATED_KEYS)) {
 
             con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
