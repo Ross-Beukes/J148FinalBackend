@@ -30,11 +30,10 @@ public class ContractorResource {
      * @return HTTP Response indicating the result of the update operation.
      */
     @PUT
-    @Path("update/{contractorId}")
+    @Path("update")
     @Consumes(APPLICATION_JSON)
-    public Response updateContractor(@PathParam("contractorId") long contractorId, Contractor contractor) {
+    public Response updateContractor(Contractor contractor) {
         try {
-            contractor.setContractorId(contractorId);
 
             Contractor updatedContractor = contractorService.updateContractor(contractor);
             if (updatedContractor != null) {

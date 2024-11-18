@@ -19,6 +19,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         }
 
         Optional<ContractPeriod> savedContractPeriod = contractPeriodRepo.saveContractPeriod(contractPeriod);
+        System.out.println(savedContractPeriod);
         return savedContractPeriod.orElseThrow(() ->
                 new IllegalStateException("Failed to save contract period. Please ensure all fields are correctly filled and formatted.")
         );
@@ -75,5 +76,15 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
     public ContractPeriod getNextContractPeriod() throws SQLException, Exception {
         return contractPeriodRepo.getNextContractPeriod().orElseThrow(() -> new Exception("Next Contract Period not found"));
     }
+    @Override
+    public double enrollmentAveragesForYear(int year) throws SQLException {
+        return contractPeriodRepo.enrollmentAveragesForYear(year);
+    }
+
+    @Override
+    public double enrollmentAverageForPeriodOfYears(int startYear, int endYear) throws SQLException {
+        return contractPeriodRepo.enrollmentAverageForPeriodOfYears(startYear, endYear);
+    }
+
 
 }
