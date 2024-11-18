@@ -16,14 +16,15 @@ import java.util.logging.Logger;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Controller for User management
- * Includes end point tests for all user management
+ * Controller for User management Includes end point tests for all user
+ * management
  */
 @Path("user")
 public class UserResource {
+
     private UserService userService = new UserServiceImpl();
     /**
-     *This map is used to temporarily store the generated admin keys.
+     * This map is used to temporarily store the generated admin keys.
      */
     private static final Map<String, String> verificationTokens = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
@@ -35,18 +36,18 @@ public class UserResource {
 
     @POST
     @Path("generate-verification-token")
-    public Response generateVerificationToken(@QueryParam("applicantEmail")String applicantEmail){
+    public Response generateVerificationToken(@QueryParam("applicantEmail") String applicantEmail) {
         String token = userService.generateVerificationToken();
         verificationTokens.put(token, applicantEmail);
 
         String subject = "Your Email Verification Token";
 
-        String messageBody = "Hello,\n\nHere is your email verification token: \n\n" +
-                "Token: " + token + "\n\n" +
-                "Use this token to complete your registration.\n\n" +
-                "Best regards,\nYour Application Team";
+        String messageBody = "Hello,\n\nHere is your email verification token: \n\n"
+                + "Token: " + token + "\n\n"
+                + "Use this token to complete your registration.\n\n"
+                + "Best regards,\nYour Application Team";
 
-        try{
+        try {
             EmailService.sendEmail(applicantEmail, subject, messageBody);
             System.out.println("Token sent to email: " + applicantEmail);
         } catch (MessagingException e) {
@@ -57,51 +58,22 @@ public class UserResource {
     }
 
     @POST
-    @Path("generate-admin-token")
-    public Response generateTokenForAdmin(@QueryParam("adminEmail")String adminEmail){
-        String token = userService.generateAdminToken();
-        verificationTokens.put(token, adminEmail);
-
-        String subject = "Your Admin Registration Token";
-
-        String messageBody = "Hello,\n\nHere is your registration token: \n\n" +
-                "Token: " + token + "\n\n" +
-                "Use this token to complete your registration.\n\n" +
-                "Best regards,\nYour Application Team";
-
-        try{
-            EmailService.sendEmail(adminEmail, subject, messageBody);
-            System.out.println("Token sent to email: " + adminEmail);
-        } catch (MessagingException e) {
-            LOG.log(Level.SEVERE, "Unable to send an email to this email address " + adminEmail);
-            return Response.status(Response.Status.EXPECTATION_FAILED).build();
+    @Consumes(APPLICATION_JSON)
+    @Path("promote-staff")
+    public Response promoteStaff(User user) {
+        try {
+            return Response.ok(this.userService.PromoteStaff(user)).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to promote user details in the database");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "User object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to promote user", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-        return Response.ok(token).build();
     }
-
-    @POST
-    @Path("generate-instructor-token")
-    public Response generateTokenForInstructor(@QueryParam("instructorEmail")String instructorEmail){
-        String token = userService.generateInstructorToken();
-        verificationTokens.put(token, instructorEmail);
-
-        String subject = "Your Instructor Registration Token";
-
-        String messageBody = "Hello,\n\nHere is your registration token: \n\n" +
-                "Token: " + token + "\n\n" +
-                "Use this token to complete your registration.\n\n" +
-                "Best regards,\nYour Application Team";
-
-        try{
-            EmailService.sendEmail(instructorEmail, subject, messageBody);
-            System.out.println("Token sent to email: " + instructorEmail);
-        } catch (MessagingException e) {
-            LOG.log(Level.SEVERE, "Unable to send an email to this email address " + instructorEmail);
-            return Response.status(Response.Status.EXPECTATION_FAILED).build();
-        }
-        return Response.ok(token).build();
-    }
-
 
     @POST
     @Consumes(APPLICATION_JSON)
@@ -113,17 +85,16 @@ public class UserResource {
                 return Response.status(Response.Status.FORBIDDEN).entity("Invalid verificationToken token or email mismatch.").build();
             }
 
-
             user.setRole(User.Role.APPLICANT);
 
             verificationTokens.remove(applicantToken);
 
             return Response.ok(this.userService.registerUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -147,10 +118,10 @@ public class UserResource {
             verificationTokens.remove(adminToken);
 
             return Response.ok(this.userService.registerUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add admin to the database.  Check for duplicates");
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -173,10 +144,10 @@ public class UserResource {
 
             verificationTokens.remove(instructorToken);
             return Response.ok(this.userService.registerUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add instructor to the database.  Check for duplicates");
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -204,18 +175,17 @@ public class UserResource {
     }
 
     @GET
-    @Path("get-user")
-    public Response getUserFromEmail(@QueryParam("userEmail")String userEmail) {
+    @Produces(APPLICATION_JSON)
+    @Path("find-user")
+    public Response getUserFromEmail(@QueryParam("email") String email) {
         try {
-            User user = User.builder().email(userEmail).build();
-            User found = userService.findUserByEmail(user);
+            User found = userService.findUserByEmail(User.builder().email(email).build());
             return Response.ok(found).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to retrieve user from the database.");
-            System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "User object not complete.");
+            LOG.log(Level.SEVERE, "Email parameter is not valid.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to get user", e);
@@ -225,8 +195,8 @@ public class UserResource {
 
     @GET
     @Path("get-user-by-id")
-    public Response getUserById(@QueryParam("userId")long userId){
-        try{
+    public Response getUserById(@QueryParam("userId") long userId) {
+        try {
             User user = User.builder().userId(userId).build();
             User found = userService.findUserById(user);
             return Response.ok(found).build();
@@ -246,11 +216,11 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("promote-user")
-    public Response promoteUser(@QueryParam("idNumber")String idNumber){
-        try{
+    public Response promoteUser(@QueryParam("idNumber") String idNumber) {
+        try {
             User user = User.builder().idNumber(idNumber).build();
             return Response.ok(this.userService.promoteApplicant(user)).build();
-        }catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();

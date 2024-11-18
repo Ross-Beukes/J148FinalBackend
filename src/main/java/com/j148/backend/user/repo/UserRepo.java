@@ -124,4 +124,6 @@ public interface UserRepo {
     Optional<User> updateAge(User user) throws SQLException;
 
     Optional<User> getAdmin() throws SQLException;
+    
+    Optional<User> promoteStaff(User user) throws SQLException;
 }

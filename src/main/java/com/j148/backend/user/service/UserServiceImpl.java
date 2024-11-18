@@ -170,7 +170,6 @@ public class UserServiceImpl implements UserService {
                 if (2024 - Integer.parseInt(year) != allUsers.get(i).getAge()) {
                     User user = allUsers.get(i);
                    user.setAge(LocalDate.now().getYear() - Integer.parseInt(year));
-                   System.out.println(user);
                    userRepo.updateAge(user).orElse(null);
                    messageBody = messageBody + user.getName()+" "+ user.getSurname() + " : age: " + user.getAge()+ " , " + user.getEmail() + "\n";
                 }
@@ -178,5 +177,14 @@ public class UserServiceImpl implements UserService {
         }
         User admin = userRepo.getAdmin().orElse(null);
         EmailService.sendEmail(admin.getEmail(), "Birthdays today", messageBody);
+    }
+
+    @Override
+    public User PromoteStaff(User user) throws Exception {
+        if (user != null){
+            return userRepo.promoteStaff(user).orElseThrow(() -> new Exception("User not promoted."));
+        } else {
+            throw new IllegalArgumentException("User cannot be null.");
+        }
     }
 }

@@ -243,4 +243,22 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<User> promoteStaff(User user) throws SQLException {
+        String query = "UPDATE user SET role = ? WHERE email = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, user.getRole().toString());
+            ps.setString(2, user.getEmail());
+            con.setAutoCommit(false);
+            Savepoint beforeUserEdit = con.setSavepoint();
+            if (ps.executeUpdate() > 0) {
+                con.commit();
+                return Optional.of(user);
+            } else {
+                con.rollback(beforeUserEdit);
+            }
+        }
+        return Optional.empty();
+    }
 }

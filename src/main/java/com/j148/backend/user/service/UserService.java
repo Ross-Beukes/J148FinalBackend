@@ -120,4 +120,6 @@ public interface UserService {
      * @throws Exception if an error occurs
      */
     User findUserById(User user) throws Exception;
+    
+    User PromoteStaff(User user) throws Exception;
 }
