@@ -90,7 +90,6 @@ public class ContractPeriodResource {
      */
     @GET
     @Path("find-period-by-name")
-    @Produces(APPLICATION_JSON)
     public Response findContractPeriodByName(@QueryParam("name") String name) {
         try {
             if (name == null || name.trim().isEmpty()) {
@@ -115,7 +114,6 @@ public class ContractPeriodResource {
      */
     @GET
     @Path("find-period-by-id")
-    @Produces(APPLICATION_JSON)
     public Response findContractPeriodById(ContractPeriod contractPeriod) {
         try {
             if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
@@ -138,7 +136,6 @@ public class ContractPeriodResource {
      */
     @GET
     @Path("current-contract-period")
-    @Produces(APPLICATION_JSON)
     public Response getCurrentContractPeriod() {
         try {
             ContractPeriod contractPeriod = contractPeriodService.getCurrentContractPeriod();
@@ -156,7 +153,6 @@ public class ContractPeriodResource {
      */
     @GET
     @Path("next-contract-period")
-    @Produces(APPLICATION_JSON)
     public Response getNextContractPeriod() {
         try {
             ContractPeriod contractPeriod = contractPeriodService.getNextContractPeriod();

@@ -1,3 +1,4 @@
+
 package com.j148.backend.contract.repo;
 
 import com.j148.backend.config.DBConfig;
@@ -16,7 +17,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//Author : TSHIRELETSO
+//Author : Tshireletso
 
 public class ContractRepoImpl extends DBConfig  implements ContractRepo{
     
@@ -70,7 +71,6 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
         return Optional.empty();
        
     }
-
     @Override
     public Optional<Contract> findContract(long contractId) throws SQLException{
         String sql = """
