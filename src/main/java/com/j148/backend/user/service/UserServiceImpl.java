@@ -14,41 +14,6 @@ public class UserServiceImpl implements UserService{
      *This map is used to temporarily store the generated admin keys.
      */
     private Random random = new Random();
-
-    @Override
-    public String generateVerificationToken(){
-        StringBuilder token = new StringBuilder("V");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-    @Override
-    public String generateAdminToken() {
-        StringBuilder token = new StringBuilder("A");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-
-    @Override
-    public String generateInstructorToken() {
-        StringBuilder token = new StringBuilder("I");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
     @Override
     public User LogIn(User user) throws SQLException, Exception {
         if (user != null) {

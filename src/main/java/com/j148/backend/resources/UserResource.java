@@ -1,16 +1,12 @@
 package com.j148.backend.resources;
 
-import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
-import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,7 +23,6 @@ public class UserResource {
     /**
      * This map is used to temporarily store the generated admin keys.
      */
-    private static final Map<String, String> verificationTokens = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
     @GET
@@ -36,94 +31,8 @@ public class UserResource {
     }
 
     @POST
-    @Path("generate-token")
-    public Response generateVerificationToken(@QueryParam("email") String email, @QueryParam("role") String role) {
-        String token;
-        String subject;
-
-        switch (role.toLowerCase()) {
-            case "applicant":
-                token = UserService.generateVerificationToken();
-                subject = "Your Email Verification Token";
-                break;
-            case "admin":
-                token = UserService.generateAdminToken();
-                subject = "Your Admin Registration Token";
-                break;
-            case "instructor":
-                token = UserService.generateInstructorToken();
-                subject = "Your Instructor Registration Token";
-                break;
-            default:
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Invalid role specified.").build();
-        }
-        verificationTokens.put(token, email);
-
-        String messageBody = "Hello,\n\nHere is your email verification token: \n\n"
-                + "Token: " + token + "\n\n"
-                + "Use this token to complete your registration.\n\n"
-                + "Best regards,\nYour Application Team";
-
-        try {
-            EmailService.sendEmail(email, subject, messageBody);
-            System.out.println("Token sent to email: " + email);
-        } catch (MessagingException e) {
-            LOG.log(Level.SEVERE, "Unable to send an email to this email address " + email);
-            return Response.status(Response.Status.EXPECTATION_FAILED).build();
-        }
-        return Response.ok(token).build();
-    }
-
-    @POST
     @Consumes(APPLICATION_JSON)
     @Path("register")
-    public Response registerUser(@QueryParam("token") String token, User user) {
-        try {
-            if (token == null || token.isEmpty()) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Token is required.").build();
-            }
-
-            char firstLetter = token.charAt(0);
-            String email = verificationTokens.get(token);
-            if (email == null || !email.equals(user.getEmail())) {
-                return Response.status(Response.Status.FORBIDDEN).entity("Invalid verification token or email mismatch.").build();
-            }
-
-            switch (firstLetter) {
-                case 'A': // Admin role
-                    user.setRole(User.Role.ADMIN);
-                    break;
-                case 'I': // Instructor role
-                    user.setRole(User.Role.INSTRUCTOR);
-                    break;
-                case 'V': // Applicant role
-                    user.setRole(User.Role.APPLICANT);
-                    break;
-                default:
-                    return Response.status(Response.Status.BAD_REQUEST).entity("Invalid token format.").build();
-            }
-
-            verificationTokens.remove(token);
-
-            return Response.ok(this.UserService.registerUser(user)).build();
-
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Unable to add user to the database.  Check for duplicates");
-            System.out.println("sqlException : " + e.getMessage());
-            return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unable to register user", e);
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-    }
-
-    @POST
-    @Consumes(APPLICATION_JSON)
-    @Path("register-applicant")
     public Response registerUser(User user) {
         try {
             user.setRole(User.Role.APPLICANT);
