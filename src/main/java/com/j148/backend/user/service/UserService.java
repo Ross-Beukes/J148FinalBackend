@@ -12,6 +12,53 @@ import java.sql.SQLException;
 public interface UserService {
 
     /**
+
+     * Generates a unique verification token.
+     *
+     * <p>
+     * The token is composed of the prefix "V" followed by a sequence of five
+     * random characters. Characters are selected randomly from the ASCII range
+     * between uppercase 'A' (65) and lowercase 'z' (122), which includes
+     * uppercase letters, lowercase letters, and some punctuation characters.
+     *
+     * @return A generated verification token in the format "Vxxxxx" where xxxxx
+     * are random characters.
+     */
+    String generateVerificationToken();
+
+    /**
+     * Generates a unique admin token.
+     *
+     * <p>
+     * The token is composed of the prefix "A" followed by a sequence of five
+     * random characters. Characters are selected randomly from the ASCII range
+     * between uppercase 'A' (65) and lowercase 'z' (122), which includes
+     * uppercase letters, lowercase letters, and some punctuation characters.
+     *
+     * @return A generated admin token in the format "Axxxxx" where xxxxx
+     * are random characters.
+     */
+    String generateAdminToken();
+
+    /**
+     * Generates a unique instructor token.
+     *
+     * <p>
+     * The token is composed of the prefix "I" followed by a sequence of five
+     * random characters. Characters are selected randomly from the ASCII range
+     * between uppercase 'A' (65) and lowercase 'z' (122), which includes
+     * uppercase letters, lowercase letters, and some punctuation characters.
+     *
+     * @return A generated instructor token in the format "Ixxxxx" where xxxxx
+     * are random characters.
+     */
+
+    String generateInstructorToken();
+
+    User promoteUser(User user) throws SQLException, Exception;
+            
+    /**
+
      * Attempts to log in a user by verifying the provided email and password.
      *
      * @param user A User object containing the email and plain-text password
@@ -75,4 +122,6 @@ public interface UserService {
      * @throws Exception if an error occurs
      */
     User findUserById(User user) throws Exception;
+    
+    User PromoteStaff(User user) throws Exception;
 }

@@ -12,6 +12,8 @@ import com.j148.backend.hearing.service.HearingServiceImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Singleton;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -23,6 +25,7 @@ import java.util.Objects;
 /**
  * @author glenl
  */
+@Singleton
 public class AttendanceServiceImpl implements AttendanceService {
 
     private AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
@@ -32,10 +35,13 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in
+
         if (attendance != null && attendance.getContractor().getContractorId() != null) {
-            Attendance foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).
-                    orElseThrow(() -> new Exception("Unable to find attendance in the database"));
-            if (foundAttendance != null) {
+            Attendance foundAttendance;
+            foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).orElse(null);
+
+            if (foundAttendance == null) {
+                attendance.setTimeIn(LocalDateTime.now());
                 LocalTime targetTime = LocalTime.of(8, 30);
                 LocalTime currentTime = LocalTime.now();
                 if (currentTime.isAfter(targetTime)) {
@@ -59,7 +65,14 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public Attendance checkOut(Attendance attendance) throws SQLException, Exception { //check out
-        Attendance foundAttendance = attendanceRepo.getAttendanceByID(attendance.getAttendanceId()).orElseThrow(() -> new Exception("No attendance record found"));
+        Attendance foundAttendance;
+        if (attendance.getAttendanceId() != null) {
+            foundAttendance = attendanceRepo.getAttendanceByID(attendance.getAttendanceId()).orElse(null);
+        } else if (attendance.getContractor().getContractorId() != null) {
+            foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).orElse(null);
+        } else {
+            foundAttendance = null;
+        }
         if (foundAttendance != null) {
             Long attendanceId = foundAttendance.getAttendanceId();
             LocalDateTime timeIn = foundAttendance.getTimeIn();
@@ -70,9 +83,9 @@ public class AttendanceServiceImpl implements AttendanceService {
             if (timeOut != null) {
                 throw new Exception("Contractor already checked out");
             }
-            if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L ) {
-                attendance.setTimeOut(LocalDateTime.now());
-                return this.attendanceRepo.updateAttendance(attendance).
+            if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L) {
+                foundAttendance.setTimeOut(LocalDateTime.now());
+                return this.attendanceRepo.updateAttendance(foundAttendance).
                         orElseThrow(() -> new Exception("Unable to update database"));
             }
         }
@@ -98,9 +111,8 @@ public class AttendanceServiceImpl implements AttendanceService {
 
     @Override
     public List<Attendance> contractorsNotCheckedIn(List<Contractor> contractors) throws SQLException, Exception {
-        List<Attendance> todayAttendances = attendanceRepo.todaysAttenance();
+        List<Attendance> todayAttendances = attendanceRepo.todayAttendance();
         List<Attendance> missingAttendances = new ArrayList<>();
-
         for (Attendance todayAttendance : todayAttendances) {
             for (int j = 0; j < contractors.size(); j++) {
                 if (!(contractors.get(j).getStatus().equals(Contractor.Status.ACTIVE))) {
@@ -123,4 +135,12 @@ public class AttendanceServiceImpl implements AttendanceService {
         return missingAttendances;
     }
 
+    @Schedule(dayOfWeek = "Mon-Fri", hour = "15", minute = "45", persistent = false)
+    public void checkContractorsAttendance() {
+        try {
+            createAbsentContractors();
+        } catch (Exception e) {
+
+        }
+    }
 }

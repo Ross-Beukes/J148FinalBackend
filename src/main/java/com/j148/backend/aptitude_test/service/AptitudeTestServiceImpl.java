@@ -25,6 +25,8 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         }
 
         if (aptitudeTest.getAptitudeTestId() == null || aptitudeTest.getTestDate() == null) {
+        if (aptitudeTest.getTestDate() == null ){
+
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
@@ -39,7 +41,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
 
         aptitudeTest.setUser(user);
 
-        return aptitudeRepo.update(aptitudeTest).orElseThrow(() -> new Exception("failed to schedule aptitude test"));
+        return aptitudeRepo.create(aptitudeTest).orElseThrow(() -> new Exception("failed to schedule aptitude test"));
     }
 
     @Override
