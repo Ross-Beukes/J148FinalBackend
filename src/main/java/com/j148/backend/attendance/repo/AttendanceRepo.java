@@ -78,7 +78,8 @@ public interface AttendanceRepo {
      * @throws SQLException if there is an error accessing the database or
      * executing the SQL statement.
      */
-    List<Attendance> todaysAttenance() throws SQLException;
+    List<Attendance> todayAttendance() throws SQLException;
+
     /**
      * Finds all the Attendance records for particular contractor
      * @param  contractor the contractor Object that will contain the attendance records for the contractor.

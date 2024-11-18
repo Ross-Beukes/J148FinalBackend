@@ -6,7 +6,7 @@ import com.j148.backend.user.model.User;
 import jakarta.servlet.http.Part;
 import com.j148.backend.files.model.FileEntity;
 
-
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -393,72 +393,73 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     }
 
     @Override
-    public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
 
+    public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
+      
      if(fileEntity != null){
         String accessKey = "";
         String SecretKey =  "";
         String bucketName = "";
         Region region = Region.AF_SOUTH_1;
-
+        
         //Uploading file to S3 File Storage , needs to be tested
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey,SecretKey );
         S3Client s3Client = S3Client.builder()
                 .region(region)
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
-
+        
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
                 .key(Paths.get(fileEntity.getPath()).getFileName().toString())
                 .build();
-
+        
         s3Client.putObject(putRequest, Paths.get(fileEntity.getPath()));
         System.out.println("File has been successfully uploaded ");
-
-    try{
-
+      
+    try{    
+        
     //Add a file record to the Database
     return saveFile(fileEntity);
-
+    
     }catch(Exception e){
           LOGGER.log(Level.SEVERE, "Error saving uploaded file to Database", e);
     }
      }else {
          throw new FileNotFoundException("Error , it was not possible to find this file");
      }
-
-
+             
+            
         return Optional.empty();
-
+            
     }
-
+    
 
     @Override
     public Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException {
         if(fileEntity != null){
-
+            
         String accessKey = "";
         String SecretKey =  "";
         String bucketName = "";
         Region region = Region.AF_SOUTH_1;
-
+        
         //Find file Entity
         fileEntity = findById(fileEntity).get();
-
-        if(fileEntity.getPath() != null){
+        
+        if(fileEntity.getPath() != null){    
         //Download File Entity
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey,SecretKey );
         S3Client s3Client = S3Client.builder()
                 .region(region)
                 .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
                 .build();
-
+        
          GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(Path.of(fileEntity.getPath()).getFileName().toString())
                 .build();
-
+         
          //Construct destination path
          String userHome = System.getProperty("user.home");
          String downloadsPath = userHome + "/Downloads/" + Path.of(fileEntity.getPath()).getFileName();
@@ -466,26 +467,25 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         s3Client.getObject(getRequest, Paths.get(downloadsPath));
         System.out.println("File downloaded successfully!");
         return Optional.of(fileEntity);
-
+        
         }//If statement end
         else{
-
+            
         throw new FileNotFoundException("The File Path does not exist, File was not found ");
-
+       
         }
-
+        
         }else{
             throw new FileNotFoundException("Sorry, The No such file Exists ");
         }
-
-
-
+        
+        
+      
     }
+    
+    
+    
 
-
-
-
-    @Override
     public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException{
         String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
 
@@ -515,4 +515,6 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         }
         return Optional.empty();
     }
+
+
 }

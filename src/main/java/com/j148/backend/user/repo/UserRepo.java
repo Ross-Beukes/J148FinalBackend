@@ -117,5 +117,13 @@ public interface UserRepo {
      * @throws SQLException if there is an error connecting to the database or
      * executing the SQL statement.
      */
-    Optional<User> retreiveUserFromUserID(User user) throws SQLException;
+    Optional<User> retrieveUserFromUserID(User user) throws SQLException;
+
+    List<User> retrieveAllUsers() throws SQLException;
+
+    Optional<User> updateAge(User user) throws SQLException;
+
+    Optional<User> getAdmin() throws SQLException;
+    
+    Optional<User> promoteStaff(User user) throws SQLException;
 }

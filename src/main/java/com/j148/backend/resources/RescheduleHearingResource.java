@@ -14,15 +14,15 @@ import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-@Path("reschedule-hearing")
+@Path("hearing")
 public class RescheduleHearingResource {
     private HearingService hearingService = new HearingServiceImpl();
     private static final Logger LOG = Logger.getLogger(RescheduleHearingResource.class.getName());
 
-    @GET
-    public Response pingRescheduleHearingResource(){
-        return Response.ok("Successfully pinged Hearing resource").build();
-    }
+//    @GET
+//    public Response pingRescheduleHearingResource(){
+//        return Response.ok("Successfully pinged Hearing resource").build();
+//    }
 
     @POST
     @Consumes(APPLICATION_JSON)

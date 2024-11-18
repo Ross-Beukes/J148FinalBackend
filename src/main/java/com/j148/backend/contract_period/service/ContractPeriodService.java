@@ -73,6 +73,36 @@ public interface ContractPeriodService {
      * found; otherwise, an empty {@link Optional}.
      * @throws SQLException if a database access error occurs.
      */
-
     ContractPeriod getNextContractPeriod() throws SQLException, Exception;
+
+    /**
+     * Calculates the average enrollment over a specified period of years.
+     *
+     * <p>
+     * This method queries the database to count the number of enrollments
+     * between the specified start and end years (inclusive), then calculates
+     * the average by dividing the total enrollments by the number of years
+     * in the specified period.
+     * </p>
+     *
+     * @param startYear The beginning year of the period.
+     * @param endYear The ending year of the period.
+     * @return The average number of enrollments per year over the specified period.
+     * @throws SQLException if a database access error occurs.
+     */
+    double enrollmentAverageForPeriodOfYears(int startYear, int endYear) throws SQLException;
+
+    /**
+     * Calculates the average enrollment for a specified year.
+     *
+     * <p>
+     * This method queries the database to count the number of enrollments
+     * in the specified year and returns it as a yearly average.
+     * </p>
+     *
+     * @param year The year for which to calculate the enrollment average.
+     * @return The average number of enrollments for the specified year.
+     * @throws SQLException if a database access error occurs.
+     */
+    double enrollmentAveragesForYear(int year) throws SQLException;
 }
