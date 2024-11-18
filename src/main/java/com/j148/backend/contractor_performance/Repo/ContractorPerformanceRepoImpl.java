@@ -906,11 +906,22 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             Map<String, Integer> attendanceByRace = new HashMap<>();
             Map<String, Integer> attendanceByAgeRange = new HashMap<>();
 
-            // New Maps for tracking counts of females and males with warnings/hearings
-            Map<String, Integer> femalesWithWarnings = new HashMap<>();
-            Map<String, Integer> malesWithWarnings = new HashMap<>();
-            Map<String, Integer> femalesWithHearings = new HashMap<>();
-            Map<String, Integer> malesWithHearings = new HashMap<>();
+            // Separate maps for males and females for warnings and hearings
+            Map<String, Integer> maleWarnings = new HashMap<>();
+            Map<String, Integer> femaleWarnings = new HashMap<>();
+            Map<String, Integer> maleHearings = new HashMap<>();
+            Map<String, Integer> femaleHearings = new HashMap<>();
+
+// Initialize counts for "With" and "Without" categories
+            maleWarnings.put("With Warnings", 0);
+            maleWarnings.put("Without Warnings", 0);
+            femaleWarnings.put("With Warnings", 0);
+            femaleWarnings.put("Without Warnings", 0);
+
+            maleHearings.put("With Hearings", 0);
+            maleHearings.put("Without Hearings", 0);
+            femaleHearings.put("With Hearings", 0);
+            femaleHearings.put("Without Hearings", 0);
 
             // Initialize totals for gender count (unchanged)
             Map<String, Integer> totalContractorsByGender = new HashMap<>();
@@ -943,12 +954,18 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 warningsByRace.put(race, warningsByRace.getOrDefault(race, 0) + warningCount);
                 warningsByAgeRange.put(ageRange, warningsByAgeRange.getOrDefault(ageRange, 0) + warningCount);
 
-                // Track warnings for gender (new logic)
-                if (warningCount > 0) {
-                    if ("Female".equalsIgnoreCase(gender)) {
-                        femalesWithWarnings.put("Warnings", femalesWithWarnings.getOrDefault("Warnings", 0) + 1);
-                    } else if ("Male".equalsIgnoreCase(gender)) {
-                        malesWithWarnings.put("Warnings", malesWithWarnings.getOrDefault("Warnings", 0) + 1);
+                // Update warnings count
+                if ("Male".equalsIgnoreCase(gender)) {
+                    if (warningCount > 0) {
+                        maleWarnings.put("With Warnings", maleWarnings.get("With Warnings") + 1);
+                    } else {
+                        maleWarnings.put("Without Warnings", maleWarnings.get("Without Warnings") + 1);
+                    }
+                } else if ("Female".equalsIgnoreCase(gender)) {
+                    if (warningCount > 0) {
+                        femaleWarnings.put("With Warnings", femaleWarnings.get("With Warnings") + 1);
+                    } else {
+                        femaleWarnings.put("Without Warnings", femaleWarnings.get("Without Warnings") + 1);
                     }
                 }
 
@@ -957,12 +974,18 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 hearingsByRace.put(race, hearingsByRace.getOrDefault(race, 0) + hearingCount);
                 hearingsByAgeRange.put(ageRange, hearingsByAgeRange.getOrDefault(ageRange, 0) + hearingCount);
 
-                // Track hearings for gender (new logic)
-                if (hearingCount > 0) {
-                    if ("Female".equalsIgnoreCase(gender)) {
-                        femalesWithHearings.put("Hearings", femalesWithHearings.getOrDefault("Hearings", 0) + 1);
-                    } else if ("Male".equalsIgnoreCase(gender)) {
-                        malesWithHearings.put("Hearings", malesWithHearings.getOrDefault("Hearings", 0) + 1);
+                // Update hearings count
+                if ("Male".equalsIgnoreCase(gender)) {
+                    if (hearingCount > 0) {
+                        maleHearings.put("With Hearings", maleHearings.get("With Hearings") + 1);
+                    } else {
+                        maleHearings.put("Without Hearings", maleHearings.get("Without Hearings") + 1);
+                    }
+                } else if ("Female".equalsIgnoreCase(gender)) {
+                    if (hearingCount > 0) {
+                        femaleHearings.put("With Hearings", femaleHearings.get("With Hearings") + 1);
+                    } else {
+                        femaleHearings.put("Without Hearings", femaleHearings.get("Without Hearings") + 1);
                     }
                 }
 
@@ -972,24 +995,6 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 attendanceByAgeRange.put(ageRange, attendanceByAgeRange.getOrDefault(ageRange, 0) + attendanceCount);
             }
 
-            // Calculate the percentage of females and males with warnings and hearings (outside the loop)
-            double percentageFemalesWithWarnings = 0;
-            double percentageMalesWithWarnings = 0;
-            double percentageFemalesWithHearings = 0;
-            double percentageMalesWithHearings = 0;
-
-            // Calculate the percentage of females and males with warnings and hearings (outside the loop)
-            if (totalContractorsByGender.get("Female") > 0) {
-                percentageFemalesWithWarnings = (double) femalesWithWarnings.get("Warnings") / totalContractorsByGender.get("Female") * 100;
-                percentageFemalesWithHearings = (double) femalesWithHearings.get("Hearings") / totalContractorsByGender.get("Female") * 100;
-            }
-
-            if (totalContractorsByGender.get("Male") > 0) {
-                percentageMalesWithWarnings = (double) malesWithWarnings.get("Warnings") / totalContractorsByGender.get("Male") * 100;
-                percentageMalesWithHearings = (double) malesWithHearings.get("Hearings") / totalContractorsByGender.get("Male") * 100;
-            }
-
-            // *** AGGREGATION OF CONTRACTORS BY AGE RANGE ***
 // * SUMMARY SHEET *
             Sheet summarySheet = workbook.createSheet("Warnings Summary");
             Row summaryHeader = summarySheet.createRow(0);
@@ -1024,33 +1029,23 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 row.createCell(1).setCellValue(entry.getValue());
             }
 
-            // Add Warnings by Females
+//Add warnings by female
             Row femaleHeader = summarySheet.createRow(summaryRowNum++);
-            femaleHeader.createCell(0).setCellValue("Warnings by Females");
-            for (Map.Entry<String, Integer> entry : femalesWithWarnings.entrySet()) {
+            femaleHeader.createCell(0).setCellValue("Warnings by female");
+            for (Map.Entry<String, Integer> entry : femaleWarnings.entrySet()) {
                 Row row = summarySheet.createRow(summaryRowNum++);
                 row.createCell(0).setCellValue(entry.getKey());
                 row.createCell(1).setCellValue(entry.getValue());
             }
 
-// Add the percentage of females with warnings to the Excel sheet (below the warnings data)
-            Row femalePercentageRow = summarySheet.createRow(summaryRowNum++);
-            femalePercentageRow.createCell(0).setCellValue("Percentage of Females with Warnings");
-            femalePercentageRow.createCell(1).setCellValue(percentageFemalesWithWarnings + "%");
-
-// Add Warnings by Males
+//Add warnings by male
             Row maleHeader = summarySheet.createRow(summaryRowNum++);
-            maleHeader.createCell(0).setCellValue("Warnings by Males");
-            for (Map.Entry<String, Integer> entry : malesWithWarnings.entrySet()) {
+            maleHeader.createCell(0).setCellValue("Warnings by male");
+            for (Map.Entry<String, Integer> entry : maleWarnings.entrySet()) {
                 Row row = summarySheet.createRow(summaryRowNum++);
                 row.createCell(0).setCellValue(entry.getKey());
                 row.createCell(1).setCellValue(entry.getValue());
             }
-
-// Add the percentage of males with warnings to the Excel sheet (below the warnings data)
-            Row malePercentageRow = summarySheet.createRow(summaryRowNum++);
-            malePercentageRow.createCell(0).setCellValue("Percentage of Males with Warnings");
-            malePercentageRow.createCell(1).setCellValue(percentageMalesWithWarnings + "%");
 
 // * CREATING GRAPHS *
             XSSFDrawing drawing = (XSSFDrawing) summarySheet.createDrawingPatriarch();
@@ -1122,6 +1117,34 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             // Plot the chart with both axes and data
             ageChart.plot(ageData);
 
+            // Female Warnings Pie Chart
+            XSSFClientAnchor femaleAnchor = drawing.createAnchor(0, 0, 0, 0, 5, 22, 15, 42); // Adjust position if needed
+            XSSFChart femaleChart = drawing.createChart(femaleAnchor);
+            femaleChart.setTitleText("Warnings for Females");
+            femaleChart.setTitleOverlay(false);
+            femaleChart.getOrAddLegend();
+            XDDFDataSource<String> femaleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(14, 14 + femaleWarnings.size() - 1, 0, 0));
+            XDDFNumericalDataSource<Double> femaleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(14, 14 + femaleWarnings.size() - 1, 1, 1)); // Fix range alignment
+            XDDFChartData femaleData = femaleChart.createData(ChartTypes.PIE, null, null);
+            XDDFChartData.Series femaleSeries = femaleData.addSeries(femaleCategories, femaleValues);
+            femaleChart.plot(femaleData);
+
+// Male Warnings Pie Chart
+            XSSFClientAnchor maleAnchor = drawing.createAnchor(0, 0, 0, 0, 16, 22, 26, 42); // Adjust position to avoid overlap
+            XSSFChart maleChart = drawing.createChart(maleAnchor);
+            maleChart.setTitleText("Warnings for Males");
+            maleChart.setTitleOverlay(false);
+            maleChart.getOrAddLegend();
+            XDDFDataSource<String> maleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(17, 17 + maleWarnings.size() - 1, 0, 0));
+            XDDFNumericalDataSource<Double> maleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(17, 17 + maleWarnings.size() - 1, 1, 1)); // Ensure correct range for male data
+            XDDFChartData maleData = maleChart.createData(ChartTypes.PIE, null, null);
+            XDDFChartData.Series maleSeries = maleData.addSeries(maleCategories, maleValues);
+            maleChart.plot(maleData);
+
             //-------------------------------------------------------------------------------------------------------------------------
             // * SUMMARY SHEET *
             summarySheet = workbook.createSheet("Hearing Summary");
@@ -1152,6 +1175,24 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             ageHeader = summarySheet.createRow(summaryRowNum++);
             ageHeader.createCell(0).setCellValue("Hearings by Age Range");
             for (Map.Entry<String, Integer> entry : hearingsByAgeRange.entrySet()) {
+                Row row = summarySheet.createRow(summaryRowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue());
+            }
+
+            //Add hearings by female
+            femaleHeader = summarySheet.createRow(summaryRowNum++);
+            femaleHeader.createCell(0).setCellValue("Hearings by female");
+            for (Map.Entry<String, Integer> entry : femaleHearings.entrySet()) {
+                Row row = summarySheet.createRow(summaryRowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue());
+            }
+
+//Add hearings by male
+            maleHeader = summarySheet.createRow(summaryRowNum++);
+            maleHeader.createCell(0).setCellValue("Hearings by male");
+            for (Map.Entry<String, Integer> entry : maleHearings.entrySet()) {
                 Row row = summarySheet.createRow(summaryRowNum++);
                 row.createCell(0).setCellValue(entry.getKey());
                 row.createCell(1).setCellValue(entry.getValue());
@@ -1226,6 +1267,36 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
 
             // Plot the chart with both axes and data
             ageChart.plot(ageData);
+            
+            
+            
+            // Female Warnings Pie Chart
+            femaleAnchor = drawing.createAnchor(0, 0, 0, 0, 5, 22, 15, 42); // Adjust position if needed
+            femaleChart = drawing.createChart(femaleAnchor);
+            femaleChart.setTitleText("Hearings for Females");
+            femaleChart.setTitleOverlay(false);
+            femaleChart.getOrAddLegend();
+            femaleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(14, 14 + femaleHearings.size() - 1, 0, 0));
+            femaleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(14, 14 + femaleHearings.size() - 1, 1, 1)); // Fix range alignment
+            femaleData = femaleChart.createData(ChartTypes.PIE, null, null);
+            femaleSeries = femaleData.addSeries(femaleCategories, femaleValues);
+            femaleChart.plot(femaleData);
+
+// Male Warnings Pie Chart
+            maleAnchor = drawing.createAnchor(0, 0, 0, 0, 16, 22, 26, 42); // Adjust position to avoid overlap
+            maleChart = drawing.createChart(maleAnchor);
+            maleChart.setTitleText("Hearings for Males");
+            maleChart.setTitleOverlay(false);
+            maleChart.getOrAddLegend();
+            maleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(17, 17 + maleHearings.size() - 1, 0, 0));
+            maleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(17, 17 + maleHearings.size() - 1, 1, 1)); // Ensure correct range for male data
+            maleData = maleChart.createData(ChartTypes.PIE, null, null);
+            maleSeries = maleData.addSeries(maleCategories, maleValues);
+            maleChart.plot(maleData);
 
             //-------------------------------------------------------------------------------------------------------------------------
             // * SUMMARY SHEET *
