@@ -80,6 +80,7 @@ public Response getAllContractorPerformance(){
     }
 }
 
+//<<<<<<< HEAD:src/main/java/com/j148/backend/contractor_performance/resource/ContractorPerformanceResource.java
 @GET
 @Produces(APPLICATION_JSON)
 @Path("get-all-filtered-contractor-performance")
@@ -101,6 +102,7 @@ public Response getFilteredContractorPerformance(@QueryParam("filters") String f
         return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();  
     }
 }
+
 
 @GET
 @Produces(APPLICATION_JSON)
