@@ -11,6 +11,7 @@ import java.sql.SQLException;
  */
 public interface UserService {
 
+
     /**
 
      * Generates a unique verification token.
@@ -56,6 +57,10 @@ public interface UserService {
     String generateInstructorToken();
 
     User promoteUser(User user) throws SQLException, Exception;
+            
+    /**
+
+
             
     /**
 

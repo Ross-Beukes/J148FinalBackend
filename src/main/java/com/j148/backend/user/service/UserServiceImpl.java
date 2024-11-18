@@ -13,12 +13,12 @@ import java.time.LocalDateTime;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Random;
 
 @Singleton
 public class UserServiceImpl implements UserService {
 
     private final UserRepo userRepo = new UserRepoImpl();
+
     /**
      *This map is used to temporarily store the generated admin keys.
      */
@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     @Override
     public User LogIn(User user) throws SQLException, Exception {
         if (user != null) {
@@ -104,35 +105,35 @@ public class UserServiceImpl implements UserService {
     public User updateUser(User user) throws Exception {
         if (user != null){
             return userRepo.updateUser(user).orElseThrow(() -> new Exception("Unable to update user."));
-        } else {
+        }else {
             throw new IllegalArgumentException("ID number cannot be null.");
         }
     }
 
     @Override
     public User findUserByEmail(User user) throws Exception {
-        if (user.getEmail() != null) {
+        if (user.getEmail() != null){
             return userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User with this email address was not found."));
         } else {
-            throw new IllegalArgumentException("Email cannot be null.");
+            throw  new IllegalArgumentException("Email cannot be null.");
         }
     }
 
     @Override
     public User promoteApplicant(User user) throws Exception {
-        if (user != null && user.getIdNumber() != null){
+        if (user != null){
             return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("User not promoted to contractor."));
         } else {
-            throw new IllegalArgumentException("User cannot be null.");
+            throw  new IllegalArgumentException("User cannot be null.");
         }
     }
 
     @Override
     public User findUserById(User user) throws Exception {
-        if (user != null && user.getUserId() != null) {
+        if (user != null && user.getUserId() != null){
             return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
         } else {
-            throw new IllegalArgumentException("User id cannot be null.");
+            throw  new IllegalArgumentException("User id cannot be null.");
         }
     }
 
