@@ -8,7 +8,6 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
-
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;

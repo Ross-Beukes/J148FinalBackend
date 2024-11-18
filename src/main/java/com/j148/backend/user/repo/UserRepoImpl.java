@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,23 +93,22 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     String name = rs.getString("name");
                     String surname = rs.getString("surname");
                     String email = rs.getString("email");
-                    String password = rs.getString("password");
                     String gender = rs.getString("gender");
                     String id_number = rs.getString("id_number");
                     Role role = Role.valueOf(rs.getString("role"));
                     String race = rs.getString("race");
                     String location = rs.getString("location");
+                    String password = rs.getString("password");
                     int age = rs.getInt("age");
                     foundUser = User.builder().userId(userID).
                             name(name).
                             surname(surname).
                             email(email).
-                            password(password).
                             gender(gender).
                             idNumber(id_number).
                             role(role).race(race).
                             location(location).
-                            age(age).build();
+                            age(age).password(password).build();
                     return Optional.of(foundUser);
 
                 }
@@ -166,6 +166,97 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
                     return Optional.of(foundUser);
 
                 }
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<User> retrieveAllUsers() throws SQLException {
+        List<User> allUsers = new ArrayList<>();
+        String query = "SELECT * FROM user";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                User user = new User();
+
+                user.setUserId(rs.getLong("user_id"));
+                user.setName(rs.getString("name"));
+                user.setSurname(rs.getString("surname"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setGender(rs.getString("gender"));
+                user.setIdNumber(rs.getString("id_number"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setRace(rs.getString("race"));
+                user.setLocation(rs.getString("location"));
+                user.setAge(rs.getInt("age"));
+
+                allUsers.add(user);
+            }
+        }
+        return allUsers;
+    }
+
+    @Override
+    public Optional<User> updateAge(User user) throws SQLException {
+        String query = "UPDATE user SET age = ? WHERE id_number = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareCall(query)) {
+            con.setAutoCommit(false);
+            ps.setInt(1, user.getAge());
+            ps.setString(2, user.getIdNumber());
+
+            Savepoint beforeUserEdit = con.setSavepoint();
+            if (ps.executeUpdate() > 0) {
+                con.commit();
+                return Optional.of(user);
+            } else {
+                con.rollback(beforeUserEdit);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> getAdmin() throws SQLException {
+        String query = "SELECT * FROM user WHERE role = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, Role.ADMIN.name());
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getLong("user_id"));
+                user.setName(rs.getString("name"));
+                user.setSurname(rs.getString("surname"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setGender(rs.getString("gender"));
+                user.setIdNumber(rs.getString("id_number"));
+                user.setRole(User.Role.valueOf(rs.getString("role")));
+                user.setRace(rs.getString("race"));
+                user.setLocation(rs.getString("location"));
+                user.setAge(rs.getInt("age"));
+                return Optional.of(user);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> promoteStaff(User user) throws SQLException {
+        String query = "UPDATE user SET role = ? WHERE email = ?";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, user.getRole().toString());
+            ps.setString(2, user.getEmail());
+            con.setAutoCommit(false);
+            Savepoint beforeUserEdit = con.setSavepoint();
+            if (ps.executeUpdate() > 0) {
+                con.commit();
+                return Optional.of(user);
+            } else {
+                con.rollback(beforeUserEdit);
             }
         }
         return Optional.empty();

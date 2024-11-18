@@ -1,27 +1,31 @@
 package com.j148.backend.resources;
 
+import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
+
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Controller for User management Includes end point tests for all user
- * management
+ * Controller for User management
+ * Includes end point tests for all user management
  */
 @Path("user")
 public class UserResource {
-
     private UserService UserService = new UserServiceImpl();
     /**
-     * This map is used to temporarily store the generated admin keys.
+     *This map is used to temporarily store the generated admin keys.
      */
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
@@ -72,10 +76,10 @@ public class UserResource {
     public Response updateUser(User user) {
         try {
             return Response.ok(this.UserService.updateUser(user)).build();
-        } catch (SQLException e) {
+        } catch (SQLException e){
             LOG.log(Level.SEVERE, "Unable to update user details in the database");
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e){
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -143,4 +147,5 @@ public class UserResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
+
 }

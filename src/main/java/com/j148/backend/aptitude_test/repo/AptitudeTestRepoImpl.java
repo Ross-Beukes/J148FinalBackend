@@ -9,14 +9,16 @@ package com.j148.backend.aptitude_test.repo;
  */
 
 import com.j148.backend.aptitude_test.model.AptitudeTest;
-import com.j148.backend.user.model.User;
 import com.j148.backend.config.DBConfig;
+import com.j148.backend.user.model.User;
 
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
 
@@ -25,7 +27,7 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
         String sql = "INSERT INTO aptitude_test (test_mark, test_date, user_id) VALUES (?, ?, ?)";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
+            conn.setAutoCommit(false);
             Savepoint beforeTestSave = conn.setSavepoint();
 
             try {
@@ -49,13 +51,12 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
                 throw e;
             }
         }
-
         return Optional.empty();
     }
 
     @Override
     public Optional<AptitudeTest> findById(Long id) throws SQLException {
-        String sql = "SELECT * FROM aptitude_tests WHERE aptitude_test_id = ?";
+        String sql = "SELECT * FROM aptitude_test WHERE aptitude_test_id = ?";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -86,28 +87,25 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
 
     @Override
     public Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException {
-        String sql = "UPDATE aptitude_test SET test_mark = ?, test_date = ?, user_id = ? WHERE aptitude_test_id = ?";
+        String query = "UPDATE aptitude_test SET test_mark = ?, test_date = ?, user_id = ? WHERE aptitude_test_id = ?";
+        System.out.println(query);
         try (Connection conn = DBConfig.getCon();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            conn.setAutoCommit(false);
+            stmt.setInt(1, aptitudeTest.getTestMark());
+            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
+            stmt.setLong(3, aptitudeTest.getUser().getUserId());
+            stmt.setLong(4, aptitudeTest.getAptitudeTestId());
             Savepoint beforeTestSave = conn.setSavepoint();
 
-            try {
-                stmt.setInt(1, aptitudeTest.getTestMark());
-                stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-                stmt.setLong(3, aptitudeTest.getUser().getUserId());
-                stmt.setLong(4, aptitudeTest.getAptitudeTestId());
-
-                if (stmt.executeUpdate() > 0) {
-                    conn.commit();
-                    return Optional.of(aptitudeTest);
-                } else {
-                    conn.rollback(beforeTestSave);
-                }
-                return Optional.empty();
-            } catch (SQLException e) {
+            if (stmt.executeUpdate() > 0) {
+                conn.commit();
+                return Optional.of(aptitudeTest);
+            } else {
                 conn.rollback(beforeTestSave);
-                throw e;
             }
+            return Optional.empty();
+
         }
     }
 

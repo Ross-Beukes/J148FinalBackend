@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.j148.backend.hearing.service;
 
 import com.j148.backend.contractor.model.Contractor;
@@ -18,11 +14,6 @@ import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-/**
- *
- * @author Tshireletso
- */
 public class HearingServiceImpl implements HearingService {
 
     private final HearingRepo hearingRepo = new HearingRepoImpl();
@@ -30,7 +21,7 @@ public class HearingServiceImpl implements HearingService {
     private final WarningRepo warningRepo = new WarningRepoImpl();
 
     @Override
-    public LocalDateTime scheduleHearing() throws Exception{
+    public LocalDateTime scheduleHearing() throws Exception {
         // get one week to the current date and time
         LocalDateTime hearingDate = LocalDateTime.now().plusWeeks(1);
 
@@ -38,9 +29,9 @@ public class HearingServiceImpl implements HearingService {
     }
 
     @Override
-    public Hearing IssueHearing(Contractor contractor) throws Exception{
+    public Hearing IssueHearing(Contractor contractor) throws Exception {
 
-        if(contractor != null){
+        if (contractor != null) {
             int hearingCount = 0;
             long warningCount = 0l;
             HearingRepoImpl hri = new HearingRepoImpl();
@@ -53,15 +44,14 @@ public class HearingServiceImpl implements HearingService {
             }
             //Obtain count based on a Contractors amount of active warnings
             try {
-                warningCount = warningRepo.countActiveWarningsByContractor(contractor).get() ;
+                warningCount = warningRepo.countActiveWarningsByContractor(contractor).get();
             } catch (SQLException ex) {
                 Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing warning history", ex);
             }
 
+            if (warningCount % 3 == 0 && warningCount > 0) {
 
-            if(warningCount % 3 == 0 && warningCount > 0){
-
-                if(warningCount * 3L != hearingCount){
+                if (warningCount * 3L != hearingCount) {
                     Hearing hearing = Hearing.builder()
                             .scheduleDate(scheduleHearing())
                             .hearingsId(0L)
@@ -80,26 +70,26 @@ public class HearingServiceImpl implements HearingService {
     @Override
     public Hearing rescheduleHearing(Hearing hearing, Contractor contractor) throws Exception {
 
-        if (hearing == null){
+        if (hearing == null) {
             throw new IllegalArgumentException("User is null");
         }
-        if (contractor == null){
+        if (contractor == null) {
             throw new IllegalArgumentException("Contractor is null");
         }
 
-        if (hearing.getHearingsId() == null || hearing.getScheduleDate() == null ){
+        if (hearing.getHearingsId() == null || hearing.getScheduleDate() == null) {
             throw new IllegalArgumentException("Hearing schedule date or id is null");
         }
 
-        if (contractor.getContractorId() == null){
+        if (contractor.getContractorId() == null) {
             throw new IllegalArgumentException("Contractor id is null");
         }
 
-        if (contractorRepo.findById(contractor).isEmpty()){
+        if (contractorRepo.findById(contractor).isEmpty()) {
             throw new IllegalArgumentException("Could not find contractor");
         }
 
-        if (hearingRepo.getHearing(hearing).isEmpty()){
+        if (hearingRepo.getHearing(hearing).isEmpty()) {
             throw new IllegalArgumentException("Could not find hearing");
         }
 
@@ -109,14 +99,6 @@ public class HearingServiceImpl implements HearingService {
 
         return hearingRepo.updateHearing(hearing)
                 .orElseThrow(() -> new Exception("Failed to reschedule hearing"));
-
+        
     }
-
-
-
 }
-    
-  
-    
-    
-

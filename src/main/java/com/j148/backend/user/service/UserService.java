@@ -11,6 +11,8 @@ import java.sql.SQLException;
  */
 public interface UserService {
 
+    User promoteUser(User user) throws SQLException, Exception;
+            
     /**
      * Attempts to log in a user by verifying the provided email and password.
      *
@@ -75,4 +77,6 @@ public interface UserService {
      * @throws Exception if an error occurs
      */
     User findUserById(User user) throws Exception;
+    
+    User PromoteStaff(User user) throws Exception;
 }
