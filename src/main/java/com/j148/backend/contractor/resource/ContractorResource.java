@@ -6,6 +6,7 @@ import com.j148.backend.contractor.service.ContractorServiceImpl;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
@@ -26,14 +27,13 @@ public class ContractorResource {
 
     /**
      * Updates an existing contractor in the database.
-     * @param contractorId ID of the contractor to update.
      * @param contractor   Updated contractor details.
      * @return HTTP Response indicating the result of the update operation.
      */
     @POST
     @Path("update")
     @Consumes(APPLICATION_JSON)
-    public Response updateContractor(Contractor contractor) {
+    public Response updateContractor(@Valid Contractor contractor) {
         try {
 
             Contractor updatedContractor = contractorService.updateContractor(contractor);
@@ -56,7 +56,7 @@ public class ContractorResource {
      * @param contractor   Contractor object containing the updated status.
      * @return HTTP Response indicating the result of the status update operation.
      */
-    @POST
+    @PUT
     @Path("changeStatus/{contractorId}")
     @Consumes(APPLICATION_JSON)
     public Response changeContractorStatus(@PathParam("contractorId") long contractorId, Contractor contractor) {
