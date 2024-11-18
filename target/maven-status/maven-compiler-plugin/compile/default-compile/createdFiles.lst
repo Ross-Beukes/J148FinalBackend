@@ -20,6 +20,7 @@ com\j148\backend\attendance\model\Attendance$Register.class
 com\j148\backend\Exceptions\DateNotFoundException.class
 com\j148\backend\aptitude_test\service\AptitudeTestService.class
 com\j148\backend\contract\repo\ContractRepoImpl.class
+com\j148\backend\resources\WarningResource.class
 com\j148\backend\warning\model\Warning.class
 com\j148\backend\user\repo\UserRepoImpl.class
 com\j148\backend\user\EmailService.class
@@ -50,6 +51,7 @@ com\j148\backend\JakartaRestConfiguration.class
 com\j148\backend\contractor_performance\model\ContractorPerformance.class
 com\j148\backend\Exceptions\FileNotFoundException.class
 com\j148\backend\Exceptions\ContractorPerformanceNotFoundException.class
+com\j148\backend\resources\AptitudeTestResource.class
 com\j148\backend\files\repo\FileEntityRepo.class
 com\j148\backend\contractor\service\ContractorServiceImpl.class
 com\j148\backend\warning\service\WarningService.class
@@ -78,6 +80,7 @@ com\j148\backend\contractor\model\Contractor$ContractorBuilder.class
 com\j148\backend\warning\repo\WarningRepo.class
 com\j148\backend\user\EmailService$1.class
 com\j148\backend\user\model\User.class
+com\j148\backend\attendance\resource\AttendanceResource.class
 com\j148\backend\aptitude_test\model\AptitudeTest.class
 com\j148\backend\contractor\service\ContractorService.class
 com\j148\backend\contract_period\service\ContractPeriodServiceImpl.class

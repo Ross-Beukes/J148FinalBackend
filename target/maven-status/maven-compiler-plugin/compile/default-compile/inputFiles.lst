@@ -14,6 +14,7 @@ C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contractor\service\ContractorServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\warning\service\WarningService.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contractor\repo\ContractorRepoImpl.java
+C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\resources\AptitudeTestResource.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contractor_performance\service\ContractorPerformanceService.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\repo\FileEntityRepoImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\leave_request\service\LeaveRequestServices.java
@@ -60,6 +61,7 @@ C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\repo\FileRepo.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contract_period\repo\ContractPeriodRepo.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\Exceptions\ContractorPerformanceNotFoundException.java
+C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\attendance\resource\AttendanceResource.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contract_period\service\ContractPeriodServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\leave_request\service\LeaveRequestServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\leave_request\repo\LeaveRequestRepoImpl.java
@@ -67,6 +69,7 @@ C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\aptitude_test\repo\AptitudeTestRepoImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\aptitude_test\service\AptitudeTestServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\resources\UserResource.java
+C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\resources\WarningResource.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\aptitude_test\model\AptitudeTest.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\Exceptions\LeaveRequestNotFoundException.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\Exceptions\AptitudeTestNotFoundException.java

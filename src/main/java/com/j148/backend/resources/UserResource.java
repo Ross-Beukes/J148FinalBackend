@@ -1,17 +1,13 @@
 package com.j148.backend.resources;
 
-import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
-import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -130,15 +126,13 @@ public class UserResource {
 
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("promote-user")
-    public Response promoteUser(@QueryParam("idNumber") String idNumber) {
+    @Path("promote-staff")
+    public Response promoteStaff(User user) {
         try {
-            User user = User.builder().idNumber(idNumber).build();
-            return Response.ok(this.UserService.promoteApplicant(user)).build();
+            return Response.ok(this.UserService.PromoteStaff(user)).build();
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");
-            System.out.println("sqlException : " + e.getMessage());
-            return Response.status(Response.Status.CONFLICT).build();
+            LOG.log(Level.SEVERE, "Unable to promote user details in the database");
+            return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
