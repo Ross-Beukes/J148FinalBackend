@@ -5,8 +5,6 @@ import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class UserServiceImpl implements UserService{
@@ -15,42 +13,7 @@ public class UserServiceImpl implements UserService{
     /**
      *This map is used to temporarily store the generated admin keys.
      */
-    private static final Map<String, String> adminTokens = new HashMap<>();
     private Random random = new Random();
-
-    @Override
-    public String generateAdminToken() {
-        StringBuilder token = new StringBuilder("A");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-
-    @Override
-    public String generateInstructorToken() {
-        StringBuilder token = new StringBuilder("I");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-    @Override
-    public User promoteUser(User user) throws SQLException, Exception {
-        if (user != null && user.getIdNumber() != null) {
-            user.setRole(User.Role.CONTRACTOR);
-            return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("Applicant was not promoted to Contractor"));
-        } else {
-            throw new IllegalArgumentException("The user is null");
-        }
-    }
-
     @Override
     public User LogIn(User user) throws SQLException, Exception {
         if (user != null) {
@@ -73,11 +36,13 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User registerUser(User user) throws Exception {
-        if(user != null){
-            return this.userRepo.register(user).orElseThrow(() -> new Exception("Unable to insert user into the database."));
-        }else{
-            throw new IllegalArgumentException("User cannot be null");
+
+        //Checks the email format
+        if (!isValidEmail(user.getEmail())) {
+            throw new IllegalArgumentException("Invalid email format.");
         }
+
+        return this.userRepo.register(user).orElseThrow(() -> new Exception("Unable to insert user into the database."));
     }
 
     @Override
@@ -100,7 +65,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User promoteApplicant(User user) throws Exception {
-        if (user != null){
+        if (user != null && user.getIdNumber() != null){
             return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("User not promoted to contractor."));
         } else {
             throw  new IllegalArgumentException("User cannot be null.");
@@ -110,9 +75,14 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findUserById(User user) throws Exception {
         if (user != null && user.getUserId() != null){
-            return userRepo.retreiveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
+            return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
         } else {
             throw  new IllegalArgumentException("User id cannot be null.");
         }
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9._%+-]+@gmail\\.com$";
+        return email != null && email.matches(emailRegex);
     }
 }
