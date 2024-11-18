@@ -17,7 +17,7 @@ public class FileEntity {
     private Verified verified;
 
     public enum Category {
-        TIMESHEET, MATRIC, ID, CONTRACT, LEAVE_FORM, PROJECT, OTHER
+        TIMESHEET, MATRIC_CERTIFICATE, ID, CONTRACT, LEAVE_FORM, PROJECT, OTHER
     }
 
     public enum Verified {

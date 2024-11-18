@@ -382,4 +382,35 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         }
         return files;
     }
+
+    @Override
+    public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException{
+        String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
+
+        try (Connection con = getCon();
+             PreparedStatement ps = con.prepareStatement(query)) {
+
+            ps.setString(1, category.toString());
+            ps.setLong(2, user.getUserId());
+            try (ResultSet rs = ps.executeQuery()) {
+                if(rs.next()){
+                    FileEntity fileEntity = FileEntity.builder()
+                .fileId(rs.getLong(1))
+                .user(user)
+                .fileType(rs.getString(3))
+                .category(FileEntity.Category.valueOf(rs.getString(4)))
+                .dateAdded(rs.getTimestamp(5).toLocalDateTime())
+                .path(rs.getString(6))
+                .verified(FileEntity.Verified.valueOf(rs.getString(7)))
+                .build();
+                
+                    return Optional.of(fileEntity);
+                }
+               
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error finding file by category and user ID", ex);
+        }
+        return Optional.empty();
+    }
 }

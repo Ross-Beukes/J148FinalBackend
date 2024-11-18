@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //Author : TSHIRELETSO
 
@@ -20,11 +22,13 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
     
     private final ContractPeriodRepoImpl cpri = new ContractPeriodRepoImpl();
     private final UserRepoImpl uri = new UserRepoImpl();
+    private static final Logger LOG = Logger.getLogger(ContractRepoImpl.class.getName());
+    
 
     @Override
     public Optional<Contract> createContract(Contract contract) throws SQLException {
-        String sql = "INSERT INTO contract(contractor_period_id,user_id,decision_date,offer_date,expiration_date,decision,deleted) "
-                + " VALUES(?,?,?,?,?,?,?) ";
+        String sql = "INSERT INTO contract(contract_period_id,user_id,offer_date,expiration_date) "
+                + " VALUES(?,?,?,?) ";
         
         try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)){
         con.setAutoCommit(false);
@@ -32,13 +36,10 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
         
         try{
             
-            ps.setLong(1, contract.getContractId());
+            ps.setLong(1, contract.getContractPeriod().getContractPeriodId());
             ps.setLong(2,contract.getUser().getUserId());
-            ps.setString(3,String.valueOf(contract.getDecisionDate()));
-            ps.setString(4,String.valueOf(contract.getOfferDate()));
-            ps.setString(5,String.valueOf(contract.getExpirationDate()));
-            ps.setString(6,String.valueOf(contract.getDecision()));
-            ps.setBoolean(7, contract.isDeleted());
+            ps.setString(3,String.valueOf(contract.getOfferDate()));
+            ps.setString(4,String.valueOf(contract.getExpirationDate()));
             
             if(ps.executeUpdate() > 0){
                 
@@ -59,6 +60,7 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
             
         
         }catch(Exception e){
+            LOG.log(Level.SEVERE, "", e);
          System.out.println("Error while creating a new contract");
         }
             

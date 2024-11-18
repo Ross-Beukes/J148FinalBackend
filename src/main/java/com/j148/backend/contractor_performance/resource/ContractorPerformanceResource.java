@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.j148.backend.ContractorPerformance.resource;
+package com.j148.backend.contractor_performance.resource;
 
-import com.j148.backend.ContractorPerformance.model.ContractorPerformance;
-import com.j148.backend.ContractorPerformance.service.ContractorPerformanceService;
-import com.j148.backend.ContractorPerformance.service.ContractorPerformanceServiceImpl;
+import com.j148.backend.contractor_performance.model.ContractorPerformance;
+import com.j148.backend.contractor_performance.service.ContractorPerformanceService;
+import com.j148.backend.contractor_performance.service.ContractorPerformanceServiceImpl;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
@@ -21,6 +21,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -80,31 +81,31 @@ public Response getAllContractorPerformance(){
     }
 }
 
-//@GET
-//@Produces(APPLICATION_JSON)
-//@Path("get-all-contractor-performance")
-//public Response getFilteredContractorPerformance(@QueryParam("filters") String filters){
-//    try{
-//        List<ContractorPerformance> cp = this.contractorPerformanceService.getAllContractorPerformance();
-//        return Response.ok(this.contractorPerformanceService.filterContractorPerformance(filters, cp)).build();
-//    }catch(SQLException e){
-//        LOG.log(Level.SEVERE, "There was an error retrieving the list from the database", e);
-//        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
-//    }catch(ContractorPerformanceNotFoundException e){
-//        LOG.log(Level.SEVERE, "ContractorPerformance was null", e);
-//            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
-//    }catch(UserNotFoundException e){
-//        LOG.log(Level.SEVERE, "User is null or userID is null", e);
-//        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
-//    }catch(ContractorNotFoundException e){
-//        LOG.log(Level.SEVERE, "Contractor is null or contractorID is null", e);
-//        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
-//    }
-//}
+@GET
+@Produces(APPLICATION_JSON)
+@Path("get-all-filtered-contractor-performance")
+public Response getFilteredContractorPerformance(@QueryParam("filters") String filters){
+    try{
+        List<ContractorPerformance> cp = this.contractorPerformanceService.getAllContractorPerformance();
+        return Response.ok(this.contractorPerformanceService.filterContractorPerformance(filters, cp)).build();
+    }catch(SQLException e){
+        LOG.log(Level.SEVERE, "There was an error retrieving the list from the database", e);
+        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+    }catch(ContractorPerformanceNotFoundException e){
+        LOG.log(Level.SEVERE, "ContractorPerformance was null", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();   
+    }catch(UserNotFoundException e){
+        LOG.log(Level.SEVERE, "User is null or userID is null", e);
+        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+    }catch(ContractorNotFoundException e){
+        LOG.log(Level.SEVERE, "Contractor is null or contractorID is null", e);
+        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();  
+    }
+}
 
 @GET
 @Produces(APPLICATION_JSON)
-@Path("get-all-contractor-performance")
+@Path("get-contractor-list")
 public Response getListOfContractors(){
     try{
         return Response.ok(this.contractorPerformanceService.getAllContractors()).build();
@@ -123,6 +124,28 @@ public Response getListOfContractors(){
     }
 }
 
+@GET
+@Path("download-report")
+public Response downloadFile(){
+        try {
+            return Response.ok(this.contractorPerformanceService.downloadReportFile(this.contractorPerformanceService.getAllContractorPerformance())).build();
+        } catch (ContractorPerformanceNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (UserNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (ContractorNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (SQLException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (IOException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        }
+}
 
 
     
