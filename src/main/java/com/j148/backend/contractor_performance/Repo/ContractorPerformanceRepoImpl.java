@@ -1049,7 +1049,6 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             ageChart.plot(ageData);
 
             //-------------------------------------------------------------------------------------------------------------------------
-            
             // * SUMMARY SHEET *
             summarySheet = workbook.createSheet("Hearing Summary");
             summaryHeader = summarySheet.createRow(0);
@@ -1153,18 +1152,16 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
 
             // Plot the chart with both axes and data
             ageChart.plot(ageData);
-        }
 
-        File reportFile = new File("C:/Users/arshr/OneDrive/Documents/reports.xlsx");
-        if (reportFile.exists() == false) {
-            reportFile.createNewFile();
+            File reportFile = new File("C:/Users/arshr/OneDrive/Documents/reports.xlsx");
+            if (reportFile.exists() == false) {
+                reportFile.createNewFile();
+            }
+            try (FileOutputStream fileOut = new FileOutputStream(reportFile)) {
+                workbook.write(fileOut);
+            }
+            return reportFile.getPath();
         }
-        try (FileOutputStream fileOut = new FileOutputStream(reportFile)) {
-            workbook.write(fileOut);
-        }
-        return reportFile.getPath();
     }
-    
+
 }
-
-
