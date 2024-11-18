@@ -18,7 +18,6 @@ public class AptitudeTest {
     @Min(value = 0, message = "Test mark cannot be less than 0")
     @Max(value = 100 , message = "Test mark cannot exceed 100")
     private int testMark;
-    @NotNull(message = "testDate cannot be blank")
     @Future(message = "Test Date must be set to a later date")
     private LocalDateTime testDate;
     

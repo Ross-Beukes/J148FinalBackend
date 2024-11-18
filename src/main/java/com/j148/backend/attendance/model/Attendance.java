@@ -18,7 +18,6 @@ public class Attendance {
     private LocalDateTime timeIn;
     @NotBlank(message = " Time-out is required")
     private LocalDateTime timeOut;
-    @NotNull(message = "Attendance register declaration required")
     private Register register;
     
     private Contractor contractor;

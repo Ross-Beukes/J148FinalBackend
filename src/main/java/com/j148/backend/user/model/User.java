@@ -28,10 +28,11 @@ public class User {
     @NotBlank(message = "A gender is required")
     @Pattern(regexp = "[a-zA-Z\\s]+", message = "gender must contain only letters")
     private String gender;
+    
     @NotBlank(message = "ID number is required")
     @Pattern(regexp = "\\d+", message = "ID number must contain only numbers")
+    @Pattern(regexp = "^[0-9]{13}$", message = "National ID must be exactly 13 digits long.")
     private String idNumber;
-    @NotNull(message = "User Role is required")
     private Role role;
     @NotBlank(message = "A race is required")
     @Pattern(regexp = "[a-zA-Z\\s]+", message = "Race must contain only letters")
@@ -40,7 +41,6 @@ public class User {
     @Pattern(regexp = "[a-zA-Z\\s]+", message = "Location must contain only letters")
     private String location;
     
-    @NotBlank(message = "A age is required")
     @Min(value = 18, message = "Age must at ninimum be 18")
     @Max(value = 100 , message = "Age must be below 100")
     private int age;

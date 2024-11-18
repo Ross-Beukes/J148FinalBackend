@@ -5,6 +5,7 @@ import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -55,7 +56,7 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("register-applicant")
-    public Response registerApplicant(User user) {
+    public Response registerApplicant(@Valid User user) {
         try {
             user.setRole(User.Role.APPLICANT);
             System.out.println(user.toString());

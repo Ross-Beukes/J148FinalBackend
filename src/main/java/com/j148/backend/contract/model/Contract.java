@@ -21,11 +21,8 @@ public class Contract {
     private Long contractId;
     private ContractPeriod contractPeriod;
     private User user;
-    @NotNull(message = "Contract Offer date is required")
     private LocalDate offerDate;
-    @NotNull(message = "Decision date is required")
     private LocalDate decisionDate;
-    @NotNull(message = "Expiration date is required")
     private LocalDate expirationDate;
     private Decision decision;
     private boolean isDeleted;

@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public class Contractor {
     @Min(value = 1, message = "Contractor ID cannot be less than 1")
     private Long contractorId;
-   
     private Status status;
     private User user;
     private ContractPeriod contractPeriod;
