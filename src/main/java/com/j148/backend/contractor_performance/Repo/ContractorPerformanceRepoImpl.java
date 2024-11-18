@@ -881,35 +881,68 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 testDateCell.setCellStyle(dateStyle); // Format as date only
             }
 
+            //Contractors by age range
+            Map<String, Integer> contractorsByAgeRange = new HashMap<>();
+            //Contractors by gender
+            Map<String, Integer> contractorsByGender = new HashMap<>();
+            //Contractors by race
+            Map<String, Integer> contractorsByRace = new HashMap<>();
+            //Contractor by status
+            Map<String, Integer> contractorsByStatus = new HashMap<>();
+
             // *** WARNINGS BY GENDER, RACE, AND AGE AGGREGATION ***
+            // The attributes are represented by keys, the values represent the counts of each.
             Map<String, Integer> warningsByGender = new HashMap<>();
             Map<String, Integer> warningsByRace = new HashMap<>();
             Map<String, Integer> warningsByAgeRange = new HashMap<>();
+
+            //HEARINGS BY GENDER, RACE, AND AGE AGGREGATION
+            Map<String, Integer> hearingsByGender = new HashMap<>();
+            Map<String, Integer> hearingsByRace = new HashMap<>();
+            Map<String, Integer> hearingsByAgeRange = new HashMap<>();
+
+            //ATTENDANCE BY GENDER, RACE AND AGE AGGREGATION
+            Map<String, Integer> attendanceByGender = new HashMap<>();
+            Map<String, Integer> attendanceByRace = new HashMap<>();
+            Map<String, Integer> attendanceByAgeRange = new HashMap<>();
 
             for (ContractorPerformance cp : contractorPerformanceList) {
                 String gender = cp.getUser().getGender();
                 String race = cp.getUser().getRace();
                 int age = cp.getUser().getAge();
+                String status = cp.getContractor().getStatus().toString();
+
                 String ageRange = age < 20 ? "Under 20"
                         : age < 25 ? "20-24"
                                 : age < 30 ? "25-29"
                                         : age < 35 ? "30-34"
                                                 : age < 40 ? "35-39" : "40+";
 
+                //Contractors by age range
+                contractorsByAgeRange.put(ageRange, contractorsByAgeRange.getOrDefault(ageRange, 0) + 1);
+                //Contractors by gender
+                contractorsByGender.put(gender, contractorsByGender.getOrDefault(gender, 0) + 1);
+                //Contractors by race
+                contractorsByRace.put(race, contractorsByRace.getOrDefault(race, 0) + 1);
+                //Contractor by status
+                contractorsByRace.put(status, contractorsByStatus.getOrDefault(status, 0) + 1);
+
                 int warningCount = cp.getWarningList().size();
                 warningsByGender.put(gender, warningsByGender.getOrDefault(gender, 0) + warningCount);
                 warningsByRace.put(race, warningsByRace.getOrDefault(race, 0) + warningCount);
                 warningsByAgeRange.put(ageRange, warningsByAgeRange.getOrDefault(ageRange, 0) + warningCount);
+
+                int hearingCount = cp.getHearingList().size();
+                hearingsByGender.put(gender, hearingsByGender.getOrDefault(gender, 0) + hearingCount);
+                hearingsByRace.put(race, hearingsByRace.getOrDefault(race, 0) + hearingCount);
+                hearingsByAgeRange.put(ageRange, hearingsByAgeRange.getOrDefault(ageRange, 0) + hearingCount);
+
+                int attendanceCount = cp.getAttendanceList().size();
+                attendanceByGender.put(gender, attendanceByGender.getOrDefault(gender, 0) + attendanceCount);
+                attendanceByRace.put(race, attendanceByRace.getOrDefault(race, 0) + attendanceCount);
+                attendanceByAgeRange.put(ageRange, attendanceByAgeRange.getOrDefault(ageRange, 0) + attendanceCount);
             }
             // *** AGGREGATION OF CONTRACTORS BY AGE RANGE ***
-            Map<String, Integer> contractorsByAgeRange = new HashMap<>();
-
-            for (ContractorPerformance cp : contractorPerformanceList) {
-                int age = cp.getUser().getAge();
-                String ageRange = age < 20 ? "Under 20" : (age < 30 ? "20-29" : (age < 40 ? "30-39" : "40+"));
-
-                contractorsByAgeRange.put(ageRange, contractorsByAgeRange.getOrDefault(ageRange, 0) + 1);
-            }
 
 // * SUMMARY SHEET *
             Sheet summarySheet = workbook.createSheet("Warnings Summary");
@@ -969,7 +1002,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             raceChart.setTitleOverlay(false);
             raceChart.getOrAddLegend();
             XDDFDataSource<String> raceCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(3 + warningsByGender.size() , 3 + warningsByGender.size() + warningsByRace.size() - 1, 0, 0));
+                    new CellRangeAddress(3 + warningsByGender.size(), 3 + warningsByGender.size() + warningsByRace.size() - 1, 0, 0));
             XDDFNumericalDataSource<Double> raceValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
                     new CellRangeAddress(3 + warningsByGender.size(), 3 + warningsByGender.size() + warningsByRace.size() - 1, 1, 1));
             XDDFChartData raceData = raceChart.createData(ChartTypes.PIE, null, null);
@@ -980,7 +1013,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             XSSFDrawing barDrawing = (XSSFDrawing) summarySheet.createDrawingPatriarch();
 
             // Age Range Bar Chart
-            XSSFClientAnchor ageAnchor = barDrawing.createAnchor(0, 0, 0, 0, 16, 1,26, 21);
+            XSSFClientAnchor ageAnchor = barDrawing.createAnchor(0, 0, 0, 0, 16, 1, 26, 21);
             XSSFChart ageChart = barDrawing.createChart(ageAnchor);
             ageChart.setTitleText("Contractors by Age Range");
             ageChart.getOrAddLegend();
@@ -1005,10 +1038,9 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             XDDFBarChartData ageData = (XDDFBarChartData) ageChart.createData(ChartTypes.BAR, categoryAxis, valueAxis);
             ageData.setBarDirection(BarDirection.COL);
             ageData.setGapWidth(150);
-            ageData.setOverlap((byte)0);
+            ageData.setOverlap((byte) 0);
             // Add the data series to the chart
             XDDFChartData.Series ageSeries = ageData.addSeries(ageCategories, ageValues);
-            
 
             // Customize the series (e.g., set bar color or width if needed)
             ageSeries.setTitle("Contractors by Age Range", null);
@@ -1016,15 +1048,123 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
             // Plot the chart with both axes and data
             ageChart.plot(ageData);
 
-            File reportFile = new File("C:/Users/yusuf/OneDrive/Documents/reports.xlsx");
-            if (reportFile.exists() == false) {
-                reportFile.createNewFile();
-            }
-            try (FileOutputStream fileOut = new FileOutputStream(reportFile)) {
-                workbook.write(fileOut);
-            }
-            return reportFile.getPath();
-        }
-    }
+            //-------------------------------------------------------------------------------------------------------------------------
+            
+            // * SUMMARY SHEET *
+            summarySheet = workbook.createSheet("Hearing Summary");
+            summaryHeader = summarySheet.createRow(0);
+            summaryHeader.createCell(0).setCellValue("Category");
+            summaryHeader.createCell(1).setCellValue("Count");
 
+            summaryRowNum = 1;
+// Add Warnings by Gender
+            genderHeader = summarySheet.createRow(summaryRowNum++);
+            genderHeader.createCell(0).setCellValue("Hearings by Gender");
+            for (Map.Entry<String, Integer> entry : hearingsByGender.entrySet()) {
+                Row row = summarySheet.createRow(summaryRowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue());
+            }
+
+// Add Warnings by Race
+            raceHeader = summarySheet.createRow(summaryRowNum++);
+            raceHeader.createCell(0).setCellValue("Hearings by Race");
+            for (Map.Entry<String, Integer> entry : hearingsByRace.entrySet()) {
+                Row row = summarySheet.createRow(summaryRowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue());
+            }
+
+// Add Warnings by Age Range
+            ageHeader = summarySheet.createRow(summaryRowNum++);
+            ageHeader.createCell(0).setCellValue("Hearings by Age Range");
+            for (Map.Entry<String, Integer> entry : hearingsByAgeRange.entrySet()) {
+                Row row = summarySheet.createRow(summaryRowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue());
+            }
+
+// * CREATING GRAPHS *
+            drawing = (XSSFDrawing) summarySheet.createDrawingPatriarch();
+
+// Gender Pie Chart
+            genderAnchor = drawing.createAnchor(0, 0, 0, 0, 5, 1, 15, 21);
+            genderChart = drawing.createChart(genderAnchor);
+            genderChart.setTitleText("Hearings by Gender");
+            genderChart.setTitleOverlay(false);
+            genderChart.getOrAddLegend();
+            genderCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(2, 2 + hearingsByGender.size() - 1, 0, 0));
+            genderValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(2, 2 + hearingsByGender.size() - 1, 1, 1));
+            genderData = genderChart.createData(ChartTypes.PIE, null, null);
+            genderSeries = genderData.addSeries(genderCategories, genderValues);
+            genderChart.plot(genderData);
+
+// Race Pie Chart
+            raceAnchor = drawing.createAnchor(0, 0, 0, 0, 5, 22, 15, 42);
+            raceChart = drawing.createChart(raceAnchor);
+            raceChart.setTitleText("Hearings by Race");
+            raceChart.setTitleOverlay(false);
+            raceChart.getOrAddLegend();
+            raceCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(3 + hearingsByGender.size(), 3 + hearingsByGender.size() + hearingsByRace.size() - 1, 0, 0));
+            raceValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(3 + hearingsByGender.size(), 3 + hearingsByGender.size() + hearingsByRace.size() - 1, 1, 1));
+            raceData = raceChart.createData(ChartTypes.PIE, null, null);
+            raceSeries = raceData.addSeries(raceCategories, raceValues);
+            raceChart.plot(raceData);
+
+            // *** CREATING BAR CHART FOR CONTRACTORS BY AGE RANGE ***
+            barDrawing = (XSSFDrawing) summarySheet.createDrawingPatriarch();
+
+            // Age Range Bar Chart
+            ageAnchor = barDrawing.createAnchor(0, 0, 0, 0, 16, 1, 26, 21);
+            ageChart = barDrawing.createChart(ageAnchor);
+            ageChart.setTitleText("Contractors by Age Range");
+            ageChart.getOrAddLegend();
+
+            // Create the category axis (X-axis)
+            categoryAxis = (XDDFCategoryAxis) ageChart.createCategoryAxis(AxisPosition.LEFT);
+            categoryAxis.setTitle("Age Range");
+
+            // Set the data for the category axis (age ranges)
+            ageCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(2 + hearingsByGender.size() + 2 + hearingsByRace.size(), 2 + hearingsByGender.size() + 2 + hearingsByRace.size() + hearingsByAgeRange.size() - 1, 0, 0));
+
+            // Create the value axis (Y-axis)
+            valueAxis = (XDDFValueAxis) ageChart.createValueAxis(AxisPosition.BOTTOM);
+            valueAxis.setTitle("Contractor Count");
+
+            // Set the data for the value axis (contractor counts)
+            ageValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
+                    new CellRangeAddress(2 + hearingsByGender.size() + 2 + hearingsByRace.size(), 2 + hearingsByGender.size() + 2 + hearingsByRace.size() + hearingsByAgeRange.size() - 1, 1, 1));
+
+            // Create chart data for the bar chart
+            ageData = (XDDFBarChartData) ageChart.createData(ChartTypes.BAR, categoryAxis, valueAxis);
+            ageData.setBarDirection(BarDirection.COL);
+            ageData.setGapWidth(150);
+            ageData.setOverlap((byte) 0);
+            // Add the data series to the chart
+            ageSeries = ageData.addSeries(ageCategories, ageValues);
+
+            // Customize the series (e.g., set bar color or width if needed)
+            ageSeries.setTitle("Contractors by Age Range", null);
+
+            // Plot the chart with both axes and data
+            ageChart.plot(ageData);
+        }
+
+        File reportFile = new File("C:/Users/arshr/OneDrive/Documents/reports.xlsx");
+        if (reportFile.exists() == false) {
+            reportFile.createNewFile();
+        }
+        try (FileOutputStream fileOut = new FileOutputStream(reportFile)) {
+            workbook.write(fileOut);
+        }
+        return reportFile.getPath();
+    }
+    
 }
+
+
