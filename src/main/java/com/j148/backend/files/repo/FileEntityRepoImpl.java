@@ -1,5 +1,6 @@
 package com.j148.backend.files.repo;
 
+import com.j148.backend.Exceptions.FileNotFoundException;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
 import jakarta.servlet.http.Part;
@@ -9,8 +10,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -19,6 +18,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     private static final Logger LOGGER = Logger.getLogger(FileEntityRepoImpl.class.getName());
@@ -403,14 +412,24 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                 .path(rs.getString(6))
                 .verified(FileEntity.Verified.valueOf(rs.getString(7)))
                 .build();
-                
+
                     return Optional.of(fileEntity);
                 }
-               
+
             }
         } catch (SQLException ex) {
             LOGGER.log(Level.SEVERE, "Error finding file by category and user ID", ex);
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException {
         return Optional.empty();
     }
 }

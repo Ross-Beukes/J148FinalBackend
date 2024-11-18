@@ -301,6 +301,7 @@ public class HearingRepoImpl extends DBConfig implements HearingRepo {
         List<Hearing> hearingHistory = new ArrayList<>();
 
         try(Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setLong(1,contractor.getContractorId());
 
             try(ResultSet rs = ps.executeQuery()){
                 while(rs.next()){

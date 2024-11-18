@@ -11,8 +11,6 @@ import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepoImpl;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,8 +21,10 @@ import java.util.logging.Logger;
  */
 public class ContractorHistoryServiceImpl implements ContractorHistoryService {
     
-    private HearingRepoImpl hri = new HearingRepoImpl();
-    private WarningRepoImpl wri = new WarningRepoImpl();        
+    private final HearingRepoImpl hearingRepoImpl = new HearingRepoImpl();
+    private final WarningRepoImpl warningRepoImpl = new WarningRepoImpl(); 
+    private static final Logger LOG = Logger.getLogger(ContractorHistoryServiceImpl.class.getName());
+    
     
 
     @Override
@@ -36,22 +36,25 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
             try {
             List<Warning> warningHistory;
             List<Hearing> hearingHistory;
+               
+                if((hearingHistory = hearingRepoImpl.findContractorHearingHistory(contractor)) != null) { 
                 
-                hearingHistory = hri.findContractorHearingHistory(contractor);
-                warningHistory = wri.findAllActiveByContractor(contractor).get();
+                warningHistory = warningRepoImpl.findAllActiveByContractor(contractor).orElseThrow(() -> new Exception(
+                "Error collecting this contractors warning hsitory"));
+  
                 
-                ContractorHistory c = ContractorHistory.builder()
+                return ContractorHistory.builder()
                         .warningHistory(warningHistory)
                         .hearingHistory(hearingHistory)
                         .contractor(contractor)
                         .build();
+                }else{
+                    throw new RuntimeException("Apologies there was an issue recovering your disciplinary history");
+                }
                 
-               
-                return c;
                 
-                
-            } catch (SQLException ex) {
-               System.out.println("Error while view a contractors disciplinary history");
+            }catch(Exception e){
+                LOG.log(Level.SEVERE, "Error collecting a contractor disciplinary history", e);
             }
             
             
