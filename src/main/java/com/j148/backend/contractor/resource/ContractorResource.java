@@ -6,7 +6,6 @@ import com.j148.backend.contractor.service.ContractorServiceImpl;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
@@ -34,7 +33,7 @@ public class ContractorResource {
     @POST
     @Path("update")
     @Consumes(APPLICATION_JSON)
-    public Response updateContractor(@Valid Contractor contractor) {
+    public Response updateContractor(Contractor contractor) {
         try {
 
             Contractor updatedContractor = contractorService.updateContractor(contractor);
