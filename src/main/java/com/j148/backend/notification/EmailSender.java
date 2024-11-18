@@ -32,7 +32,7 @@ import java.util.logging.Logger;
 public class EmailSender {
     
     
-    public void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
+    public static void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
         String email = "xavierdovah124";
         String password = "evba attv nsgw ymlz";
         
@@ -65,7 +65,7 @@ public class EmailSender {
         
     }
     
-     public void sendEmailWithAttachment(String sendTo,String body ,String subject,File attachment) throws MessagingException {
+     public static void sendEmailWithAttachment(String sendTo,String body ,String subject,File attachment) throws MessagingException {
         String email = "xavierdovah124";
         String password = "evba attv nsgw ymlz";
         
@@ -117,9 +117,7 @@ public class EmailSender {
         System.out.println("Notification successfully sent");
         
     }
-    
-        
-        
+       
 }
     
 

@@ -2,6 +2,10 @@ package com.j148.backend.contract.model;
 
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.user.model.User;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +17,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Contract {
+    @Min(value = 1, message = "Contract ID cannot be less than 1")
     private Long contractId;
     private ContractPeriod contractPeriod;
     private User user;
+    @NotNull(message = "Contract Offer date is required")
     private LocalDate offerDate;
+    @NotNull(message = "Decision date is required")
     private LocalDate decisionDate;
+    @NotNull(message = "Expiration date is required")
     private LocalDate expirationDate;
     private Decision decision;
     private boolean isDeleted;
