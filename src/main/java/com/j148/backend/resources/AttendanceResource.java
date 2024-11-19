@@ -59,15 +59,13 @@ public class AttendanceResource {
     /**
      * Get list of contractors who haven't checked in today.
      *
-     * @param contractors List of contractors to check
+     *
      * @return Response with list of contractors who haven't checked in today
      */
 
-    @POST
+    @GET
     @Path("not-checked-in")
-    @Consumes(APPLICATION_JSON)
-    @Produces(APPLICATION_JSON)
-    public Response getContractorsNotCheckedIn(List<Contractor> contractors) {
+    public Response getContractorsNotCheckedIn() {
         try {
             List<Attendance> notCheckedIn = attendanceService.contractorsNotCheckedIn(contractors);
             return Response.status(Response.Status.OK).entity(notCheckedIn).build();
@@ -105,6 +103,4 @@ public class AttendanceResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
         }
     }
-
-
 }
