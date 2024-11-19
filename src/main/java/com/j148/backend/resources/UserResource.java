@@ -16,15 +16,15 @@ import java.util.logging.Logger;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Controller for User management
- * Includes end point tests for all user management
+ * Controller for User management Includes end point tests for all user
+ * management
  */
 @Path("user")
 public class UserResource {
 
     private UserService userService = new UserServiceImpl();
     /**
-     *This map is used to temporarily store the generated admin keys.
+     * This map is used to temporarily store the generated admin keys.
      */
     private static final Map<String, String> verificationTokens = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
@@ -77,8 +77,8 @@ public class UserResource {
 
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("register-applicant")
-    public Response registerApplicant(User user) {
+    @Path("register")
+    public Response register(User user) {
         try {
             user.setRole(User.Role.APPLICANT);
 
@@ -87,8 +87,9 @@ public class UserResource {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
+            System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to register user", e);
@@ -101,14 +102,7 @@ public class UserResource {
     @Path("register-admin")
     public Response registerAdmin(@QueryParam("adminToken") String adminToken, User user) {
         try {
-            String email = verificationTokens.get(adminToken);
-            if (adminToken == null || email == null || !email.equals(user.getEmail())) {
-                return Response.status(Response.Status.FORBIDDEN).entity("Invalid verificationToken token or email mismatch.").build();
-            }
-
             user.setRole(User.Role.ADMIN);
-
-            verificationTokens.remove(adminToken);
 
             return Response.ok(this.userService.registerUser(user)).build();
         } catch (SQLException e) {
@@ -128,14 +122,9 @@ public class UserResource {
     @Path("register-instructor")
     public Response registerInstructor(User user) {
         try {
-            String email = verificationTokens.get(instructorToken);
-            if (instructorToken == null || email == null || !email.equals(user.getEmail())) {
-                return Response.status(Response.Status.FORBIDDEN).entity("Invalid verificationToken token or email mismatch.").build();
-            }
 
             user.setRole(User.Role.INSTRUCTOR);
 
-            verificationTokens.remove(instructorToken);
             return Response.ok(this.userService.registerUser(user)).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add instructor to the database.  Check for duplicates");
