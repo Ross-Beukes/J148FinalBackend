@@ -54,12 +54,12 @@ public class WarningServiceImpl implements WarningService {
 
 
     @Override
-    public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
+    public Warning appealWarning(Warning warning) throws Exception {
 
         if (warning == null) {
             throw new IllegalArgumentException("Warning is null");
         }
-        if (contractor == null) {
+        if (warning.getContractor() == null) {
             throw new IllegalArgumentException("Contractor is null");
         }
 
@@ -67,11 +67,11 @@ public class WarningServiceImpl implements WarningService {
             throw new IllegalArgumentException("Warning id is null");
         }
 
-        if (contractor.getContractorId() == null) {
+        if (warning.getContractor().getContractorId() == null) {
             throw new IllegalArgumentException("Contractor id is null");
         }
 
-        if (contractorRepo.findById(contractor).isEmpty()) {
+        if (contractorRepo.findById(warning.getContractor()).isEmpty()) {
             throw new IllegalArgumentException("Could not find contractor");
         }
 
@@ -79,8 +79,9 @@ public class WarningServiceImpl implements WarningService {
             throw new IllegalArgumentException("Could not find warning");
         }
 
-        return warningRepo.updateState(warning)
-                .orElseThrow(() -> new Exception("Failed to appeal warning"));
+        warning.setState(Warning.WarningState.APPEALED);
+
+        return warningRepo.updateState(warning).get();
 
     }
 

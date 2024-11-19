@@ -39,19 +39,18 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
 
     @Override
     public ContractPeriod findContractPeriodById(ContractPeriod contractPeriod) throws Exception {
-        if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
+        if (contractPeriod == null) {
             throw new IllegalArgumentException("Contract period or contract period ID cannot be null.");
         }
         Optional<ContractPeriod> foundContractPeriod = contractPeriodRepo.findById(contractPeriod);
 
-        return foundContractPeriod.orElseThrow(() ->
-                new NoSuchElementException("No contract period found with ID: " + contractPeriod.getContractPeriodId())
-        );
+        return foundContractPeriod.get();
+        
     }
 
     @Override
     public ContractPeriod updateContractPeriod(ContractPeriod contractPeriod) throws Exception {
-        if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
+        if (contractPeriod == null) {
             throw new IllegalArgumentException("Contract period cannot be null.");
         }
         Optional<ContractPeriod> existingContractPeriod = contractPeriodRepo.findById(contractPeriod);
@@ -59,11 +58,11 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         if (existingContractPeriod.isPresent()) {
             Optional<ContractPeriod> updatedContractPeriod = contractPeriodRepo.updateContractPeriod(contractPeriod);
             return updatedContractPeriod.orElseThrow(() ->
-                    new IllegalStateException("Failed to update contract period with ID: " + contractPeriod.getContractPeriodId())
+                    new IllegalStateException("Failed to update contract period with ID: ")
             );
 
         } else {
-            throw new NoSuchElementException("No contract period found with ID: " + contractPeriod.getContractPeriodId());
+            throw new NoSuchElementException("No contract period found with ID: ");
         }
     }
 

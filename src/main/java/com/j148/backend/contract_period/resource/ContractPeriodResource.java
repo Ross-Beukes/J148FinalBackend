@@ -63,7 +63,7 @@ public class ContractPeriodResource {
     @Consumes(APPLICATION_JSON)
     public Response updateContractPeriod(ContractPeriod contractPeriod) {
         try {
-            if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
+            if (contractPeriod == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Contract period and ID must not be null.").build();
             }
 
@@ -116,7 +116,7 @@ public class ContractPeriodResource {
     @Path("find-period-by-id")
     public Response findContractPeriodById(ContractPeriod contractPeriod) {
         try {
-            if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
+            if (contractPeriod == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Contract period or ID must not be null.").build();
             }
 
@@ -124,7 +124,7 @@ public class ContractPeriodResource {
 
             return Response.ok(foundContractPeriod).build();
         } catch (NoSuchElementException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Contract period not found with ID: " + contractPeriod.getContractPeriodId()).build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Contract period not found with ID: ").build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "An unexpected error occurred", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();

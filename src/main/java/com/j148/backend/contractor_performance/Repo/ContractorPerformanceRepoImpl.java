@@ -229,6 +229,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                     long warningId = rs.getLong("warning_id");
                     if (warningId != 0 && !warningIdsMap.get(contractorId).contains(warningId)) {
                         Warning warning = Warning.builder()
+
                                 .warningId(warningId)
                                 .dateIssue(rs.getTimestamp("date_issue").toLocalDateTime())
                                 .reason(Warning.WarningReason.valueOf(rs.getString("warning_reason")))
