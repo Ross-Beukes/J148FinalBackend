@@ -892,6 +892,8 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
 // Contractor by status
             Map<String, Integer> contractorsByStatus = new TreeMap<>();
 
+            //Enrollments per year for line graph
+            Map<String, Integer> contractorEnrollmentsPerYear = new TreeMap<>();
 
 // *** WARNINGS BY GENDER, RACE, AND AGE AGGREGATION ***
             Map<String, Integer> warningsByGender = new TreeMap<>();
@@ -962,8 +964,13 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 //Contractor Enrollment per year
                 //Extract the start date of the contractor period
                 LocalDate startDate = cp.getContractPeriod().getStartDate(); // Assuming it's a LocalDate
+                if (startDate != null) {
+                    // Extract the year
+                    String year = String.valueOf(startDate.getYear());
 
-                
+                    // Increment the enrollment count for that year
+                    contractorEnrollmentsPerYear.put(year, contractorEnrollmentsPerYear.getOrDefault(year, 0) + 1);
+                }
 
                 int warningCount = cp.getWarningList().size();
                 warningsByGender.put(gender, warningsByGender.getOrDefault(gender, 0) + warningCount);
@@ -1684,7 +1691,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
 
 // Create the chart and set its title
             XSSFChart chart = drawing.createChart(anchor);
-            chart.setTitleText("Total Attendance Per Month");
+            chart.setTitleText("Total Attendance per Month");
             chart.setTitleOverlay(false);
 
 // Set the bottom (category) axis for months
@@ -1704,12 +1711,63 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
 
             XDDFNumericalDataSource<Double> attendanceCounts = XDDFDataSourcesFactory.fromNumericCellRange(
                     (XSSFSheet) attendanceSummarySheet2,
-                    new CellRangeAddress(2,  rowIndex - 1, 1, 1)); // Attendance count column range
+                    new CellRangeAddress(2, rowIndex - 1, 1, 1)); // Attendance count column range
 
 // Create the chart data and add a series
             XDDFChartData data = chart.createData(ChartTypes.LINE, bottomAxis, leftAxis);
             XDDFChartData.Series series = data.addSeries(months, attendanceCounts);
             series.setTitle("Attendance", null);
+
+            //--------------------------------------------------------------------------------------------------------------------------------
+            // Create a sheet for the attendance summary
+            Sheet ContractorEnrollmentSheet = workbook.createSheet("Total Enrollment Per Year");
+            summaryHeader = ContractorEnrollmentSheet.createRow(0);
+            summaryHeader.createCell(0).setCellValue("Category");
+            summaryHeader.createCell(1).setCellValue("Count");
+
+// Fill in the data from monthlyAttendance map
+            // Reset row index for new sheet
+            rowIndex = 1;
+
+// Add header
+            Row enrollmentHeader = ContractorEnrollmentSheet.createRow(rowIndex++);
+            enrollmentHeader.createCell(0).setCellValue("Year");
+            enrollmentHeader.createCell(1).setCellValue("Enrollment");
+
+// Fill in the data
+            for (Map.Entry<String, Integer> entry : contractorEnrollmentsPerYear.entrySet()) {
+                Row row = ContractorEnrollmentSheet.createRow(rowIndex++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue());
+            }
+
+// Create new drawing and chart
+            XSSFDrawing enrollmentDrawing = (XSSFDrawing) ContractorEnrollmentSheet.createDrawingPatriarch();
+            XSSFClientAnchor enrollmentAnchor = enrollmentDrawing.createAnchor(0, 0, 0, 0, 5, 2, 20, 20);
+            XSSFChart enrollmentChart = enrollmentDrawing.createChart(enrollmentAnchor);
+            enrollmentChart.setTitleText("Total Enrollment per Year");
+            enrollmentChart.setTitleOverlay(false);
+
+// Create axes
+            XDDFCategoryAxis yearAxis = enrollmentChart.createCategoryAxis(AxisPosition.BOTTOM);
+            yearAxis.setTitle("Year");
+            XDDFValueAxis enrollmentAxis = enrollmentChart.createValueAxis(AxisPosition.LEFT);
+            enrollmentAxis.setTitle("Total Enrollment");
+
+// Prepare data sources
+            XDDFDataSource<String> years = XDDFDataSourcesFactory.fromStringCellRange(
+                    (XSSFSheet) ContractorEnrollmentSheet,
+                    new CellRangeAddress(2, contractorEnrollmentsPerYear.size() + 1, 0, 0));
+
+            XDDFNumericalDataSource<Double> enrollmentCounts = XDDFDataSourcesFactory.fromNumericCellRange(
+                    (XSSFSheet) ContractorEnrollmentSheet,
+                    new CellRangeAddress(2, contractorEnrollmentsPerYear.size() + 1, 1, 1));
+
+// Create and plot data
+            XDDFChartData enrollmentData = enrollmentChart.createData(ChartTypes.LINE, yearAxis, enrollmentAxis);
+            XDDFChartData.Series enrollmentSeries = enrollmentData.addSeries(years, enrollmentCounts);
+            enrollmentSeries.setTitle("Enrollment", null);
+            enrollmentChart.plot(enrollmentData);
 
 // Plot the chart
             chart.plot(data);
