@@ -92,7 +92,33 @@ public interface FileEntityRepo {
      * @return List of all FileEntity objects in the database
      */
     List<FileEntity> getAllFiles();
-    
+
+    /**
+     * Uploads a file from your local machine to the Amazon simple storage service
+     * file storage
+     *
+     * @param fileEntity
+     * @return
+     * @throws java.sql.SQLException
+     */
+
+    Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException;
+
+    /**
+     * Downloads a file from the Amazon simple storage service file storage to
+     * your local machine
+     *
+     * @param fileEntity
+     * @return
+     * @throws java.sql.SQLException
+     */
+
+    Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException;
+
+
+
+
+
     /**
      * Retrieves a specific file from a specific user.
      * @param user
