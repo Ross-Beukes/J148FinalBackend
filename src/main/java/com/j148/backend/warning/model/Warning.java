@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Builder
 public class Warning {
     private Long warningId;
-    private Long contractorId;
     private LocalDateTime dateIssue;
     private WarningReason reason;
     private WarningState state;

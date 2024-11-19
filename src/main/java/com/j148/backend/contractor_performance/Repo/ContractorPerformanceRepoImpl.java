@@ -196,7 +196,6 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                     // Populate Warning
                     if (rs.getTimestamp("date_issue") != null) {
                         Warning warning = Warning.builder()
-                                .contractorId(contractorId)
                                 .dateIssue(rs.getTimestamp("date_issue").toLocalDateTime())
                                 .reason(Warning.WarningReason.valueOf(rs.getString("warning_reason")))
                                 .state(Warning.WarningState.valueOf(rs.getString("warning_state")))

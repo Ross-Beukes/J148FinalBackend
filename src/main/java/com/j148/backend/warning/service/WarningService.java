@@ -47,7 +47,7 @@ public interface WarningService {
 
     Warning save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException;
 
-    Warning appealWarning(Warning warning, Contractor contractor) throws Exception;
+    Warning appealWarning(Warning warning) throws Exception;
 
     Warning findById(Warning warning) throws SQLException;
 

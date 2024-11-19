@@ -1,6 +1,5 @@
 package com.j148.backend.warning.resource;
 
-import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
@@ -23,16 +22,15 @@ public class WarningResource {
      * Endpoint to appeal a warning for a contractor.
      *
      * @param warning Warning object containing the appeal details and ID.
-     * @param contractor Contractor object containing the contractor's ID.
      * @return HTTP Response indicating the result of the appeal operation.
      */
     @POST
-    @Path("appeal-warning")
+    @Path("appeal-warning/{warningId}")
     @Consumes(APPLICATION_JSON)
-    public Response appealWarning(Warning warning, Contractor contractor) {
+    public Response appealWarning(Warning warning,@PathParam("warningId") long warningId) {
         try {
             System.out.println("Appealing warning: " + warning);
-            Warning appealedWarning = warningService.appealWarning(warning, contractor);
+            Warning appealedWarning = warningService.appealWarning(warning);
             if (appealedWarning != null) {
                 return Response.ok(appealedWarning).build();
             } else {
