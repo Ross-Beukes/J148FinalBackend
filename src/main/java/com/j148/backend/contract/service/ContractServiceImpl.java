@@ -44,7 +44,7 @@ public class ContractServiceImpl implements ContractService {
             validateContractOffer(contract);
             emailSender.sendNotification(user.getEmail(), "Contract : " + contract.toString(), "Contract offer : " + user.getName() + " " + user.getSurname());
             return contractRepo.createContract(contract).orElseThrow(()
-                    -> new Exception("Could not offer contract (create new contract) due to an error"));
+                    -> new RuntimeException("Could not offer contract (create new contract) due to an error"));
         } else {
             throw new IllegalArgumentException("Aptitude test mark too low to offer user contract or a document has not been approved");
         }

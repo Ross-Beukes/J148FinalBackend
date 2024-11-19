@@ -26,7 +26,7 @@ public class FileEntityServiceImpl implements FileEntityService {
         if (user != null && category != null) {
             validateUserID(user);
             return fileEntityRepo.findFileByUserIdAndCategory(user, category).orElseThrow(()
-                    -> new Exception("There was an error retrieving the file by userID and category"));
+                    -> new RuntimeException("There was an error retrieving the file by userID and category"));
         } else if (user == null) {
             throw new NullPointerException("User cannot be null when retrieving a file by userID and category");
         } else {

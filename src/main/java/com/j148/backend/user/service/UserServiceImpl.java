@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
     public User promoteUser(User user) throws SQLException, Exception { //promote Applicant to Contractor
         if (user != null && user.getEmail() != null) {
             user.setRole(User.Role.CONTRACTOR);
-            return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("Applicant was not promoted to Contractor"));
+            return userRepo.promoteApplicant(user).orElseThrow(() -> new RuntimeException("Applicant was not promoted to Contractor"));
         } else {
             throw new IllegalArgumentException("The user is null");
         }
@@ -49,11 +49,11 @@ public class UserServiceImpl implements UserService {
             if (user.getEmail() != null && user.getPassword() != null) {
                 String email = user.getEmail();
                 String password = user.getPassword();
-                User foundUser = userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User email not recognised"));
+                User foundUser = userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new RuntimeException("User email not recognised"));
                 if (email.equalsIgnoreCase(foundUser.getEmail()) && password.equals(foundUser.getPassword())) {
                     return foundUser;
                 } else {
-                    throw new Exception("Invalid email or password");
+                    throw new RuntimeException("Invalid email or password");
                 }
             } else {
                 throw new IllegalArgumentException("Email or password is missing");
@@ -71,13 +71,13 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Invalid email format.");
         }
 
-        return this.userRepo.register(user).orElseThrow(() -> new Exception("Unable to insert user into the database."));
+        return this.userRepo.register(user).orElseThrow(() -> new RuntimeException("Unable to insert user into the database."));
     }
 
     @Override
     public User updateUser(User user) throws Exception {
         if (user != null){
-            return userRepo.updateUser(user).orElseThrow(() -> new Exception("Unable to update user."));
+            return userRepo.updateUser(user).orElseThrow(() -> new RuntimeException("Unable to update user."));
         }else {
             throw new IllegalArgumentException("ID number cannot be null.");
         }
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByEmail(User user) throws Exception {
         if (user.getEmail() != null){
-            return userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User with this email address was not found."));
+            return userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new RuntimeException("User with this email address was not found."));
         } else {
             throw  new IllegalArgumentException("Email cannot be null.");
         }
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User promoteApplicant(User user) throws Exception {
         if (user != null){
-            return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("User not promoted to contractor."));
+            return userRepo.promoteApplicant(user).orElseThrow(() -> new RuntimeException("User not promoted to contractor."));
         } else {
             throw  new IllegalArgumentException("User cannot be null.");
         }
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(User user) throws Exception {
         if (user != null && user.getUserId() != null){
-            return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
+            return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new RuntimeException("User with this user id was not found."));
         } else {
             throw  new IllegalArgumentException("User id cannot be null.");
         }
@@ -158,7 +158,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User PromoteStaff(User user) throws Exception {
         if (user != null){
-            return userRepo.promoteStaff(user).orElseThrow(() -> new Exception("User not promoted."));
+            return userRepo.promoteStaff(user).orElseThrow(() -> new RuntimeException("User not promoted."));
         } else {
             throw new IllegalArgumentException("User cannot be null.");
         }

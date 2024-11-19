@@ -42,12 +42,12 @@ public class ContractorServiceImpl implements ContractorService {
     public Contractor promoteToContractor(User user) throws SQLException, Exception {
         Contractor contractor = Contractor.builder().build();
         if (user != null) {
-            User promotedUser = userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("The user was not promoted"));
+            User promotedUser = userRepo.promoteApplicant(user).orElseThrow(() -> new RuntimeException("The user was not promoted"));
             contractor.setUser(promotedUser);
             contractor.setStatus(Contractor.Status.ACTIVE);
             ContractPeriod contractPeriod = contractPeriodService.getNextContractPeriod();
             contractor.setContractPeriod(contractPeriod);
-            return contractorRepo.save(contractor).orElseThrow(() -> new Exception("Contractor could not be saved"));
+            return contractorRepo.save(contractor).orElseThrow(() -> new RuntimeException("Contractor could not be saved"));
         } else {
             throw new IllegalArgumentException("User is null");
         }
@@ -57,7 +57,7 @@ public class ContractorServiceImpl implements ContractorService {
     public Contractor promoteToExternalContractor(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
             contractor.setStatus(Contractor.Status.EXTERNAL);
-            return contractorRepo.updateStatus(contractor).orElseThrow(() -> new Exception("Contractor could not be updated"));
+            return contractorRepo.updateStatus(contractor).orElseThrow(() -> new RuntimeException("Contractor could not be updated"));
         } else {
             throw new IllegalArgumentException("Contractor is null");
         }
@@ -68,7 +68,7 @@ public class ContractorServiceImpl implements ContractorService {
 
         if (contractorRepo.findById(contractor).isEmpty()) {
 
-            throw new Exception("The contractor does not exist.");
+            throw new RuntimeException("The contractor does not exist.");
 
         }
 
@@ -83,7 +83,7 @@ public class ContractorServiceImpl implements ContractorService {
             throw new IllegalArgumentException("The contractor is null.");
         }
 
-        return contractorRepo.updateStatus(contractor).orElseThrow(() -> new Exception("Failed to change contractor status"));
+        return contractorRepo.updateStatus(contractor).orElseThrow(() -> new RuntimeException("Failed to change contractor status"));
 
     }
 
@@ -102,7 +102,7 @@ public class ContractorServiceImpl implements ContractorService {
         if(contractor != null){
             verifyContractorWithUserReference(contractor);
             return contractorRepo.retrieveContractorByUserID(contractor).orElseThrow(() 
-            -> new Exception("There was an error retrieving a contractor by user reference"));
+            -> new RuntimeException("There was an error retrieving a contractor by user reference"));
         } else {
             throw new ContractorNotFoundException("Contractor not found or is returning a null");
         }

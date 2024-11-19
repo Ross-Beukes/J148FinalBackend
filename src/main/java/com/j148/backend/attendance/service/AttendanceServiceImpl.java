@@ -60,7 +60,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                     attendance.setRegister(Attendance.Register.PRESENT);
                 }
                 return this.attendanceRepo.createAttendanceRecord(attendance).
-                        orElseThrow(() -> new Exception("Unable to insert attendance into the database"));
+                        orElseThrow(() -> new RuntimeException("Unable to insert attendance into the database"));
             } else {
                 throw new IllegalArgumentException("Contractor has already checked in");
             }
@@ -87,12 +87,12 @@ public class AttendanceServiceImpl implements AttendanceService {
             Contractor contractor = foundAttendance.getContractor();
             Long contractorID = contractor.getContractorId();
             if (timeOut != null) {
-                throw new Exception("Contractor already checked out");
+                throw new RuntimeException("Contractor already checked out");
             }
             if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L) {
                 foundAttendance.setTimeOut(LocalDateTime.now());
                 return this.attendanceRepo.updateAttendance(foundAttendance).
-                        orElseThrow(() -> new Exception("Unable to update database"));
+                        orElseThrow(() -> new RuntimeException("Unable to update database"));
             }
         }
         return attendance;
@@ -106,7 +106,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             for (Attendance value : attendances) {
                 value.setRegister(Attendance.Register.ABSENT);
                 Attendance attendance = this.attendanceRepo.createAttendanceRecord(value).
-                        orElseThrow(() -> new Exception("unable to add attendance record"));
+                        orElseThrow(() -> new RuntimeException("unable to add attendance record"));
                 Contractor contractor = attendance.getContractor();
                 Warning warning = warningService.absentWarning(contractor);
                 Hearing hearing = hearingService.IssueHearing(contractor);

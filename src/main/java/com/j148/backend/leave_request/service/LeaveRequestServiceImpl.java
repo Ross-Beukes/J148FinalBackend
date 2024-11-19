@@ -115,7 +115,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             }
             validateUpdateLeaveRequestDecision(leaveRequest);
             return leaveRequestRepo.updateLeaveRequestToApprovedOrDenied(leaveRequest).orElseThrow(()
-                    -> new Exception("There was an error updating the leave request decision"));
+                    -> new RuntimeException("There was an error updating the leave request decision"));
         } else {
             throw new NullPointerException("Leave request cannot be null in updating");
         }
@@ -150,7 +150,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         if (leaveRequest != null) {
             validateLeaveRequestRetrievalByID(leaveRequest);
             return leaveRequestRepo.retrieveLeaveRequestByID(leaveRequest).orElseThrow(()
-                    -> new Exception("There was an error in retrieving leave request by ID"));
+                    -> new RuntimeException("There was an error in retrieving leave request by ID"));
         } else {
             throw new NullPointerException("Leave request parameter cannot be null when retrieving leave request by ID");
         }

@@ -46,7 +46,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
 
         aptitudeTest.setUser(user);
 
-        return aptitudeRepo.create(aptitudeTest).orElseThrow(() -> new Exception("failed to schedule aptitude test"));
+        return aptitudeRepo.create(aptitudeTest).orElseThrow(() -> new RuntimeException("failed to schedule aptitude test"));
     }
 
     @Override
@@ -74,14 +74,14 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
 
         aptitudeTest.setUser(user);
 
-        return aptitudeRepo.update(aptitudeTest).orElseThrow(() -> new Exception("failed to reschedule aptitude test"));
+        return aptitudeRepo.update(aptitudeTest).orElseThrow(() -> new RuntimeException("failed to reschedule aptitude test"));
     }
 
     @Override
     public AptitudeTest retrieveAptitudeTestByUserId(User user) throws Exception {
         if (user != null) {
             return aptitudeRepo.retrieveAptitudeTestByUserId(user).orElseThrow(()
-                    -> new Exception("Could not retrieve aptitude test by user ID"));
+                    -> new RuntimeException("Could not retrieve aptitude test by user ID"));
         } else {
             throw new NullPointerException("User cannot be null when retrieving aptitude test by user ID");
         }

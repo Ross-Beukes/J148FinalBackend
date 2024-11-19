@@ -31,7 +31,7 @@ public class WarningServiceImpl implements WarningService {
     public Warning lateComingWarning(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
             if (contractor.getContractorId() != null) {
-                return warningRepo.createLateWarning(contractor).orElseThrow(() -> new Exception("Warning could not be issued"));
+                return warningRepo.createLateWarning(contractor).orElseThrow(() -> new RuntimeException("Warning could not be issued"));
             } else {
                 throw new IllegalArgumentException("Contract ID is null");
             }
@@ -44,7 +44,7 @@ public class WarningServiceImpl implements WarningService {
     public Warning absentWarning(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
             if (contractor.getContractorId() != null) {
-                return warningRepo.createAbsentWarning(contractor).orElseThrow(() -> new Exception("Warning could not be issued"));
+                return warningRepo.createAbsentWarning(contractor).orElseThrow(() -> new RuntimeException("Warning could not be issued"));
             } else {
                 throw new IllegalArgumentException("Contract ID is null");
             }
@@ -86,7 +86,7 @@ public class WarningServiceImpl implements WarningService {
         }
 
         return warningRepo.updateState(warning)
-                .orElseThrow(() -> new Exception("Failed to appeal warning"));
+                .orElseThrow(() -> new RuntimeException("Failed to appeal warning"));
 
     }
 

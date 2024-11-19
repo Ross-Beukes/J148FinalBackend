@@ -69,7 +69,7 @@ public class HearingServiceImpl implements HearingService {
                             .build();
                     
                     //Add a new Disciplinary hearing to database
-                   return hearingRepo.createHearing(hearing).orElseThrow(() -> new Exception("Error, A disciplinary hearing was not issued to the contractor"));
+                   return hearingRepo.createHearing(hearing).orElseThrow(() -> new RuntimeException("Error, A disciplinary hearing was not issued to the contractor"));
                     
                     
                 }
@@ -110,6 +110,6 @@ public class HearingServiceImpl implements HearingService {
         }
 
         return hearingRepo.updateHearing(hearing)
-                .orElseThrow(() -> new Exception("Failed to reschedule hearing"));      
+                .orElseThrow(() -> new RuntimeException("Failed to reschedule hearing"));      
     }
 }
