@@ -59,9 +59,11 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("register")
+
     public Response registerUser(@Valid User user) {
         try {
             user.setRole(User.Role.APPLICANT);
+
             return Response.ok(this.userService.registerUser(user)).build();
 
         } catch (SQLException e) {
@@ -72,6 +74,53 @@ public class UserResource {
 
 
 
+
+            LOG.log(Level.SEVERE, e.getMessage());
+
+            LOG.log(Level.SEVERE, "User object not complete.");
+            System.out.println("sqlException : " + e.getMessage());
+
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to register user", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+
+
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Path("register-admin")
+    public Response registerAdmin(@QueryParam("adminToken") String adminToken, User user) {
+        try {
+            user.setRole(User.Role.ADMIN);
+
+            return Response.ok(this.userService.registerUser(user)).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to add admin to the database.  Check for duplicates");
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to register user", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Path("register-instructor")
+    public Response registerInstructor(User user) {
+        try {
+
+            user.setRole(User.Role.INSTRUCTOR);
+
+            return Response.ok(this.userService.registerUser(user)).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to add instructor to the database.  Check for duplicates");
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -147,6 +196,28 @@ public class UserResource {
 
     @POST
     @Consumes(APPLICATION_JSON)
+
+    @Path("promote-user")
+    public Response promoteUser(User user) {
+        try {
+//            User user = User.builder().idNumber(idNumber).build();
+            return Response.ok(this.userService.promoteApplicant(user)).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");
+            System.out.println("sqlException : " + e.getMessage());
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "User object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to promote user", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+
+    @POST
+    @Consumes(APPLICATION_JSON)
+
     @Path("login")
     public Response login(User user) {
         try {

@@ -42,6 +42,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         aptitudeTest.setUser(user);
 
         return aptitudeRepo.create(aptitudeTest).orElseThrow(() -> new Exception("failed to schedule aptitude test"));
+    
     }
 
     @Override
