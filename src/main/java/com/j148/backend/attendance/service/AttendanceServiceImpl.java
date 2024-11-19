@@ -12,8 +12,6 @@ import com.j148.backend.hearing.service.HearingServiceImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
-import jakarta.ejb.Schedule;
-import jakarta.ejb.Singleton;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -25,7 +23,6 @@ import java.util.Objects;
 /**
  * @author glenl
  */
-@Singleton
 public class AttendanceServiceImpl implements AttendanceService {
 
     private AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
@@ -135,12 +132,4 @@ public class AttendanceServiceImpl implements AttendanceService {
         return missingAttendances;
     }
 
-    @Schedule(dayOfWeek = "Mon-Fri", hour = "15", minute = "45", persistent = false)
-    public void checkContractorsAttendance() {
-        try {
-            createAbsentContractors();
-        } catch (Exception e) {
-
-        }
-    }
 }

@@ -78,16 +78,9 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("register-applicant")
-    public Response registerApplicant(@QueryParam("applicantToken") String applicantToken, User user) {
+    public Response registerApplicant(User user) {
         try {
-            String email = verificationTokens.get(applicantToken);
-            if (applicantToken == null || email == null || !email.equals(user.getEmail())) {
-                return Response.status(Response.Status.FORBIDDEN).entity("Invalid verificationToken token or email mismatch.").build();
-            }
-
             user.setRole(User.Role.APPLICANT);
-
-            verificationTokens.remove(applicantToken);
 
             return Response.ok(this.userService.registerUser(user)).build();
         } catch (SQLException e) {
@@ -99,6 +92,7 @@ public class UserResource {
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to register user", e);
+            System.out.println("Exception : " + e.getMessage());
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
@@ -216,9 +210,9 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("promote-user")
-    public Response promoteUser(@QueryParam("idNumber") String idNumber) {
+    public Response promoteUser(User user) {
         try {
-            User user = User.builder().idNumber(idNumber).build();
+//            User user = User.builder().idNumber(idNumber).build();
             return Response.ok(this.userService.promoteApplicant(user)).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");
