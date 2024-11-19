@@ -6,7 +6,7 @@ package com.j148.backend.notification;
 
 /**
  *
- * @author arshr
+ * @author arshr and mulalo
  */
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
@@ -23,10 +23,28 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * TimeSheetReminder is scheduled service class for sending reminder emails to contractors
+ * and notifying admins regarding outstanding timesheet submissions.
+ *
+ * This class uses scheduled methods annotated with @Scheduled to automatically run at specific times,
+ * sending reminders 7 days, 3 days and 1 day before the timesheet deadlines, as well as  notifying admins
+ * the day after the deadline
+ * */
 @Singleton
 public class TimesheetReminder extends DBConfig {
 
-    @Schedule(hour = "14", minute = "34", dayOfMonth = "13", persistent = false)
+    /**
+     * Sends reminder email to users who have not updated their timesheets 7 days before the due date.
+     *
+     * This method is scheduled to run automatically on the first day of each month at 9:00 AM.
+     * It retrieve a list of users who have not submitted their by a certain date and sends them
+     * a reminder email to upload their timesheet before the 7th day of the month.
+     *
+     * @throws SQLException if there is an error retrieving user information from the database.
+     * @throws MessagingException if there is an issue sending the email notification.
+     * */
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "1", persistent = false)
     public void SevenDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
@@ -56,7 +74,17 @@ public class TimesheetReminder extends DBConfig {
         }
     }
 
-    @Schedule(hour = "13", minute = "52", dayOfMonth = "13", persistent = false)
+    /**
+     * Sends a reminder email to users who have not uploaded their timesheets  7 days before the due date.
+     *
+     * This method is scheduled to run on the 3rd day of the month at 9:00 AM.
+     * It checks for users who have  not uploaded their timesheets within a specified period,
+     * reminding them to submit before the end of the 7th.
+     *
+     * @throws SQLException if there is an error retrieving user data from the database.
+     * @throws MessagingException if an error occurs while sending email notification
+     * */
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "3", persistent = false)
     public void ThreeDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
@@ -86,7 +114,18 @@ public class TimesheetReminder extends DBConfig {
         }
     }
 
-    @Schedule(hour = "13", minute = "55", dayOfMonth = "13", persistent = false)
+
+    /**
+     * Sends a reminder email to users who have not uploaded their timesheets 3 days before the due date.
+     *
+     * This method is scheduled to run on the 7th day of the month at 9:00 AM.
+     * It retrieves users who have not submitted their timesheets within a specified period,
+     * reminding them to upload by the end of the 7th.
+     *
+     * @throws SQLException if there is an error retrieving user data from the database.
+     * @throws MessagingException if an error occurs while sending email notifications
+     **/
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "7", persistent = false)
     public void OneDayReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
@@ -116,7 +155,17 @@ public class TimesheetReminder extends DBConfig {
         }
     }
 
-    @Schedule(hour = "14", minute = "28", dayOfMonth = "13", persistent = false)
+    /**
+     * Sends an email notification to admin listing contractors who have not uploaded their timesheet by the due date.
+     *
+     * This method is scheduled to run on the 8th day of the month at 9:00 AM.
+     * It retrieves a list users who have not uploaded their timesheet and compiles
+     * a summary email sent to admins
+     *
+     * @throws SQLException if there is an error retrieving user or Admin data from the database.
+     * @throws MessagingException if an error occurs while sending email notifications to Admins
+     * */
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "8", persistent = false)
     public void AdminReminder() {
         try {
             int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
@@ -136,7 +185,7 @@ public class TimesheetReminder extends DBConfig {
                         .append(user.getSurname()).append("\n")
                         .append("Email: ")
                         .append(user.getEmail()).append("\n\n");
-                        
+
 
             }
 
@@ -155,12 +204,25 @@ public class TimesheetReminder extends DBConfig {
         }
     }
 
+    /**
+     * Calculates the number of days from the 15th of the previous month to the current date.
+     *
+     * @return the number of days between the 15th of the previous month and today.
+     */
     private int calculateDaysTo15thOfPreviousMonth() {
         LocalDate today = LocalDate.now();
         LocalDate fifteenthOfLastMonth = today.minusMonths(1).withDayOfMonth(15);
         return (int) java.time.temporal.ChronoUnit.DAYS.between(fifteenthOfLastMonth, today);
     }
 
+    /**
+     * Retrieves a list of contractors who have not uploaded their timesheets by a calculated date.
+     *
+     * @param currentDate the date to base the calculation on.
+     * @param days the number of days to subtract from the current date.
+     * @return a list of users who have not uploaded their timesheets by the calculated date.
+     * @throws SQLException if there is an error executing the query or retrieving data from the database.
+     */
     List<User> TimesheetOutstanding(LocalDate currentDate, int days) throws SQLException {
         List<User> users = new ArrayList<>();
         LocalDate calculatedDate = currentDate.minusDays(days);
@@ -194,6 +256,12 @@ public class TimesheetReminder extends DBConfig {
         }
     }
 
+    /**
+     * Retrieves a list of admins from the database to notify about outstanding timesheets.
+     *
+     * @return a list of admins.
+     * @throws SQLException if there is an error executing the query or retrieving data from the database.
+     */
     List<User> getAdmins() throws SQLException {
         String query = "SELECT * FROM user WHERE user.role = 'ADMIN'";
         List<User> admins = new ArrayList<>();
