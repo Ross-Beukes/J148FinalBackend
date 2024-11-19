@@ -21,6 +21,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -104,7 +105,7 @@ public Response getFilteredContractorPerformance(@QueryParam("filters") String f
 
 @GET
 @Produces(APPLICATION_JSON)
-@Path("get-contrator-list")
+@Path("get-contractor-list")
 public Response getListOfContractors(){
     try{
         return Response.ok(this.contractorPerformanceService.getAllContractors()).build();
@@ -123,6 +124,28 @@ public Response getListOfContractors(){
     }
 }
 
+@GET
+@Path("download-report")
+public Response downloadFile(){
+        try {
+            return Response.ok(this.contractorPerformanceService.downloadReportFile(this.contractorPerformanceService.getAllContractorPerformance())).build();
+        } catch (ContractorPerformanceNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (UserNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (ContractorNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (SQLException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (IOException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        }
+}
 
 
     

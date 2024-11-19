@@ -16,15 +16,15 @@ import java.util.logging.Logger;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
- * Controller for User management Includes end point tests for all user
- * management
+ * Controller for User management
+ * Includes end point tests for all user management
  */
 @Path("user")
 public class UserResource {
 
     private UserService userService = new UserServiceImpl();
     /**
-     * This map is used to temporarily store the generated admin keys.
+     *This map is used to temporarily store the generated admin keys.
      */
     private static final Map<String, String> verificationTokens = new HashMap<>();
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
@@ -87,12 +87,11 @@ public class UserResource {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, e.getMessage());
+        } catch (IllegalArgumentException e){
+            LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to register user", e);
-            System.out.println("Exception : " + e.getMessage());
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
@@ -127,7 +126,7 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("register-instructor")
-    public Response registerInstructor(@QueryParam("instructorToken") String instructorToken, User user) {
+    public Response registerInstructor(User user) {
         try {
             String email = verificationTokens.get(instructorToken);
             if (instructorToken == null || email == null || !email.equals(user.getEmail())) {

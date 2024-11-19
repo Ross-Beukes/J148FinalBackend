@@ -92,4 +92,13 @@ public interface FileEntityRepo {
      * @return List of all FileEntity objects in the database
      */
     List<FileEntity> getAllFiles();
+    
+    /**
+     * Retrieves a specific file from a specific user.
+     * @param user
+     * @param category
+     * @throws SQLException
+     * @return Optional containing file that corresponds to userID and category.
+     */
+    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
 }

@@ -17,21 +17,20 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
     @Override
     public AptitudeTest scheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {
 
-        if (user == null || user.getUserId() == null){
+        if (user == null || user.getUserId() == null) {
             throw new IllegalArgumentException("User is null");
         }
-        if (aptitudeTest == null){
+        if (aptitudeTest == null) {
             throw new IllegalArgumentException("Aptitude test is null");
         }
 
-        if (aptitudeTest.getTestDate() == null ){
+        if (aptitudeTest.getAptitudeTestId() == null || aptitudeTest.getTestDate() == null) {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
         if (userRepo.retrieveUserFromUserID(user).isEmpty()){
             throw new IllegalArgumentException("User not found");
         }
-
 
         if (aptitudeTest.getTestDate().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Test date must be in the future");
@@ -45,10 +44,10 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
     @Override
     public AptitudeTest rescheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {
 
-        if (user == null || user.getUserId() == null){
+        if (user == null || user.getUserId() == null) {
             throw new IllegalArgumentException("User is null");
         }
-        if (aptitudeTest.getAptitudeTestId() == null || aptitudeTest.getTestDate() == null ){
+        if (aptitudeTest.getAptitudeTestId() == null || aptitudeTest.getTestDate() == null) {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
@@ -56,10 +55,9 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
             throw new IllegalArgumentException("User not found");
         }
 
-        if (aptitudeRepo.findById(aptitudeTest.getAptitudeTestId()).isEmpty()){
+        if (aptitudeRepo.findById(aptitudeTest.getAptitudeTestId()).isEmpty()) {
             throw new IllegalArgumentException("Aptitude test not found");
         }
-
 
         if (aptitudeTest.getTestDate().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Test date must be in the future");
@@ -68,5 +66,15 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         aptitudeTest.setUser(user);
 
         return aptitudeRepo.update(aptitudeTest).orElseThrow(() -> new Exception("failed to reschedule aptitude test"));
+    }
+
+    @Override
+    public AptitudeTest retrieveAptitudeTestByUserId(User user) throws Exception {
+        if (user != null) {
+            return aptitudeRepo.retrieveAptitudeTestByUserId(user).orElseThrow(()
+                    -> new Exception("Could not retrieve aptitude test by user ID"));
+        } else {
+            throw new NullPointerException("User cannot be null when retrieving aptitude test by user ID");
+        }
     }
 }

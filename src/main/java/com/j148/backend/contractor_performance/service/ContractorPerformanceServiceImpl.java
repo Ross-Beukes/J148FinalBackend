@@ -8,6 +8,7 @@ import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.user.model.User;
+import java.io.IOException;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ContractorPerformanceServiceImpl implements ContractorPerformanceSe
         }
 
         Optional<ContractorPerformance> contractorPerformanceOptional = contractorPerformanceRepo.getContractorPerformance(user);
-        ContractorPerformance contractorPerformance = contractorPerformanceOptional.orElseThrow(() -> new IllegalStateException("Contractor performance optional is empty"));
+        ContractorPerformance contractorPerformance = contractorPerformanceOptional.orElseThrow(() -> new IllegalStateException("Contractor performance optional is empty. Contractor not found"));
 
         validateContractorPerformance(contractorPerformance);
         return contractorPerformance;
@@ -70,7 +71,7 @@ public class ContractorPerformanceServiceImpl implements ContractorPerformanceSe
 
     @Override
     public List<ContractorPerformance> getAllContractors() throws ContractorPerformanceNotFoundException, UserNotFoundException, ContractorNotFoundException, SQLException {
-        List<ContractorPerformance> contractorPerformance = contractorPerformanceRepo.getAllContractorPerformance();
+        List<ContractorPerformance> contractorPerformance = contractorPerformanceRepo.getAllContractors();
 
         if (contractorPerformance.isEmpty()) {
             return List.of();//return empty list
@@ -92,6 +93,16 @@ public class ContractorPerformanceServiceImpl implements ContractorPerformanceSe
         }
         if (contractorPerformance.getContractor() == null || contractorPerformance.getContractor().getContractorId() == null || contractorPerformance.getContractor().getContractorId() == 0) {
             throw new ContractorNotFoundException("The contractor object is null or the contractor id is 0 ");
+        }
+    }
+
+    @Override
+    public boolean downloadReportFile(List<ContractorPerformance> contractorPerformanceList) throws SQLException, IOException {
+
+        if (contractorPerformanceRepo.downloadReportFile(contractorPerformanceList) == "C:/Users/arshr/OneDrive/Documents/reports.xlsx") {
+            return true;
+        } else {
+            return false;
         }
     }
 
