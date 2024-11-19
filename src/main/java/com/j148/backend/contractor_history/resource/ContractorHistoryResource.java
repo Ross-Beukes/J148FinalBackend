@@ -41,7 +41,9 @@ public class ContractorHistoryResource {
     @Path("disciplinary-history")
     public Response getDisciplinaryHistory(Contractor contractor){
        
-    if(contractor != null)    {try {
+    if(contractor != null)   
+    
+    {try {
             if(this.contractorHistoryService.viewWarningAndHearingHistory(contractor) != null){
             return Response.ok(this.contractorHistoryService.viewWarningAndHearingHistory(contractor)).build();   
             }

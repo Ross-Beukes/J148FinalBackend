@@ -56,7 +56,6 @@ public class AttendanceResource {
     }
 
 
-
     /**
      * Get list of contractors who haven't checked in today.
      *
@@ -71,24 +70,19 @@ public class AttendanceResource {
     public Response getContractorsNotCheckedIn(List<Contractor> contractors) {
         try {
             List<Attendance> notCheckedIn = attendanceService.contractorsNotCheckedIn(contractors);
-            return Response.status(Response.Status.OK)
-                    .entity(notCheckedIn)
-                    .build();
+            return Response.status(Response.Status.OK).entity(notCheckedIn).build();
 
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error while processing contractor not checked in")
-                    .build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
 
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error while processing contractor not checked in")
-                    .build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
 
         }
     }
+
     /**
      * Mark absent contractors for today
      *
@@ -100,25 +94,17 @@ public class AttendanceResource {
     public Response markAbsentContractors() {
         try {
             List<Attendance> absentContractors = attendanceService.createAbsentContractors();
-            return Response.status(Response.Status.OK)
-                    .entity(absentContractors)
-                    .build();
+            return Response.status(Response.Status.OK).entity(absentContractors).build();
 
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Error while absent contractors ", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error while processing absent contractors")
-                    .build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
 
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Error while absent contractors ", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error while processing absent contractors")
-                    .build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
         }
     }
-
-
 
 
 }

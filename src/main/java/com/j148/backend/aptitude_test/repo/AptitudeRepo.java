@@ -23,7 +23,7 @@ public interface AptitudeRepo {
       * @return the saved AptitudeTest entity, with any generated fields populated
       */
     Optional<AptitudeTest> create (AptitudeTest aptitudeTest) throws SQLException;
-    
+
      
     /**
      * Retrieves an AptitudeTest from the database by its ID.
@@ -42,11 +42,11 @@ public interface AptitudeRepo {
     
     List<AptitudeTest> findAll() throws SQLException;
       /**
-       * Updates an existing AptitudeTest in the database.
-       *
-       * @param aptitudeTest the AptitudeTest entity with updated values
-       * @return the updated AptitudeTest entity
-       */
+     * Updates an existing AptitudeTest in the database.
+     * 
+     * @param aptitudeTest the AptitudeTest entity with updated values
+     * @return the updated AptitudeTest entity
+     */
     
     
     Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException;
