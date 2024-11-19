@@ -12,6 +12,8 @@ import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,11 +22,15 @@ import java.util.Optional;
 /**
  * @author glenl
  */
+@ApplicationScoped
 public class ContractorServiceImpl implements ContractorService {
 
-    private ContractorRepo contractorRepo = new ContractorRepoImpl();
-    private final ContractPeriodService contractPeriodService = new ContractPeriodServiceImpl();
-    private UserRepo userRepo = new UserRepoImpl();
+    @Inject
+    private ContractorRepo contractorRepo;
+    @Inject
+    private ContractPeriodService contractPeriodService;
+    @Inject
+    private UserRepo userRepo;
 
     @Override
     public List<Contractor> findCurrentContractors() throws SQLException, Exception {

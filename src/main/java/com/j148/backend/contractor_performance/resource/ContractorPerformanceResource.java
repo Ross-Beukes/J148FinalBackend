@@ -12,6 +12,7 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -32,6 +33,7 @@ import java.util.logging.Logger;
  *
  * @author arshr
  */
+@RequestScoped
 @Path("contractor-performance")
 public class ContractorPerformanceResource {
 

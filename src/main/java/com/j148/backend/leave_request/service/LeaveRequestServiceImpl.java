@@ -12,6 +12,8 @@ import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
 import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.time.LocalDate;
 import java.util.AbstractMap;
@@ -21,9 +23,11 @@ import java.util.HashMap;
  *
  * @author yusuf
  */
+@ApplicationScoped
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-    private LeaveRequestRepo leaveRequestRepo = new LeaveRequestRepoImpl();
+    @Inject
+    private LeaveRequestRepo leaveRequestRepo;
 
     @Override
     public LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) throws Exception {

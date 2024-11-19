@@ -3,14 +3,17 @@ package com.j148.backend.contract_period.service;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.repo.ContractPeriodRepo;
 import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
+@ApplicationScoped
 public class ContractPeriodServiceImpl implements ContractPeriodService {
 
-    private final ContractPeriodRepo contractPeriodRepo = new ContractPeriodRepoImpl();
+    @Inject
+    private ContractPeriodRepo contractPeriodRepo;
 
     @Override
     public ContractPeriod saveContractPeriod(ContractPeriod contractPeriod) throws Exception {
@@ -19,7 +22,6 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         }
 
         Optional<ContractPeriod> savedContractPeriod = contractPeriodRepo.saveContractPeriod(contractPeriod);
-        System.out.println(savedContractPeriod);
         return savedContractPeriod.orElseThrow(() ->
                 new IllegalStateException("Failed to save contract period. Please ensure all fields are correctly filled and formatted.")
         );

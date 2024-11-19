@@ -4,6 +4,7 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.service.HearingService;
 import com.j148.backend.hearing.service.HearingServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
@@ -13,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
+@RequestScoped
 @Path("hearing")
 public class RescheduleHearingResource {
     private HearingService hearingService = new HearingServiceImpl();

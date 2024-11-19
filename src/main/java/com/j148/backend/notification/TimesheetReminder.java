@@ -38,6 +38,9 @@ public class TimesheetReminder   {
     @Inject
     private DBConfig DBConfig;
 
+    @Inject
+    private EmailSender emailSender;
+
     /**
      * Sends reminder email to users who have not updated their timesheets 7 days before the due date.
      *
@@ -68,7 +71,7 @@ public class TimesheetReminder   {
                 msg.append(sb);
                 System.out.println("Hello world");
 
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
             }
         } catch (SQLException ex) {
@@ -108,7 +111,7 @@ public class TimesheetReminder   {
                 msg.append(sb);
                 System.out.println("Hello world");
 
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
             }
         } catch (SQLException ex) {
@@ -149,7 +152,7 @@ public class TimesheetReminder   {
                 msg.append(sb);
                 System.out.println("Hello world");
 
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
             }
         } catch (SQLException ex) {
@@ -199,7 +202,7 @@ public class TimesheetReminder   {
                         .append("Please see the list of contractors who have not uploaded timesheets.").append("\n\n")
                         .append(sb).append("\n")
                         .append("System generated response");
-                EmailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
             }
         } catch (SQLException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);

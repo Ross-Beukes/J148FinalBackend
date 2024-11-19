@@ -10,6 +10,7 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.contractor_history.service.ContractorHistoryService;
 import com.j148.backend.contractor_history.service.ContractorHistoryServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  *
  * @author Tshireletso
  */
-
+@RequestScoped
 @Path("contractor-history")
 public class ContractorHistoryResource {
     

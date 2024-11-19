@@ -4,6 +4,7 @@ import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.attendance.service.AttendanceService;
 import com.j148.backend.attendance.service.AttendanceServiceImpl;
 import com.j148.backend.contractor.model.Contractor;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -13,7 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
+@RequestScoped
 @Path("attendance")
 public class AttendanceResource {
 

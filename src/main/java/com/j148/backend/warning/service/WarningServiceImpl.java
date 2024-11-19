@@ -8,6 +8,9 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,10 +19,13 @@ import java.util.Optional;
 /**
  * @author glenl
  */
+@ApplicationScoped
 public class WarningServiceImpl implements WarningService {
 
-    private final WarningRepo warningRepo = new WarningRepoImpl();
-    private final ContractorRepo contractorRepo = new ContractorRepoImpl();
+    @Inject
+    private WarningRepo warningRepo;
+    @Inject
+    private ContractorRepo contractorRepo;
 
     @Override
     public Warning lateComingWarning(Contractor contractor) throws SQLException, Exception {

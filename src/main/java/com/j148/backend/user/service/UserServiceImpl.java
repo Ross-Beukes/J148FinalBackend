@@ -1,11 +1,13 @@
 package com.j148.backend.user.service;
 
-import com.j148.backend.user.EmailService;
+import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -15,49 +17,19 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 
-@Singleton
+@ApplicationScoped
 public class UserServiceImpl implements UserService {
 
-    private final UserRepo userRepo = new UserRepoImpl();
+    @Inject
+    private UserRepo userRepo;
+
+    @Inject
+    private EmailSender emailSender;
 
     /**
      *This map is used to temporarily store the generated admin keys.
      */
 
-    private Random random = new Random();
-
-    @Override
-    public String generateVerificationToken(){
-        StringBuilder token = new StringBuilder("V");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-    @Override
-    public String generateAdminToken() {
-        StringBuilder token = new StringBuilder("A");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-    @Override
-    public String generateInstructorToken() {
-        StringBuilder token = new StringBuilder("I");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
 
 
     @Override
@@ -180,7 +152,7 @@ public class UserServiceImpl implements UserService {
             }
         }
         User admin = userRepo.getAdmin().orElse(null);
-        EmailService.sendEmail(admin.getEmail(), "Birthdays today", messageBody);
+        emailSender.sendNotification(admin.getEmail(), "Birthdays today", messageBody);
     }
 
     @Override

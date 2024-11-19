@@ -14,6 +14,8 @@ import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -25,13 +27,17 @@ import java.util.Objects;
 /**
  * @author glenl
  */
-@Singleton
+@ApplicationScoped
 public class AttendanceServiceImpl implements AttendanceService {
 
-    private AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
-    private ContractorService contractorService = new ContractorServiceImpl();
-    private WarningService warningService = new WarningServiceImpl();
-    private HearingService hearingService = new HearingServiceImpl();
+    @Inject
+    private AttendanceRepo attendanceRepo;
+    @Inject
+    private ContractorService contractorService;
+    @Inject
+    private WarningService warningService;
+    @Inject
+    private HearingService hearingService;
 
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in

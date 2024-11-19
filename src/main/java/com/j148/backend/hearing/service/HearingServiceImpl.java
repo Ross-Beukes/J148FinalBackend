@@ -10,15 +10,21 @@ import java.sql.SQLException;
 
 import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+@ApplicationScoped
 public class HearingServiceImpl implements HearingService {
 
-    private final HearingRepo hearingRepo = new HearingRepoImpl();
-    private final ContractorRepo contractorRepo = new ContractorRepoImpl();
-    private final WarningRepo warningRepo = new WarningRepoImpl();
+    @Inject
+    private  HearingRepo hearingRepo;
+    @Inject
+    private  ContractorRepo contractorRepo;
+    @Inject
+    private  WarningRepo warningRepo;
    
 
     @Override

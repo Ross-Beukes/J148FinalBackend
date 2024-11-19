@@ -9,6 +9,9 @@ import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import java.io.IOException;
 
 import java.sql.SQLException;
@@ -16,11 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+@ApplicationScoped
 public class ContractorPerformanceServiceImpl implements ContractorPerformanceService {
 
     //  private static final Logger LOG = Logger.getLogger(ContractorPerformance.class.getName());
-    private ContractorPerformanceRepo contractorPerformanceRepo = new ContractorPerformanceRepoImpl();
+    @Inject
+    private ContractorPerformanceRepo contractorPerformanceRepo;
 
     @Override
     public ContractorPerformance getContractorPerformance(User user) throws ContractorPerformanceNotFoundException, UserNotFoundException, ContractorNotFoundException, SQLException {

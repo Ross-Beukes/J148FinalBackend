@@ -6,13 +6,18 @@ import com.j148.backend.aptitude_test.repo.AptitudeTestRepoImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 
 import java.time.LocalDateTime;
-
+@ApplicationScoped
 public class AptitudeTestServiceImpl implements AptitudeTestService {
 
-    private final AptitudeRepo aptitudeRepo = new AptitudeTestRepoImpl();
-    private final UserRepo userRepo = new UserRepoImpl();
+    @Inject
+    private AptitudeRepo aptitudeRepo;
+    @Inject
+    private UserRepo userRepo ;
 
     @Override
     public AptitudeTest scheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {

@@ -11,6 +11,9 @@ import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,10 +24,13 @@ import java.util.logging.Logger;
  *
  * @author Tshireletso
  */
+@ApplicationScoped
 public class ContractorHistoryServiceImpl implements ContractorHistoryService {
-    
-    private HearingRepoImpl hri = new HearingRepoImpl();
-    private WarningRepoImpl wri = new WarningRepoImpl();        
+
+    @Inject
+    private HearingRepoImpl hearingRepo;
+    @Inject
+    private WarningRepoImpl warningRepo;        
     
 
     @Override
@@ -37,8 +43,8 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
             List<Warning> warningHistory;
             List<Hearing> hearingHistory;
                 
-                hearingHistory = hri.findContractorHearingHistory(contractor);
-                warningHistory = wri.findAllActiveByContractor(contractor).get();
+                hearingHistory = hearingRepo.findContractorHearingHistory(contractor);
+                warningHistory = warningRepo.findAllActiveByContractor(contractor).get();
                 
                 ContractorHistory c = ContractorHistory.builder()
                         .warningHistory(warningHistory)

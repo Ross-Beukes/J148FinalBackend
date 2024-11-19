@@ -13,6 +13,7 @@ import com.j148.backend.leave_request.service.LeaveRequestServiceImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -31,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author yusuf
  */
-
+@RequestScoped
 @Path("leave-request")
 public class LeaveRequestResource {
     

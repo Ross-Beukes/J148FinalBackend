@@ -1,9 +1,9 @@
 package com.j148.backend.resources;
 
-import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
@@ -19,6 +19,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
  * Controller for User management
  * Includes end point tests for all user management
  */
+@RequestScoped
 @Path("user")
 public class UserResource {
 

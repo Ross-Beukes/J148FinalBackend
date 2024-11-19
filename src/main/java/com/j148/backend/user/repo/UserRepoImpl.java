@@ -5,7 +5,6 @@
 package com.j148.backend.user.repo;
 
 import com.j148.backend.config.DBConfig;
-import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.model.User.Role;
 import jakarta.enterprise.context.ApplicationScoped;

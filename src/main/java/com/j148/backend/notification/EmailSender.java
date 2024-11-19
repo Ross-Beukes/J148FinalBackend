@@ -9,6 +9,7 @@ package com.j148.backend.notification;
  * @author Tshireletso
  */
 
+import jakarta.ejb.Singleton;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
@@ -28,11 +29,11 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+@Singleton
 public class EmailSender {
     
     
-    public static void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
+    public void sendNotification(String sendTo,String notification,String subject) throws MessagingException {
         String email = "xavierdovah124";
         String password = "evba attv nsgw ymlz";
         
@@ -65,7 +66,7 @@ public class EmailSender {
         
     }
     
-     public static void sendEmailWithAttachment(String sendTo,String body ,String subject,File attachment) throws MessagingException {
+     public void sendEmailWithAttachment(String sendTo,String body ,String subject,File attachment) throws MessagingException {
         String email = "xavierdovah124";
         String password = "evba attv nsgw ymlz";
         

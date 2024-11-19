@@ -10,14 +10,21 @@ import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.jms.IllegalStateRuntimeException;
 import java.time.LocalDate;
-
+@ApplicationScoped
 public class ContractServiceImpl implements ContractService {
 
-    ContractRepo contractRepo = new ContractRepoImpl();
-    ContractPeriodService contractPeriodService = new ContractPeriodServiceImpl();
-    EmailSender emailSender = new EmailSender();
+    @Inject
+    ContractRepo contractRepo;
+    @Inject
+    ContractPeriodService contractPeriodService;
+    @Inject
+    EmailSender emailSender;
+
+
 
     @Override
     public Contract offerContract(User user, AptitudeTest aptitudeTest, FileEntity idFile, FileEntity matricCertificateFile) throws Exception {

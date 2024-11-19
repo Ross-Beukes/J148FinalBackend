@@ -16,6 +16,7 @@ import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -37,10 +38,14 @@ import java.util.logging.Logger;
 @Path("contract")
 public class ContractResource {
 
-    private ContractService contractService = new ContractServiceImpl();
-    private UserService userService = new UserServiceImpl();
-    private AptitudeTestService aptitudeTestService = new AptitudeTestServiceImpl();
-    private FileEntityService fileEntityService = new FileEntityServiceImpl();
+    @Inject
+    private ContractService contractService;
+    @Inject
+    private UserService userService;
+    @Inject
+    private AptitudeTestService aptitudeTestService;
+    @Inject
+    private FileEntityService fileEntityService;
 
     @POST
     @Consumes(APPLICATION_JSON)
