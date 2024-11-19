@@ -1,50 +1,81 @@
 package com.j148.backend.config;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
+@ApplicationScoped
+public class DBConfig {
+    private static final Logger LOGGER = Logger.getLogger(DBConfig.class.getName());
+    private BasicDataSource dataSource;
 
-public abstract class DBConfig {
-    private static BasicDataSource basicDataSource;
-
-    static {
+    @PostConstruct
+    public void init() {
         try {
-            basicDataSource = new BasicDataSource();
-            basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            dataSource = new BasicDataSource();
+            dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
-            // RDS Configuration - replace with your actual RDS details
-            basicDataSource.setUrl(System.getenv("RDS_URL"));
-            basicDataSource.setUsername(System.getenv("RDS_USERNAME"));
-            basicDataSource.setPassword(System.getenv("RDS_PASSWORD"));
+            // Get configuration from environment variables
+            String url = System.getenv("RDS_URL");
+            String username = System.getenv("RDS_USERNAME");
+            String password = System.getenv("RDS_PASSWORD");
+
+            if (url == null || username == null || password == null) {
+                throw new IllegalStateException("Database configuration environment variables not set");
+            }
+
+            dataSource.setUrl(url);
+            dataSource.setUsername(username);
+            dataSource.setPassword(password);
 
             // Connection Pool Settings
-            basicDataSource.setMinIdle(20);
-            basicDataSource.setMaxIdle(20);
-            basicDataSource.setMaxOpenPreparedStatements(150);
+            dataSource.setMinIdle(20);
+            dataSource.setMaxIdle(20);
+            dataSource.setMaxOpenPreparedStatements(150);
 
             // RDS-specific optimizations
-            basicDataSource.setValidationQuery("SELECT 1");
-            basicDataSource.setTestOnBorrow(true);
-            basicDataSource.setMaxWaitMillis(20000);
+            dataSource.setValidationQuery("SELECT 1");
+            dataSource.setTestOnBorrow(true);
+            dataSource.setMaxWaitMillis(20000);
+
+            LOGGER.info("Database connection pool initialized successfully");
 
         } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Failed to initialize database connection pool", e);
             throw new ExceptionInInitializerError("Database initialization failed: " + e.getMessage());
         }
     }
 
-    protected static Connection getCon() throws SQLException {
-
-        Connection con = basicDataSource.getConnection();
-        con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-        return con;
+    @Produces
+    @ApplicationScoped
+    public Connection  getCon() throws SQLException {
+        try {
+            Connection connection = dataSource.getConnection();
+            connection.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
+            return connection;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error obtaining database connection", e);
+            throw e;
+        }
     }
 
-    public static void close() throws SQLException {
-        if (basicDataSource != null) {
-            basicDataSource.close();
+    @PreDestroy
+    public void cleanup() {
+        try {
+            if (dataSource != null) {
+                dataSource.close();
+                LOGGER.info("Database connection pool closed successfully");
+            }
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error closing database connection pool", e);
         }
     }
 }

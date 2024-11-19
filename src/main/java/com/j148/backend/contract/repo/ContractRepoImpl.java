@@ -7,6 +7,9 @@ import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,12 +21,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //Author : Tshireletso
+@ApplicationScoped
+public class ContractRepoImpl implements ContractRepo{
 
-public class ContractRepoImpl extends DBConfig  implements ContractRepo{
-    
-    private final ContractPeriodRepoImpl cpri = new ContractPeriodRepoImpl();
-    private final UserRepoImpl uri = new UserRepoImpl();
     private static final Logger LOG = Logger.getLogger(ContractRepoImpl.class.getName());
+
+    @Inject
+    private DBConfig DBConfig;
     
 
     @Override
@@ -31,7 +35,7 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
         String sql = "INSERT INTO contract(contract_period_id,user_id,offer_date,expiration_date) "
                 + " VALUES(?,?,?,?) ";
         
-        try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)){
+        try(Connection con = DBConfig.getCon() ; PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)){
         con.setAutoCommit(false);
         Savepoint save = con.setSavepoint();
         
@@ -74,7 +78,7 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
     public Optional<Contract> findContract(long contractId) throws SQLException{
 //         String sql = "SELECT * FROM contract WHERE contract_id = ? ";
 //
-//         try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
+//         try(Connection con = DBConfig.getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
 //
 //             ps.setLong(1,contractId);
 //
@@ -112,7 +116,7 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
         
         
         
-        try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
+        try(Connection con = DBConfig.getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
             
             con.setAutoCommit(false);
             Savepoint save = con.setSavepoint();

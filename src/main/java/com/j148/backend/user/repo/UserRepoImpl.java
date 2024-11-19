@@ -8,6 +8,9 @@ import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.model.User.Role;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -22,12 +25,16 @@ import java.util.Optional;
  *
  * @author glenl
  */
-public class UserRepoImpl extends DBConfig implements UserRepo {
+@ApplicationScoped
+public class UserRepoImpl implements UserRepo {
+
+    @Inject
+    private DBConfig DBConfig;
 
     @Override
     public Optional<User> register(User user) throws SQLException {
         String query = "INSERT INTO user(name, surname, email, gender, id_number, role, race, location, age, password) VALUES (?,?,?,?,?,?,?,?,?,?)";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             con.setAutoCommit(false);
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
@@ -60,7 +67,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> updateUser(User user) throws SQLException {
         String query = "UPDATE user SET name = ?, surname = ?, email = ?, gender = ?, location = ?, password = ? WHERE id_number = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareCall(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareCall(query)) {
             con.setAutoCommit(false);
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
@@ -85,7 +92,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     public Optional<User> retreiveUserFromEmail(User user) throws SQLException {
         String query = "SELECT * FROM user WHERE email = ?";
         User foundUser;
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getEmail());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -120,7 +127,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> promoteApplicant(User user) throws SQLException {
         String query = "UPDATE user SET role = ? WHERE id_number = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             con.setAutoCommit(false);
             ps.setString(1, Role.CONTRACTOR.name());
             ps.setString(2, user.getIdNumber());
@@ -140,7 +147,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     public Optional<User> retrieveUserFromUserID(User user) throws SQLException {
         String query = "SELECT * FROM user WHERE user_id = ?";
         User foundUser;
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, user.getUserId());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -175,7 +182,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     public List<User> retrieveAllUsers() throws SQLException {
         List<User> allUsers = new ArrayList<>();
         String query = "SELECT * FROM user";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -202,7 +209,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> updateAge(User user) throws SQLException {
         String query = "UPDATE user SET age = ? WHERE id_number = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareCall(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareCall(query)) {
             con.setAutoCommit(false);
             ps.setInt(1, user.getAge());
             ps.setString(2, user.getIdNumber());
@@ -221,7 +228,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> getAdmin() throws SQLException {
         String query = "SELECT * FROM user WHERE role = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, Role.ADMIN.name());
             ResultSet rs = ps.executeQuery();
 
@@ -247,7 +254,7 @@ public class UserRepoImpl extends DBConfig implements UserRepo {
     @Override
     public Optional<User> promoteStaff(User user) throws SQLException {
         String query = "UPDATE user SET role = ? WHERE email = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getRole().toString());
             ps.setString(2, user.getEmail());
             con.setAutoCommit(false);

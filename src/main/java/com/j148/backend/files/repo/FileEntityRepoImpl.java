@@ -2,6 +2,8 @@ package com.j148.backend.files.repo;
 
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.Part;
 import com.j148.backend.files.model.FileEntity;
 
@@ -19,10 +21,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
+@ApplicationScoped
+public class FileEntityRepoImpl implements FileEntityRepo {
     private static final Logger LOGGER = Logger.getLogger(FileEntityRepoImpl.class.getName());
     private static final Path UPLOAD_DIR;
+
+    @Inject
+    private DBConfig DBConfig;
 
     static {
         try {
@@ -44,7 +49,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     public Optional<FileEntity> saveFile(FileEntity fileEntity) {
         String query = "INSERT INTO files(fileType, category, dateAdded, path, user, verified) Values(?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
             con.setAutoCommit(false);
@@ -79,7 +84,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
             throws SQLException {
         String fileName = "";
 
-        try (Connection con = getCon()) {
+        try (Connection con = DBConfig.getCon()) {
             con.setAutoCommit(false);
             Savepoint beforeFileSave = con.setSavepoint();
 
@@ -138,7 +143,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
 
     @Override
     public Optional<Boolean> deleteFile(FileEntity fileEntity) throws SQLException {
-        try (Connection con = getCon()) {
+        try (Connection con = DBConfig.getCon()) {
             con.setAutoCommit(false);
             Savepoint beforeFileDelete = con.setSavepoint();
 
@@ -180,7 +185,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
             WHERE f.file_id = ?
             """;
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, fileEntity.getFileId());
@@ -277,7 +282,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE fileId = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setLong(1, fileId);
@@ -305,7 +310,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE category = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, category.toString());
@@ -333,7 +338,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE verified = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, verified.toString());
@@ -361,7 +366,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -384,10 +389,20 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     }
 
     @Override
+    public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException {
+        return Optional.empty();
+    }
+
+    @Override
     public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException{
         String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, category.toString());

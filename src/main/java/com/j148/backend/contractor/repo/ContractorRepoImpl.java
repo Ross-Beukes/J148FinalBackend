@@ -4,19 +4,24 @@ import com.j148.backend.config.DBConfig;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+@ApplicationScoped
+public class ContractorRepoImpl implements ContractorRepo {
 
-public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
+    @Inject
+    private DBConfig DBConfig;
 
     @Override
     public Optional<Contractor> save(Contractor contractor) throws SQLException {
         String sql = "INSERT INTO contractor (contractor_period_id, status, user_id) VALUES (?, ?, ?)";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             con.setAutoCommit(false);
             Savepoint beforeSave = con.setSavepoint();
 
@@ -48,7 +53,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
     public Optional<Contractor> findById(Contractor contractor) throws SQLException {
         String sql = "SELECT * FROM contractor WHERE contractor_id = ?";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, contractor.getContractorId());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -73,7 +78,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
         String sql = "UPDATE contractor SET status = ? WHERE contractor_id = ?";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             con.setAutoCommit(false);
             Savepoint beforeUpdate = con.setSavepoint();
 
@@ -101,7 +106,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
 
         List<Contractor> contractors = new ArrayList<>();
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 User user = new User();
                 user.setUserId(rs.getLong("user_id"));
@@ -127,7 +132,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
         List<Contractor> currentContractors = new ArrayList<>();
         List<Contractor> contractors = new ArrayList<>();
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, contractPeriod.getContractPeriodId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -152,7 +157,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
     public Optional<Contractor> retrieveContractorByUserID(Contractor contractor) throws SQLException {
         String sql = "SELECT * FROM contractor WHERE user_id = ?";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, contractor.getUser().getUserId());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -180,7 +185,7 @@ public class ContractorRepoImpl extends DBConfig implements ContractorRepo {
     public Optional<Contractor> findContractorById(long id) throws SQLException {
         String sql = "SELECT * FROM contractor WHERE contractor_id = ?";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {

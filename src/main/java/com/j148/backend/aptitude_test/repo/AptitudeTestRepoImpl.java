@@ -12,6 +12,8 @@ package com.j148.backend.aptitude_test.repo;
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -21,7 +23,11 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
+@ApplicationScoped
+public class AptitudeTestRepoImpl implements AptitudeRepo {
+
+    @Inject
+    private DBConfig DBConfig;
 
     @Override
     public Optional<AptitudeTest> create(AptitudeTest aptitudeTest) throws SQLException {
@@ -110,6 +116,7 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
         }
     }
 
+
     // Helper method to map a ResultSet row to an AptitudeTest object
     private AptitudeTest mapRowToAptitudeTest(ResultSet rs) throws SQLException {
         Long id = rs.getLong("aptitude_test_id");
@@ -132,10 +139,10 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
     @Override
     public Optional<AptitudeTest> retrieveAptitudeTestByUserId(User user) throws SQLException {
         String query = "SELECT * FROM aptitude_test WHERE user_id = ?";
-        try(Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)){
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, user.getUserId());
-            try(ResultSet rs = ps.executeQuery()){
-                if(rs.next()){
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
                     AptitudeTest aptitudeTest = AptitudeTest.builder().aptitudeTestId(rs.getLong("aptitude_test_id"))
                             .testDate(rs.getTimestamp("test_date").toLocalDateTime()).testMark(rs.getInt("test_mark"))
                             .user(user).build();
@@ -146,3 +153,5 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
         return Optional.empty();
     }
 }
+
+
