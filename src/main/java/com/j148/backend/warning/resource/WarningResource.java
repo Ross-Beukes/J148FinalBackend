@@ -3,6 +3,7 @@ package com.j148.backend.warning.resource;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -28,7 +29,7 @@ public class WarningResource {
     @POST
     @Path("appeal-warning/{warningId}")
     @Consumes(APPLICATION_JSON)
-    public Response appealWarning(Warning warning,@PathParam("warningId") long warningId) {
+    public Response appealWarning(@Valid Warning warning,@PathParam("warningId") long warningId) {
         try {
             System.out.println("Appealing warning: " + warning);
             Warning appealedWarning = warningService.appealWarning(warning);

@@ -1,10 +1,9 @@
 package com.j148.backend.resources;
 
-import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
-import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -40,7 +39,7 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("promote-staff")
-    public Response promoteStaff(User user) {
+    public Response promoteStaff(@Valid User user) {
         try {
             return Response.ok(this.userService.PromoteStaff(user)).build();
         } catch (SQLException e) {
@@ -60,7 +59,7 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("register")
-    public Response registerUser(User user) {
+    public Response registerUser(@Valid User user) {
         try {
             user.setRole(User.Role.APPLICANT);
             return Response.ok(this.userService.registerUser(user)).build();
@@ -85,7 +84,7 @@ public class UserResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("update-user")
-    public Response updateUser(User user) {
+    public Response updateUser(@Valid User user) {
         try {
             return Response.ok(this.userService.updateUser(user)).build();
         } catch (SQLException e){

@@ -8,6 +8,7 @@ import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.aptitude_test.service.AptitudeTestService;
 import com.j148.backend.aptitude_test.service.AptitudeTestServiceImpl;
 import com.j148.backend.user.model.User;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.core.Response;
@@ -33,7 +34,7 @@ public class AptitudeTestResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("schedule_aptitude_test/{userId}")
-    public Response scheduleAptitudeTest(AptitudeTest aptitudeTest, @PathParam("userId") long userId) {
+    public Response scheduleAptitudeTest(@Valid AptitudeTest aptitudeTest, @PathParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
             System.out.println(userId);
@@ -54,7 +55,7 @@ public class AptitudeTestResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("reschedule_aptitude_test/{userId}")
-    public Response rescheduleAptitudeTest(AptitudeTest aptitudeTest, @PathParam("userId") long userId) {
+    public Response rescheduleAptitudeTest(@Valid AptitudeTest aptitudeTest, @PathParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
             System.out.println(userId);

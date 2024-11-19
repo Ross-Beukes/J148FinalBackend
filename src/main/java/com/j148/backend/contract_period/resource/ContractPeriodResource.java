@@ -3,11 +3,11 @@ package com.j148.backend.contract_period.resource;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -33,7 +33,7 @@ public class ContractPeriodResource {
     @POST
     @Path("save-contract-period")
     @Consumes(APPLICATION_JSON)
-    public Response saveContractPeriod(ContractPeriod contractPeriod) {
+    public Response saveContractPeriod(@Valid ContractPeriod contractPeriod) {
         try {
             if (contractPeriod == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Contract period must not be null.").build();
@@ -61,7 +61,7 @@ public class ContractPeriodResource {
     @POST
     @Path("update-contract-period")
     @Consumes(APPLICATION_JSON)
-    public Response updateContractPeriod(ContractPeriod contractPeriod) {
+    public Response updateContractPeriod(@Valid ContractPeriod contractPeriod) {
         try {
             if (contractPeriod == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Contract period and ID must not be null.").build();

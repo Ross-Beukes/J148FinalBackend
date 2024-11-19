@@ -7,13 +7,12 @@ import com.j148.backend.contractor.service.ContractorServiceImpl;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
-import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 
-import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -63,7 +62,7 @@ public class ContractorResource {
     @POST
     @Path("change-status/{contractorId}/{status}")
     @Consumes(APPLICATION_JSON)
-    public Response changeContractorStatus(Contractor contractor,@PathParam("contractorId") long contractorId ,@PathParam("status") Contractor.Status status) {
+    public Response changeContractorStatus(@Valid Contractor contractor,@PathParam("contractorId") long contractorId ,@PathParam("status") Contractor.Status status) {
         try {
             System.out.println(contractor);
             Contractor updatedContractor = contractorService.changeContractorStatus(contractor);

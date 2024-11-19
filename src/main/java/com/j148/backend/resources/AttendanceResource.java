@@ -4,6 +4,7 @@ import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.attendance.service.AttendanceService;
 import com.j148.backend.attendance.service.AttendanceServiceImpl;
 import com.j148.backend.contractor.model.Contractor;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -28,7 +29,7 @@ public class AttendanceResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("check-in")
-    public Response createAttendanceRecord(Attendance attendance) {
+    public Response createAttendanceRecord(@Valid Attendance attendance) {
         try {
             return Response.ok(this.attendanceService.createAttendenceRecord(attendance)).build();
         } catch (IllegalArgumentException e) {
@@ -43,7 +44,7 @@ public class AttendanceResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("check-out")
-    public Response checkOut(Attendance attendance) {
+    public Response checkOut(@Valid Attendance attendance) {
         try {
             return Response.ok(this.attendanceService.checkOut(attendance)).build();
         } catch (IllegalArgumentException e) {

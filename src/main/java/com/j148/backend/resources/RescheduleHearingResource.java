@@ -4,8 +4,8 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.service.HearingService;
 import com.j148.backend.hearing.service.HearingServiceImpl;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
@@ -27,7 +27,7 @@ public class RescheduleHearingResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("reschedule-hearing/{contractorId}")
-    public Response rescheduleHearing(Hearing hearing, @PathParam("contractorId")long contractorId){
+    public Response rescheduleHearing(@Valid Hearing hearing, @PathParam("contractorId")long contractorId){
         try{
             Contractor contractor = Contractor.builder().contractorId(contractorId).build();
             Hearing rescheduled = hearingService.rescheduleHearing(hearing, contractor);

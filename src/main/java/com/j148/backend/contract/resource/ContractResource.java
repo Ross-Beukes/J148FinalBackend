@@ -15,16 +15,13 @@ import com.j148.backend.files.service.FileEntityServiceImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
-import jakarta.ws.rs.core.Response.ResponseBuilder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -44,7 +41,7 @@ public class ContractResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("offer-contract")
-    public Response offerContract(User user) {
+    public Response offerContract(@Valid User user) {
         try {
             User foundUser = userService.findUserByEmail(user);
             AptitudeTest aptitudeTest = aptitudeTestService.retrieveAptitudeTestByUserId(foundUser);
