@@ -145,12 +145,4 @@ public class AttendanceServiceImpl implements AttendanceService {
         return missingAttendances;
     }
 
-    @Schedule(dayOfWeek = "Mon-Fri", hour = "15", minute = "45", persistent = false)
-    public void checkContractorsAttendance() {
-        try {
-            createAbsentContractors();
-        } catch (Exception e) {
-
-        }
-    }
 }

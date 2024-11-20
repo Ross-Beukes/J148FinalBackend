@@ -1,11 +1,16 @@
 package com.j148.backend.user.service;
 
+import com.j148.backend.contractor.model.Contractor;
+import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -25,12 +30,14 @@ public class UserServiceImpl implements UserService {
     private UserRepo userRepo;
 
     @Inject
+    private ContractorService contractorService;
+
+    @Inject
     private EmailSender emailSender;
 
     /**
      * This map is used to temporarily store the generated admin keys.
      */
-
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User promoteUser(User user) throws SQLException, Exception { //promote Applicant to Contractor
@@ -97,8 +104,11 @@ public class UserServiceImpl implements UserService {
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User promoteApplicant(User user) throws Exception {
-        if (user != null) {
-            return userRepo.promoteApplicant(user).orElseThrow(() -> new RuntimeException("User not promoted to contractor."));
+
+        if (user != null){
+            User promotedUser = findUserByEmail(user);
+            Contractor contractor = contractorService.promoteToContractor(promotedUser);
+            return user;
         } else {
             throw new IllegalArgumentException("User cannot be null.");
         }
@@ -118,46 +128,6 @@ public class UserServiceImpl implements UserService {
         return email != null && email.matches(emailRegex);
     }
 
-    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
-    @Schedule(dayOfWeek = "Mon-Sun", hour = "16", minute = "12", persistent = false)
-    public void updateAge() throws Exception {
-        List<User> allUsers;
-        String messageBody = "";
-        allUsers = userRepo.retrieveAllUsers();
-        for (int i = 0; i < allUsers.size(); i++) {
-            String birth = allUsers.get(i).getIdNumber().substring(0, 6);
-            String year = birth.substring(0, 2);
-            int yearBorn = 2000 + Integer.parseInt(year);
-            if (yearBorn < LocalDateTime.now().getYear()) {
-                year = "20" + year;
-            } else {
-                year = "19" + year;
-            }
-            String month = birth.substring(2, 4);
-            String day = birth.substring(4, 6);
-            String birthday = year + "-" + month + "-" + day;
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            LocalDate date = LocalDate.parse(birthday, formatter);
-
-            // Get the MonthDay of the input date
-            MonthDay inputMonthDay = MonthDay.from(date);
-
-            // Get today's MonthDay
-            MonthDay todayMonthDay = MonthDay.from(LocalDate.now());
-
-            // Compare MonthDay values (ignoring the year)
-            if (inputMonthDay.equals(todayMonthDay)) {
-                if (2024 - Integer.parseInt(year) != allUsers.get(i).getAge()) {
-                    User user = allUsers.get(i);
-                    user.setAge(LocalDate.now().getYear() - Integer.parseInt(year));
-                    userRepo.updateAge(user).orElse(null);
-                    messageBody = messageBody + user.getName() + " " + user.getSurname() + " : age: " + user.getAge() + " , " + user.getEmail() + "\n";
-                }
-            }
-        }
-        User admin = userRepo.getAdmin().orElse(null);
-        emailSender.sendNotification(admin.getEmail(), "Birthdays today", messageBody);
-    }
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
