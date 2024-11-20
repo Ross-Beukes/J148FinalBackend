@@ -39,4 +39,12 @@ public interface AptitudeTestService {
      * @throws Exception if the rescheduling operation fails
      */
     AptitudeTest rescheduleTest(AptitudeTest aptitudeTest, User user) throws Exception;
+    
+    /**
+     * Retrieves a specific users aptitude test by their user ID.
+     * @param user
+     * @return
+     * @throws Exception 
+     */
+    AptitudeTest retrieveAptitudeTestByUserId(User user) throws Exception;
 }

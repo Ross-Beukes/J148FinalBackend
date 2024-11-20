@@ -68,4 +68,6 @@ public interface ContractorService {
      */
     public Contractor updateContractor (Contractor contractor) throws Exception;
     Contractor changeContractorStatus(Contractor contractor) throws Exception;
+    
+    Contractor retrieveContractorByUserID (Contractor contractor) throws Exception;
 }

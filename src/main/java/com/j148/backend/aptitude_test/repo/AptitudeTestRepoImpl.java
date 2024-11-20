@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -11,6 +12,8 @@ package com.j148.backend.aptitude_test.repo;
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -20,35 +23,31 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
+@ApplicationScoped
+public class AptitudeTestRepoImpl implements AptitudeRepo {
+
+    @Inject
+    private DBConfig DBConfig;
 
     @Override
     public Optional<AptitudeTest> create(AptitudeTest aptitudeTest) throws SQLException {
         String sql = "INSERT INTO aptitude_test (test_mark, test_date, user_id) VALUES (?, ?, ?)";
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            conn.setAutoCommit(false);
-            Savepoint beforeTestSave = conn.setSavepoint();
 
-            try {
-                stmt.setInt(1, aptitudeTest.getTestMark());
-                stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-                stmt.setLong(3, aptitudeTest.getUser().getUserId());
+            stmt.setInt(1, aptitudeTest.getTestMark());
+            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
+            stmt.setLong(3, aptitudeTest.getUser().getUserId());
 
-                int affectedRows = stmt.executeUpdate();
-                if (affectedRows > 0) {
-                    try (ResultSet rs = stmt.getGeneratedKeys()) {
-                        if (rs.next()) {
-                            aptitudeTest.setAptitudeTestId(rs.getLong(1));
-                            conn.commit();
-                            return Optional.of(aptitudeTest);
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        aptitudeTest.setAptitudeTestId(rs.getLong(1));
+                        return Optional.of(aptitudeTest);
 
-                        }
                     }
                 }
-            } catch (SQLException e) {
-                conn.rollback(beforeTestSave);
-                throw e;
             }
         }
         return Optional.empty();
@@ -87,26 +86,21 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
 
     @Override
     public Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException {
-        String query = "UPDATE aptitude_test SET test_mark = ?, test_date = ?  WHERE user_id = ?";
+        String query = "UPDATE aptitude_test SET test_date = ? WHERE user_id = ?";
         System.out.println(query);
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            conn.setAutoCommit(false);
-            stmt.setInt(1, aptitudeTest.getTestMark());
-            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-            stmt.setLong(3, aptitudeTest.getUser().getUserId());
-            Savepoint beforeTestSave = conn.setSavepoint();
+            stmt.setTimestamp(1, Timestamp.valueOf(aptitudeTest.getTestDate()));
+            stmt.setLong(2, aptitudeTest.getUser().getUserId());
 
             if (stmt.executeUpdate() > 0) {
-                conn.commit();
                 return Optional.of(aptitudeTest);
-            } else {
-                conn.rollback(beforeTestSave);
             }
             return Optional.empty();
 
         }
     }
+
 
     // Helper method to map a ResultSet row to an AptitudeTest object
     private AptitudeTest mapRowToAptitudeTest(ResultSet rs) throws SQLException {
@@ -126,4 +120,23 @@ public class AptitudeTestRepoImpl extends DBConfig implements AptitudeRepo {
                 .user(user)
                 .build();
     }
+
+    @Override
+    public Optional<AptitudeTest> retrieveAptitudeTestByUserId(User user) throws SQLException {
+        String query = "SELECT * FROM aptitude_test WHERE user_id = ?";
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setLong(1, user.getUserId());
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    AptitudeTest aptitudeTest = AptitudeTest.builder().aptitudeTestId(rs.getLong("aptitude_test_id"))
+                            .testDate(rs.getTimestamp("test_date").toLocalDateTime()).testMark(rs.getInt("test_mark"))
+                            .user(user).build();
+                    return Optional.of(aptitudeTest);
+                }
+            }
+        }
+        return Optional.empty();
+    }
 }
+
+

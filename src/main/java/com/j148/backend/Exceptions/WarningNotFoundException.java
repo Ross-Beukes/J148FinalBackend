@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author arshr
  */
-public class WarningNotFoundException extends Exception {
+public class WarningNotFoundException extends RuntimeException {
 
     public WarningNotFoundException() {
     }
