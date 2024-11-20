@@ -10,8 +10,15 @@ import java.sql.SQLException;
  * Provides methods for creating, retrieving, and updating Users.
  */
 public interface UserService {
+
+    User promoteUser(User user) throws SQLException, Exception;
             
     /**
+
+
+            
+    /**
+
      * Attempts to log in a user by verifying the provided email and password.
      *
      * @param user A User object containing the email and plain-text password

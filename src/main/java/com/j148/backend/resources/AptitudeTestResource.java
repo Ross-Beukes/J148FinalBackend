@@ -8,6 +8,8 @@ import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.aptitude_test.service.AptitudeTestService;
 import com.j148.backend.aptitude_test.service.AptitudeTestServiceImpl;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.core.Response;
@@ -19,10 +21,12 @@ import java.util.logging.Logger;
  *
  * @author glenl
  */
+@RequestScoped
 @Path("aptitude-test")
 public class AptitudeTestResource {
-    
-    private AptitudeTestService aptitudeTestService = new AptitudeTestServiceImpl();
+
+    @Inject
+   private AptitudeTestService aptitudeTestService;
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
     
     @GET

@@ -8,7 +8,7 @@ package com.j148.backend.Exceptions;
  *
  * @author yusuf
  */
-public class DateNotFoundException extends Exception{
+public class DateNotFoundException extends RuntimeException{
 
     public DateNotFoundException() {
     }

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import javax.swing.plaf.synth.Region;
 
 /**
  * Repository interface for managing file operations in the HRMS system.
@@ -21,7 +22,7 @@ public interface FileEntityRepo {
      * @param fileEntity the file entity to be saved
      * @return Optional containing the saved FileEntity with generated ID if successful, empty Optional otherwise
      */
-    Optional<FileEntity> saveFile(FileEntity fileEntity);
+    Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException;
 
     /**
      * Saves both the physical file and its metadata in the database.
@@ -35,7 +36,7 @@ public interface FileEntityRepo {
     Optional<FileEntity> save(Part filePart, User user, FileEntity.Category category) throws SQLException;
 
     /**
-     * Deletes a file from both the filesystem and database.
+     * Deletes a file from both the file system and database.
      *
      * @param fileEntity the file entity to be deleted
      * @return Optional containing true if deletion was successful, false otherwise
@@ -53,7 +54,7 @@ public interface FileEntityRepo {
     Optional<FileEntity> findById(FileEntity fileEntity) throws SQLException;
 
     /**
-     * Downloads the physical file content from the filesystem.
+     * Downloads the physical file content from the file system.
      *
      * @param file the file entity to download
      * @return Optional containing the file bytes if found, empty Optional otherwise
@@ -92,4 +93,47 @@ public interface FileEntityRepo {
      * @return List of all FileEntity objects in the database
      */
     List<FileEntity> getAllFiles();
+
+    /**
+
+
+     * Uploads a file from your local machine to the Amazon simple storage service
+     * file storage
+     *
+     * @param fileEntity
+     * @return
+     * @throws java.sql.SQLException
+     */
+
+    Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException;
+
+    /**
+     * Downloads a file from the Amazon simple storage service file storage to
+     * your local machine
+     *
+     * @param fileEntity
+     * @return
+     * @throws java.sql.SQLException
+     */
+
+    Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException;
+
+
+
+
+
+
+    /**
+     * Retrieves a specific file from a specific user.
+     * @param user
+     * @param category
+     * @throws SQLException
+     * @return Optional containing file that corresponds to userID and category.
+     */
+    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
+
+
+
+
+
 }

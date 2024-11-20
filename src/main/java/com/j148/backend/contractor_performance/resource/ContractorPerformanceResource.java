@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -11,6 +12,8 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -21,6 +24,7 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
@@ -30,10 +34,12 @@ import java.util.logging.Logger;
  *
  * @author arshr
  */
+@RequestScoped
 @Path("contractor-performance")
 public class ContractorPerformanceResource {
 
-    private ContractorPerformanceService contractorPerformanceService = new ContractorPerformanceServiceImpl();
+    @Inject
+    private ContractorPerformanceService contractorPerformanceService;
     private static final Logger LOG = Logger.getLogger(ContractorPerformanceResource.class.getName());
 
 @POST
@@ -70,13 +76,13 @@ public Response getAllContractorPerformance(){
         return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(ContractorPerformanceNotFoundException e){
         LOG.log(Level.SEVERE, "ContractorPerformance was null", e);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();   
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(UserNotFoundException e){
         LOG.log(Level.SEVERE, "User is null or userID is null", e);
         return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(ContractorNotFoundException e){
         LOG.log(Level.SEVERE, "Contractor is null or contractorID is null", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();  
+        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }
 }
 
@@ -92,19 +98,19 @@ public Response getFilteredContractorPerformance(@QueryParam("filters") String f
         return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(ContractorPerformanceNotFoundException e){
         LOG.log(Level.SEVERE, "ContractorPerformance was null", e);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();   
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(UserNotFoundException e){
         LOG.log(Level.SEVERE, "User is null or userID is null", e);
         return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(ContractorNotFoundException e){
         LOG.log(Level.SEVERE, "Contractor is null or contractorID is null", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();  
+        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }
 }
 
 @GET
 @Produces(APPLICATION_JSON)
-@Path("get-contrator-list")
+@Path("get-contractor-list")
 public Response getListOfContractors(){
     try{
         return Response.ok(this.contractorPerformanceService.getAllContractors()).build();
@@ -113,19 +119,41 @@ public Response getListOfContractors(){
         return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(ContractorPerformanceNotFoundException e){
         LOG.log(Level.SEVERE, "ContractorPerformance was null", e);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();   
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(UserNotFoundException e){
         LOG.log(Level.SEVERE, "User is null or userID is null", e);
         return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }catch(ContractorNotFoundException e){
         LOG.log(Level.SEVERE, "Contractor is null or contractorID is null", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();  
+        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
     }
+}
+
+@GET
+@Path("download-report")
+public Response downloadFile(){
+        try {
+            return Response.ok(this.contractorPerformanceService.downloadReportFile(this.contractorPerformanceService.getAllContractorPerformance())).build();
+        } catch (ContractorPerformanceNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (UserNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (ContractorNotFoundException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (SQLException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } catch (IOException ex) {
+            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        }
 }
 
 
 
-    
-    
+
 
 }
