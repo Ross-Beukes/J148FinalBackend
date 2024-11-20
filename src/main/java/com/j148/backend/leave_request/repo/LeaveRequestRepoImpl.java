@@ -8,6 +8,7 @@ import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.leave_request.model.LeaveRequest;
+import com.j148.backend.user.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -142,6 +143,29 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
             }
         }
         return requestMap;
+    }
+    public List<LeaveRequest> retrieveAlll() throws SQLException {
+        List<LeaveRequest> leaveRequests = new ArrayList<>();
+        String query = "SELECT lr.start_date, lr.end_date, u.name, u.email " +
+                "FROM leave_request lr " +
+                "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
+                "JOIN user u ON c.user_id = u.user_id";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                LeaveRequest leaveRequest = LeaveRequest.builder()
+                        .startDate(rs.getDate("start_date").toLocalDate())
+                        .endDate(rs.getDate("end_date").toLocalDate())
+                        .contractor(Contractor.builder()
+                                .user(User.builder()
+                                        .name(rs.getString("name"))
+                                        .email(rs.getString("email"))
+                                        .build())
+                                .build())
+                        .build();
+                leaveRequests.add(leaveRequest);
+            }
+        }
+        return leaveRequests;
     }
 
     @Override

@@ -15,7 +15,9 @@ import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
 
 import java.time.LocalDate;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -76,6 +78,18 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             }
         }
         return copyMap;
+    }
+    public List<LeaveRequest>retrieveAllLeaveRequest()throws Exception{
+        HashMap<Long, LeaveRequest> copyMap = (HashMap<Long, LeaveRequest>) leaveRequestRepo.retrieveAll();
+        for (Long l : copyMap.keySet()) {
+            if (l == 0 || l == null) {
+                throw new IllegalArgumentException("Invalid ID in key set (null or 0) for retrieve all leave requests map");
+            }
+            if (copyMap.get(l) == null) {
+                throw new IllegalArgumentException("Leave Request Map cannot have null values");
+            }
+        }
+        return new ArrayList<>(copyMap.values());
     }
 
     @Override
