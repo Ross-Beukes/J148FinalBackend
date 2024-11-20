@@ -8,12 +8,12 @@ import com.j148.backend.attendance.service.AttendanceService;
 import com.j148.backend.attendance.service.AttendanceServiceImpl;
 import com.j148.backend.notification.EmailSender;
 import com.j148.backend.notification.TimesheetReminder;
-import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
+import jakarta.inject.Inject;
 import jakarta.mail.MessagingException;
 
 import java.sql.SQLException;
@@ -30,11 +30,17 @@ import java.util.logging.Logger;
  * @author glenl
  */
 @Singleton
-public class scheduler {
+public class Scheduler {
     
-    private final AttendanceService attendanceService = new AttendanceServiceImpl();
-    private final UserRepo userRepo = new UserRepoImpl();
-    private final TimesheetReminder timesheetReminder = new TimesheetReminder();
+    @Inject
+    private AttendanceService attendanceService;
+    @Inject
+    private UserRepo userRepo;
+    @Inject
+    private TimesheetReminder timesheetReminder ;
+
+    @Inject
+    private EmailSender emailSender;
     
     @Schedule(dayOfWeek = "Mon-Fri", hour = "15", minute = "45", persistent = false)
     public void checkContractorsAttendance() {
@@ -79,7 +85,8 @@ public class scheduler {
         }
         User admin = userRepo.getAdmin().orElse(null);
         if (!messageBody.toString().isEmpty()) {
-            EmailService.sendEmail(admin.getEmail(), "Birthdays today", messageBody.toString());
+
+            emailSender.sendNotification(admin.getEmail(), "Birthdays today", messageBody.toString());
         }
     }
 
@@ -113,7 +120,7 @@ public class scheduler {
                 msg.append(sb);
                 System.out.println("Hello world");
 
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
             }
         } catch (SQLException ex) {
@@ -153,7 +160,7 @@ public class scheduler {
                 msg.append(sb);
                 System.out.println("Hello world");
 
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
             }
         } catch (SQLException ex) {
@@ -193,7 +200,7 @@ public class scheduler {
                 msg.append(sb);
                 System.out.println("Hello world");
 
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
             }
         } catch (SQLException ex) {
@@ -243,7 +250,7 @@ public class scheduler {
                         .append("Please see the list of contractors who have not uploaded timesheets.").append("\n\n")
                         .append(sb).append("\n")
                         .append("System generated response");
-                EmailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
+                emailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
             }
         } catch (SQLException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
