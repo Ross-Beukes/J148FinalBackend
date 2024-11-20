@@ -33,20 +33,39 @@ public class WarningResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("appeal-warning/{contractorId}")
-    public Response scheduleAptitudeTest(Warning warning, @PathParam("contractorId") long contractorId) {
+    public Response appealWarning(Warning warning, @PathParam("contractorId") long contractorId) {
         try {
             Contractor contractor = Contractor.builder().contractorId(contractorId).build();
             
             return Response.ok(this.warningService.appealWarning(warning, contractor)).build();
         } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Unable to add aptitude test to the database.  Check for duplicates");
+            LOG.log(Level.SEVERE, "Unable to add warning to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
         } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "Aptitude Test object not complete.");
+            LOG.log(Level.SEVERE, "Warning object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unable to add Aptitude Test", e);
+            LOG.log(Level.SEVERE, "Unable to add warning", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+    
+    @POST
+    @Produces(APPLICATION_JSON)
+    @Consumes(APPLICATION_JSON)
+    @Path("GetContractorWarnings")
+    public Response retrieveContractorWarning(Contractor contractor) {
+        try {
+            return Response.ok(this.warningService.findAllActiveByContractor(contractor)).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to get warnings from the database.");
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "Contractor object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to get Warning", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }

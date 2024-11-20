@@ -95,7 +95,11 @@ public class WarningServiceImpl implements WarningService {
     }
 
     @Override
-    public List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException {
+    public List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException, Exception {
+        if (contractor != null) {
+             System.out.println(warningRepo.findAllActiveByContractor(contractor).orElseThrow(() -> new Exception("No Warnings found.")));
+             return warningRepo.findAllActiveByContractor(contractor).orElseThrow(() -> new Exception("No Warnings found."));
+        }
         return null;
     }
 
