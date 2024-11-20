@@ -5,6 +5,7 @@ import com.j148.backend.attendance.service.AttendanceService;
 import com.j148.backend.attendance.service.AttendanceServiceImpl;
 import com.j148.backend.contractor.model.Contractor;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -19,7 +20,8 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 public class AttendanceResource {
 
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
-    private AttendanceService attendanceService = new AttendanceServiceImpl();
+    @Inject
+    private AttendanceService attendanceService;
 
     @GET
     public Response pingAttendanceResource() {

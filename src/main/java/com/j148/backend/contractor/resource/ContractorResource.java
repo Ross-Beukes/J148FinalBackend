@@ -4,6 +4,7 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -24,7 +25,8 @@ import java.util.logging.Logger;
 @Path("contractor")
 public class ContractorResource {
 
-    private final ContractorService contractorService = new ContractorServiceImpl();
+    @Inject
+    private ContractorService contractorService;
     private static final Logger LOG = Logger.getLogger(ContractorResource.class.getName());
 
     /**

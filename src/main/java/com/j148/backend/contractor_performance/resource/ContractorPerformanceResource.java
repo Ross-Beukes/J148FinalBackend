@@ -13,6 +13,7 @@ import com.j148.backend.Exceptions.ContractorPerformanceNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -37,7 +38,8 @@ import java.util.logging.Logger;
 @Path("contractor-performance")
 public class ContractorPerformanceResource {
 
-    private ContractorPerformanceService contractorPerformanceService = new ContractorPerformanceServiceImpl();
+    @Inject
+    private ContractorPerformanceService contractorPerformanceService;
     private static final Logger LOG = Logger.getLogger(ContractorPerformanceResource.class.getName());
 
 @POST

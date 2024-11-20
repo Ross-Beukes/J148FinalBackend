@@ -14,6 +14,7 @@ import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -36,9 +37,12 @@ import java.util.logging.Logger;
 @Path("leave-request")
 public class LeaveRequestResource {
     
-    private LeaveRequestService leaveRequestService = new LeaveRequestServiceImpl();
-    private UserService userService = new UserServiceImpl();
-    private ContractorService contractorService = new ContractorServiceImpl();
+    @Inject
+    private LeaveRequestService leaveRequestService;
+    @Inject
+    private UserService userService;
+    @Inject
+    private ContractorService contractorService;
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
     
     @POST

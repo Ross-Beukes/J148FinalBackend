@@ -4,6 +4,7 @@ import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
@@ -25,7 +26,8 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 public class UserResource {
 
 
-    private UserService userService = new UserServiceImpl();
+    @Inject
+    private UserService userService;
 
 
     /**
