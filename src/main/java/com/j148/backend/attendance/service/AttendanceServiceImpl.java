@@ -17,6 +17,7 @@ import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -39,6 +40,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Inject
     private HearingService hearingService;
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in
 
@@ -69,6 +71,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
     }
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public Attendance checkOut(Attendance attendance) throws SQLException, Exception { //check out
         Attendance foundAttendance;
@@ -98,6 +101,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendance;
     }
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public List<Attendance> createAbsentContractors() throws SQLException, Exception {
         List<Contractor> contractors = contractorService.findCurrentContractors();

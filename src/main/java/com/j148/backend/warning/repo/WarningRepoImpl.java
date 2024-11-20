@@ -179,6 +179,7 @@ public class WarningRepoImpl   implements WarningRepo {
         }
     }
 
+
     @Override
     public Optional<Warning> createLateWarning(Contractor contractor) throws SQLException {
         try (Connection con = DBConfig.getCon()) {

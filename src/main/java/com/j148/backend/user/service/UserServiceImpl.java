@@ -8,6 +8,7 @@ import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -27,11 +28,10 @@ public class UserServiceImpl implements UserService {
     private EmailSender emailSender;
 
     /**
-     *This map is used to temporarily store the generated admin keys.
+     * This map is used to temporarily store the generated admin keys.
      */
 
-
-
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User promoteUser(User user) throws SQLException, Exception { //promote Applicant to Contractor
         if (user != null && user.getEmail() != null) {
@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User registerUser(User user) throws Exception {
 
@@ -74,39 +75,41 @@ public class UserServiceImpl implements UserService {
         return this.userRepo.register(user).orElseThrow(() -> new RuntimeException("Unable to insert user into the database."));
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User updateUser(User user) throws Exception {
-        if (user != null){
+        if (user != null) {
             return userRepo.updateUser(user).orElseThrow(() -> new RuntimeException("Unable to update user."));
-        }else {
+        } else {
             throw new IllegalArgumentException("ID number cannot be null.");
         }
     }
 
     @Override
     public User findUserByEmail(User user) throws Exception {
-        if (user.getEmail() != null){
+        if (user.getEmail() != null) {
             return userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new RuntimeException("User with this email address was not found."));
         } else {
-            throw  new IllegalArgumentException("Email cannot be null.");
+            throw new IllegalArgumentException("Email cannot be null.");
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User promoteApplicant(User user) throws Exception {
-        if (user != null){
+        if (user != null) {
             return userRepo.promoteApplicant(user).orElseThrow(() -> new RuntimeException("User not promoted to contractor."));
         } else {
-            throw  new IllegalArgumentException("User cannot be null.");
+            throw new IllegalArgumentException("User cannot be null.");
         }
     }
 
     @Override
     public User findUserById(User user) throws Exception {
-        if (user != null && user.getUserId() != null){
+        if (user != null && user.getUserId() != null) {
             return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new RuntimeException("User with this user id was not found."));
         } else {
-            throw  new IllegalArgumentException("User id cannot be null.");
+            throw new IllegalArgumentException("User id cannot be null.");
         }
     }
 
@@ -115,6 +118,7 @@ public class UserServiceImpl implements UserService {
         return email != null && email.matches(emailRegex);
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Schedule(dayOfWeek = "Mon-Sun", hour = "16", minute = "12", persistent = false)
     public void updateAge() throws Exception {
         List<User> allUsers;
@@ -145,9 +149,9 @@ public class UserServiceImpl implements UserService {
             if (inputMonthDay.equals(todayMonthDay)) {
                 if (2024 - Integer.parseInt(year) != allUsers.get(i).getAge()) {
                     User user = allUsers.get(i);
-                   user.setAge(LocalDate.now().getYear() - Integer.parseInt(year));
-                   userRepo.updateAge(user).orElse(null);
-                   messageBody = messageBody + user.getName()+" "+ user.getSurname() + " : age: " + user.getAge()+ " , " + user.getEmail() + "\n";
+                    user.setAge(LocalDate.now().getYear() - Integer.parseInt(year));
+                    userRepo.updateAge(user).orElse(null);
+                    messageBody = messageBody + user.getName() + " " + user.getSurname() + " : age: " + user.getAge() + " , " + user.getEmail() + "\n";
                 }
             }
         }
@@ -155,9 +159,10 @@ public class UserServiceImpl implements UserService {
         emailSender.sendNotification(admin.getEmail(), "Birthdays today", messageBody);
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User PromoteStaff(User user) throws Exception {
-        if (user != null){
+        if (user != null) {
             return userRepo.promoteStaff(user).orElseThrow(() -> new RuntimeException("User not promoted."));
         } else {
             throw new IllegalArgumentException("User cannot be null.");

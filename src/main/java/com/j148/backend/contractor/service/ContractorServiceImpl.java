@@ -15,6 +15,7 @@ import com.j148.backend.user.repo.UserRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class ContractorServiceImpl implements ContractorService {
         return contractorRepo.findCurrentContractor(contractPeriod);
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Contractor promoteToContractor(User user) throws SQLException, Exception {
         Contractor contractor = Contractor.builder().build();
@@ -53,6 +55,7 @@ public class ContractorServiceImpl implements ContractorService {
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Contractor promoteToExternalContractor(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
@@ -86,9 +89,10 @@ public class ContractorServiceImpl implements ContractorService {
         return contractorRepo.updateStatus(contractor).orElseThrow(() -> new RuntimeException("Failed to change contractor status"));
 
     }
-
-    public Contractor updateContractor(Contractor contractor) throws Exception{
-        if(contractor == null){
+    @Override
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
+    public Contractor updateContractor(Contractor contractor) throws Exception {
+        if (contractor == null) {
             throw new UserNotFoundException("User not found, update failed");
 
         } else {
@@ -99,19 +103,20 @@ public class ContractorServiceImpl implements ContractorService {
 
     @Override
     public Contractor retrieveContractorByUserID(Contractor contractor) throws Exception {
-        if(contractor != null){
+        if (contractor != null) {
             verifyContractorWithUserReference(contractor);
-            return contractorRepo.retrieveContractorByUserID(contractor).orElseThrow(() 
-            -> new RuntimeException("There was an error retrieving a contractor by user reference"));
+            return contractorRepo.retrieveContractorByUserID(contractor).orElseThrow(()
+                    -> new RuntimeException("There was an error retrieving a contractor by user reference"));
         } else {
             throw new ContractorNotFoundException("Contractor not found or is returning a null");
         }
     }
-    private void verifyContractorWithUserReference(Contractor contractor){
-        if(contractor.getUser() == null){
+
+    private void verifyContractorWithUserReference(Contractor contractor) {
+        if (contractor.getUser() == null) {
             throw new UserNotFoundException("Error retrieving user for reference to contractor");
         }
-        if(contractor.getUser().getUserId() == 0){
+        if (contractor.getUser().getUserId() == 0) {
             throw new UserNotFoundException("User was not found when retrieving reference for contractor");
         }
     }

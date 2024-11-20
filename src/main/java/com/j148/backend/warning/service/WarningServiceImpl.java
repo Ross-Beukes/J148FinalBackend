@@ -10,6 +10,7 @@ import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -27,6 +28,7 @@ public class WarningServiceImpl implements WarningService {
     @Inject
     private ContractorRepo contractorRepo;
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Warning lateComingWarning(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
@@ -40,6 +42,7 @@ public class WarningServiceImpl implements WarningService {
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Warning absentWarning(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
@@ -58,7 +61,7 @@ public class WarningServiceImpl implements WarningService {
         return null;
     }
 
-
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
 

@@ -14,13 +14,14 @@ import com.j148.backend.leave_request.repo.LeaveRequestRepo;
 import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.HashMap;
 
 /**
- *
  * @author yusuf
  */
 @ApplicationScoped
@@ -29,6 +30,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Inject
     private LeaveRequestRepo leaveRequestRepo;
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) throws Exception {
         if (leaveRequest != null) {
@@ -106,6 +108,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public LeaveRequest updateLeaveRequestDecision(LeaveRequest leaveRequest) throws Exception {
         if (leaveRequest != null) {

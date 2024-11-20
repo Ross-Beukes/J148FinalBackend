@@ -13,6 +13,9 @@ import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.jms.IllegalStateRuntimeException;
+
+import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.time.LocalDate;
 @ApplicationScoped
 public class ContractServiceImpl implements ContractService {
@@ -25,7 +28,7 @@ public class ContractServiceImpl implements ContractService {
     EmailSender emailSender;
 
 
-
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public Contract offerContract(User user, AptitudeTest aptitudeTest, FileEntity idFile, FileEntity matricCertificateFile) throws Exception {
         validateAllOfferAttributes(user, aptitudeTest, idFile, matricCertificateFile);

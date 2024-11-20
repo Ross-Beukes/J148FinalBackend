@@ -10,6 +10,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import lombok.extern.jbosslog.JBossLog;
 
+import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 @ApplicationScoped
 public class AptitudeTestServiceImpl implements AptitudeTestService {
@@ -19,6 +21,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
     @Inject
     private UserRepo userRepo ;
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public AptitudeTest scheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {
 
@@ -49,6 +52,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         return aptitudeRepo.create(aptitudeTest).orElseThrow(() -> new RuntimeException("failed to schedule aptitude test"));
     }
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public AptitudeTest rescheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {
 

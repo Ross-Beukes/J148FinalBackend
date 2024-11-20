@@ -58,6 +58,7 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
                 
             } catch (SQLException ex) {
                System.out.println("Error while view a contractors disciplinary history");
+
             }
             
             

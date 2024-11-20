@@ -6,15 +6,18 @@ import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
+import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
 @ApplicationScoped
 public class ContractPeriodServiceImpl implements ContractPeriodService {
 
     @Inject
     private ContractPeriodRepo contractPeriodRepo;
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public ContractPeriod saveContractPeriod(ContractPeriod contractPeriod) throws Exception {
         if (contractPeriod == null) {
@@ -51,6 +54,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         );
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public ContractPeriod updateContractPeriod(ContractPeriod contractPeriod) throws Exception {
         if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
@@ -78,6 +82,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
     public ContractPeriod getNextContractPeriod() throws SQLException, Exception {
         return contractPeriodRepo.getNextContractPeriod().orElseThrow(() -> new RuntimeException("Next Contract Period not found"));
     }
+
     @Override
     public double enrollmentAveragesForYear(int year) throws SQLException {
         return contractPeriodRepo.enrollmentAveragesForYear(year);
