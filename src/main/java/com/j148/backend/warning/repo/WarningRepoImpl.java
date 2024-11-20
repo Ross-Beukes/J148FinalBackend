@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class WarningRepoImpl   implements WarningRepo {
+public class WarningRepoImpl implements WarningRepo {
 
     @Inject
     private DBConfig DBConfig;
@@ -25,32 +25,21 @@ public class WarningRepoImpl   implements WarningRepo {
         String sql = "INSERT INTO warning (contractor_id, date_issue, reason, state) VALUES (?, ?, ?, ?)";
 
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            con.setAutoCommit(false);
-            Savepoint beforeWarningSave = con.setSavepoint();
+            ps.setLong(1, warning.getContractor().getContractorId());
+            ps.setTimestamp(2, Timestamp.valueOf(warning.getDateIssue()));
+            ps.setString(3, warning.getReason().toString());
+            ps.setString(4, warning.getState().toString());
 
-            try {
-                ps.setLong(1, warning.getContractor().getContractorId());
-                ps.setTimestamp(2, Timestamp.valueOf(warning.getDateIssue()));
-                ps.setString(3, warning.getReason().toString());
-                ps.setString(4, warning.getState().toString());
-
-                if (ps.executeUpdate() > 0) {
-                    try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                        if (generatedKeys.next()) {
-                            warning.setWarningId(generatedKeys.getLong(1));
-                            con.commit();
-                            return Optional.of(warning);
-                        }
+            if (ps.executeUpdate() > 0) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        warning.setWarningId(generatedKeys.getLong(1));
+                        return Optional.of(warning);
                     }
                 }
-
-                con.rollback(beforeWarningSave);
-                return Optional.empty();
-
-            } catch (SQLException e) {
-                con.rollback(beforeWarningSave);
-                throw e;
             }
+            return Optional.empty();
+
         }
     }
 
@@ -157,25 +146,15 @@ public class WarningRepoImpl   implements WarningRepo {
         String sql = "UPDATE warning SET state = ? WHERE warning_id = ?";
 
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
-            con.setAutoCommit(false);
-            Savepoint beforeWarningUpdate = con.setSavepoint();
 
-            try {
-                ps.setString(1, warning.getState().toString());
-                ps.setLong(2, warning.getWarningId());
+            ps.setString(1, warning.getState().toString());
+            ps.setLong(2, warning.getWarningId());
 
-                if (ps.executeUpdate() > 0) {
-                    con.commit();
-                    return Optional.of(warning);
-                }
-
-                con.rollback(beforeWarningUpdate);
-                return Optional.empty();
-
-            } catch (SQLException e) {
-                con.rollback(beforeWarningUpdate);
-                throw e;
+            if (ps.executeUpdate() > 0) {
+                return Optional.of(warning);
             }
+            return Optional.empty();
+
         }
     }
 
@@ -183,10 +162,7 @@ public class WarningRepoImpl   implements WarningRepo {
     @Override
     public Optional<Warning> createLateWarning(Contractor contractor) throws SQLException {
         try (Connection con = DBConfig.getCon()) {
-            con.setAutoCommit(false);
-            Savepoint beforeLateWarning = con.setSavepoint();
 
-            try {
                 Warning warning = Warning.builder()
                         .contractor(contractor)
                         .dateIssue(LocalDateTime.now())
@@ -194,19 +170,9 @@ public class WarningRepoImpl   implements WarningRepo {
                         .state(Warning.WarningState.ACTIVE)
                         .build();
 
-                Optional<Warning> result = save(warning);
-                if (result.isPresent()) {
-                    con.commit();
-                    return result;
-                }
+            return save(warning);
 
-                con.rollback(beforeLateWarning);
-                return Optional.empty();
 
-            } catch (SQLException e) {
-                con.rollback(beforeLateWarning);
-                throw e;
-            }
         }
     }
 
@@ -366,10 +332,7 @@ public class WarningRepoImpl   implements WarningRepo {
     @Override
     public Optional<Warning> createAbsentWarning(Contractor contractor) throws SQLException {
         try (Connection con = DBConfig.getCon()) {
-            con.setAutoCommit(false);
-            Savepoint beforeLateWarning = con.setSavepoint();
 
-            try {
                 Warning warning = Warning.builder()
                         .contractor(contractor)
                         .dateIssue(LocalDateTime.now())
@@ -377,19 +340,9 @@ public class WarningRepoImpl   implements WarningRepo {
                         .state(Warning.WarningState.ACTIVE)
                         .build();
 
-                Optional<Warning> result = save(warning);
-                if (result.isPresent()) {
-                    con.commit();
-                    return result;
-                }
+            return save(warning);
 
-                con.rollback(beforeLateWarning);
-                return Optional.empty();
 
-            } catch (SQLException e) {
-                con.rollback(beforeLateWarning);
-                throw e;
-            }
         }
     }
 }

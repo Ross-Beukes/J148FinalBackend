@@ -22,7 +22,7 @@ public interface FileEntityRepo {
      * @param fileEntity the file entity to be saved
      * @return Optional containing the saved FileEntity with generated ID if successful, empty Optional otherwise
      */
-    Optional<FileEntity> saveFile(FileEntity fileEntity);
+    Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException;
 
     /**
      * Saves both the physical file and its metadata in the database.

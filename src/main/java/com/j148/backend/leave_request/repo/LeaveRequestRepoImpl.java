@@ -43,17 +43,12 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
     public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException {
         String query = "INSERT INTO leave_request (contractor_id, file_id, start_date, end_date, decision) VALUES(?, ?, ?, ?, ?)";
         try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            con.setAutoCommit(false);
             ps.setLong(1, leaveRequest.getContractor().getContractorId());
             ps.setLong(2, leaveRequest.getFile().getFileId());
             ps.setString(3, String.valueOf(leaveRequest.getStartDate()));
             ps.setString(4, String.valueOf(leaveRequest.getEndDate()));
             ps.setString(5, "PENDING");
-
-            Savepoint beforeReservationInput = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
                     if (keys.next()) {
                         leaveRequest.setLeaveRequestId(keys.getLong(1));
@@ -61,8 +56,6 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
                 }
 
                 return Optional.of(leaveRequest);
-            } else {
-                con.rollback(beforeReservationInput);
             }
         }
         return Optional.empty();
@@ -116,19 +109,13 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
 
         try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
 
-            Savepoint beforeReservationInput = con.setSavepoint();
-
             ps.setString(1, leaveRequest.getDecision().toString());
             ps.setLong(2, leaveRequest.getLeaveRequestId());
 
-            con.setAutoCommit(false);
-
             if (ps.executeUpdate() > 0) {
-                con.commit();
+
 
                 return Optional.of(leaveRequest);
-            } else {
-                con.rollback(beforeReservationInput);
             }
         }
         return Optional.empty();

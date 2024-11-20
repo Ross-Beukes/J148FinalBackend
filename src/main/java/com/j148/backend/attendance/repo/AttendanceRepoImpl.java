@@ -26,24 +26,19 @@ public class AttendanceRepoImpl implements AttendanceRepo {
 
     @Inject
     private DBConfig DBConfig;
+
     @Override
     public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
         String query = "INSERT into attendance (time_in, register, contractor_id) VALUES (?,?,?)";
         try (Connection con = DBConfig.getCon(); PreparedStatement statement = con.prepareStatement(query)) {
-
-            con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
             statement.setString(2, attendance.getRegister().name());
             statement.setLong(3, attendance.getContractor().getContractorId());
-
-            Savepoint save = con.setSavepoint();
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows > 0) {
-                con.commit();
                 return Optional.of(attendance);
             } else {
-                con.rollback(save);
                 return Optional.empty();
 
             }
@@ -99,22 +94,18 @@ public class AttendanceRepoImpl implements AttendanceRepo {
     public Optional<Attendance> updateAttendance(Attendance attendance) throws SQLException {
         String query = "UPDATE attendance SET time_in = ?, time_out = ?, register = ?, contractor_id = ? WHERE attendance_id = ?";
         try (Connection con = DBConfig.getCon(); PreparedStatement statement = con.prepareStatement(query)) {
-            con.setAutoCommit(false);
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
             statement.setTimestamp(2, Timestamp.valueOf(attendance.getTimeOut()));
             statement.setString(3, attendance.getRegister().name());
             statement.setLong(4, attendance.getContractor().getContractorId());
             statement.setLong(5, attendance.getAttendanceId());
 
-            Savepoint save = con.setSavepoint();
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows > 0) {
-                con.commit();
                 return Optional.of(attendance);
 
             } else {
-                con.rollback(save);
                 return Optional.empty();
             }
         }
@@ -177,9 +168,9 @@ public class AttendanceRepoImpl implements AttendanceRepo {
                     LocalDateTime time_in = rs.getTimestamp("time_in").toLocalDateTime();
                     LocalDateTime time_out = null;
                     if (rs.getTimestamp("time_out") != null) {
-                         time_out = rs.getTimestamp("time_out").toLocalDateTime();
+                        time_out = rs.getTimestamp("time_out").toLocalDateTime();
                     }
-                    
+
                     Register register = Register.valueOf(rs.getString("register"));
                     Attendance foundAttendance = Attendance.builder().
                             attendanceId(attendanceID).

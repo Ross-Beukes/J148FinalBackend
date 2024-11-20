@@ -46,15 +46,11 @@ public class FileEntityRepoImpl implements FileEntityRepo {
     }
 
     @Override
-    public Optional<FileEntity> saveFile(FileEntity fileEntity) {
+    public Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException {
         String query = "INSERT INTO files(fileType, category, dateAdded, path, user, verified) Values(?, ?, ?, ?, ?, ?)";
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            con.setAutoCommit(false);
-            Savepoint beforeUserInsert = con.setSavepoint();
-
             ps.setString(1, fileEntity.getFileType());
             ps.setString(2, String.valueOf(fileEntity.getCategory()));
             ps.setTimestamp(3, Timestamp.valueOf(fileEntity.getDateAdded()));
@@ -66,15 +62,11 @@ public class FileEntityRepoImpl implements FileEntityRepo {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         fileEntity.setFileId(rs.getLong(1));
-                        con.commit();
                         return Optional.of(fileEntity);
                     }
                 }
             }
 
-            con.rollback(beforeUserInsert);
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error saving file entity", e);
         }
         return Optional.empty();
     }
@@ -85,9 +77,6 @@ public class FileEntityRepoImpl implements FileEntityRepo {
         String fileName = "";
 
         try (Connection con = DBConfig.getCon()) {
-            con.setAutoCommit(false);
-            Savepoint beforeFileSave = con.setSavepoint();
-
             try {
                 // Generate unique filename
                 fileName = generateUniqueFileName(filePart);
@@ -122,19 +111,15 @@ public class FileEntityRepoImpl implements FileEntityRepo {
                                         .path(fullPath.normalize().toString())
                                         .verified(FileEntity.Verified.WAITING)
                                         .build();
-
-                                con.commit();
                                 LOGGER.info("File saved successfully: " + fileName);
                                 return Optional.of(savedFile);
                             }
                         }
                     }
 
-                    con.rollback(beforeFileSave);
                     return Optional.empty();
                 }
             } catch (Exception e) {
-                con.rollback(beforeFileSave);
                 handleSaveError(fileName, e);
                 throw new SQLException("Failed to save file", e);
             }
@@ -144,8 +129,6 @@ public class FileEntityRepoImpl implements FileEntityRepo {
     @Override
     public Optional<Boolean> deleteFile(FileEntity fileEntity) throws SQLException {
         try (Connection con = DBConfig.getCon()) {
-            con.setAutoCommit(false);
-            Savepoint beforeFileDelete = con.setSavepoint();
 
             try {
                 // Delete physical file first
@@ -160,16 +143,13 @@ public class FileEntityRepoImpl implements FileEntityRepo {
                     ps.setLong(1, fileEntity.getFileId());
 
                     if (ps.executeUpdate() > 0) {
-                        con.commit();
                         LOGGER.info("File deleted successfully: " + fileEntity.getPath());
                         return Optional.of(true);
                     }
 
-                    con.rollback(beforeFileDelete);
                     return Optional.of(false);
                 }
             } catch (Exception e) {
-                con.rollback(beforeFileDelete);
                 LOGGER.log(Level.SEVERE, "Error deleting file", e);
                 throw new SQLException("Failed to delete file", e);
             }

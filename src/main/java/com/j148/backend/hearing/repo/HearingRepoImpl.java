@@ -39,10 +39,7 @@ public class HearingRepoImpl   implements HearingRepo {
             ps.setTimestamp(2, Timestamp.valueOf(hearing.getScheduleDate()));
             ps.setString(3, hearing.getOutcome().name());
             ps.setString(4, hearing.getReason());
-            Savepoint beforeHearingInsert = con.setSavepoint();
-
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         hearing.setHearingsId(rs.getLong(1));
@@ -50,8 +47,6 @@ public class HearingRepoImpl   implements HearingRepo {
                     }
                 }
                 return Optional.of(hearing);
-            } else {
-                con.rollback(beforeHearingInsert);
             }
         }
         return Optional.empty();
@@ -60,22 +55,16 @@ public class HearingRepoImpl   implements HearingRepo {
     @Override
     public Optional<Hearing> updateHearing(Hearing hearing) throws SQLException {
         String query;
-        System.out.println(hearing);
         query = "UPDATE hearings SET contractor_id = ?, schedule_date = ?, outcome = ?, reason = ? WHERE hearings_id = ?";
         try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            con.setAutoCommit(false);
             ps.setLong(1, hearing.getContractor().getContractorId());
             ps.setTimestamp(2, Timestamp.valueOf(hearing.getScheduleDate()));
             ps.setString(3, hearing.getOutcome().name());
             ps.setString(4, hearing.getReason());
             ps.setLong(5, hearing.getHearingsId());
-
-            Savepoint beforeChangingContractorId = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 return Optional.of(hearing);
             } else {
-                con.rollback(beforeChangingContractorId);
                 return Optional.empty();
             }
         }

@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- *
  * @author glenl
  */
 @ApplicationScoped
@@ -34,7 +33,7 @@ public class UserRepoImpl implements UserRepo {
     public Optional<User> register(User user) throws SQLException {
         String query = "INSERT INTO user(name, surname, email, gender, id_number, role, race, location, age, password) VALUES (?,?,?,?,?,?,?,?,?,?)";
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            con.setAutoCommit(false);
+
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
             ps.setString(3, user.getEmail());
@@ -46,9 +45,9 @@ public class UserRepoImpl implements UserRepo {
             ps.setInt(9, user.getAge());
             ps.setString(10, user.getPassword());
 
-            Savepoint beforeUserInsert = con.setSavepoint();
+
             if (ps.executeUpdate() > 0) {
-                con.commit();
+
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         //the testing throws a sql error when using the column name for this field.
@@ -56,8 +55,6 @@ public class UserRepoImpl implements UserRepo {
                     }
                 }
                 return Optional.of(user);
-            } else {
-                con.rollback(beforeUserInsert);
             }
         }
         return Optional.empty();
@@ -67,7 +64,6 @@ public class UserRepoImpl implements UserRepo {
     public Optional<User> updateUser(User user) throws SQLException {
         String query = "UPDATE user SET name = ?, surname = ?, email = ?, gender = ?, location = ?, password = ? WHERE id_number = ?";
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareCall(query)) {
-            con.setAutoCommit(false);
             ps.setString(1, user.getName());
             ps.setString(2, user.getSurname());
             ps.setString(3, user.getEmail());
@@ -76,12 +72,8 @@ public class UserRepoImpl implements UserRepo {
             ps.setString(6, user.getPassword());
             ps.setString(7, user.getIdNumber());
 
-            Savepoint beforeUserEdit = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 return Optional.of(user);
-            } else {
-                con.rollback(beforeUserEdit);
             }
         }
         return Optional.empty();
@@ -127,16 +119,10 @@ public class UserRepoImpl implements UserRepo {
     public Optional<User> promoteApplicant(User user) throws SQLException {
         String query = "UPDATE user SET role = ? WHERE id_number = ?";
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            con.setAutoCommit(false);
             ps.setString(1, Role.CONTRACTOR.name());
             ps.setString(2, user.getIdNumber());
-
-            Savepoint beforeUserEdit = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 return Optional.of(user);
-            } else {
-                con.rollback(beforeUserEdit);
             }
         }
         return Optional.empty();
@@ -209,16 +195,11 @@ public class UserRepoImpl implements UserRepo {
     public Optional<User> updateAge(User user) throws SQLException {
         String query = "UPDATE user SET age = ? WHERE id_number = ?";
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareCall(query)) {
-            con.setAutoCommit(false);
             ps.setInt(1, user.getAge());
             ps.setString(2, user.getIdNumber());
 
-            Savepoint beforeUserEdit = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 return Optional.of(user);
-            } else {
-                con.rollback(beforeUserEdit);
             }
         }
         return Optional.empty();
@@ -256,13 +237,8 @@ public class UserRepoImpl implements UserRepo {
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, user.getRole().toString());
             ps.setString(2, user.getEmail());
-            con.setAutoCommit(false);
-            Savepoint beforeUserEdit = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 return Optional.of(user);
-            } else {
-                con.rollback(beforeUserEdit);
             }
         }
         return Optional.empty();
