@@ -12,7 +12,7 @@
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <jakartaee>9.1.0</jakartaee>
+        <jakartaee>9.0.0</jakartaee>
     </properties>
     
     <dependencies>
@@ -132,6 +132,8 @@
                     <compilerArgs>
                         <args>-Djava.endorsed.dirs=${endorsed.dir}</args>
                     </compilerArgs>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
             <plugin>
