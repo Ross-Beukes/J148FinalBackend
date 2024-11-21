@@ -62,7 +62,7 @@ public class WarningServiceImpl implements WarningService {
     }
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
-    @Override
+
     public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
 
         if (warning == null) {
@@ -146,6 +146,11 @@ public class WarningServiceImpl implements WarningService {
     @Override
     public Boolean existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException {
         return null;
+    }
+
+    @Override
+    public Warning appealWarning(Warning warning) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
 
