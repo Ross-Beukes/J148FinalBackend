@@ -124,4 +124,19 @@ public class LeaveRequestResource {
             
         }
     }
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("get-all-leave-requests")
+    public Response getAllLeaveRequests() {
+        try {
+            // Call the service method to retrieve leave requests
+            return Response.ok(leaveRequestService.retrieveListOfAllLeaveRequests()).build();
+        } catch (Exception ex) {
+            // Log the exception with severity
+            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            // Return a BAD_REQUEST response with the exception message as the entity
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+        }
+    }
+
 }

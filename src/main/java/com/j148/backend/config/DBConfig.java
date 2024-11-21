@@ -16,19 +16,19 @@ public abstract class DBConfig {
             basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
             // RDS Configuration - replace with your actual RDS details
-            basicDataSource.setUrl(System.getenv("RDS_URL"));
-            basicDataSource.setUsername(System.getenv("RDS_USERNAME"));
-            basicDataSource.setPassword(System.getenv("RDS_PASSWORD"));
+            basicDataSource.setUrl(System.getenv("com.mysql.cj.jdbc.Driver//localhost:8080/J148FinalBackend/hrms"));
+            basicDataSource.setUsername(System.getenv("root"));
+            basicDataSource.setPassword(System.getenv("root"));
 
             // Connection Pool Settings
             basicDataSource.setMinIdle(20);
             basicDataSource.setMaxIdle(20);
             basicDataSource.setMaxOpenPreparedStatements(150);
-
-            // RDS-specific optimizations
-            basicDataSource.setValidationQuery("SELECT 1");
-            basicDataSource.setTestOnBorrow(true);
-            basicDataSource.setMaxWaitMillis(20000);
+//
+//            // RDS-specific optimizations
+//            basicDataSource.setValidationQuery("SELECT 1");
+//            basicDataSource.setTestOnBorrow(true);
+//            basicDataSource.setMaxWaitMillis(20000);
 
         } catch (Exception e) {
             throw new ExceptionInInitializerError("Database initialization failed: " + e.getMessage());

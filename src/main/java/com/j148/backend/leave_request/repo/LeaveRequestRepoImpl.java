@@ -16,16 +16,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author yusuf
@@ -144,24 +140,49 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         }
         return requestMap;
     }
-    public List<LeaveRequest> retrieveAlll() throws SQLException {
+
+    @Override
+    public List<LeaveRequest> retrieveListOfAllRequests() throws SQLException {
         List<LeaveRequest> leaveRequests = new ArrayList<>();
-        String query = "SELECT lr.start_date, lr.end_date, u.name, u.email " +
+        String query = "SELECT " +
+                "lr.start_date, " +
+                "lr.end_date, " +
+                "lr.decision, " +
+                "u.name AS user_name, " +   // Correct alias for 'name' field
+                "u.surname AS user_surname, " +  // Alias for surname
+                "u.email AS user_email, " +
+                "f.file_id, " +
+                "f.category " +
                 "FROM leave_request lr " +
                 "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
-                "JOIN user u ON c.user_id = u.user_id";
+                "JOIN user u ON c.user_id = u.user_id " +
+                "JOIN files f ON lr.file_id = f.file_id";
+
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
+                // Creating file entity
+                FileEntity fileEntity = FileEntity.builder()
+                        .fileId(rs.getLong("file_id"))
+                        .build();
+
+                // Mapping contractor and user details
+                Contractor contractor = Contractor.builder()
+                        .user(User.builder()
+                                .name(rs.getString("user_name"))  // Mapping 'name' column
+                                .surname(rs.getString("user_surname"))  // Mapping 'surname' column
+                                .email(rs.getString("user_email"))  // Mapping 'email' column
+                                .build()
+                        )
+                        .build();
+
+                // Creating leave request with contractor details
                 LeaveRequest leaveRequest = LeaveRequest.builder()
                         .startDate(rs.getDate("start_date").toLocalDate())
                         .endDate(rs.getDate("end_date").toLocalDate())
-                        .contractor(Contractor.builder()
-                                .user(User.builder()
-                                        .name(rs.getString("name"))
-                                        .email(rs.getString("email"))
-                                        .build())
-                                .build())
+                        .contractor(contractor)
                         .build();
+
+                // Adding the leave request to the list
                 leaveRequests.add(leaveRequest);
             }
         }

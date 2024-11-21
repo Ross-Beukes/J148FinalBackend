@@ -62,7 +62,9 @@ public interface LeaveRequestRepo {
      * @throws SQLException 
     */
     Optional<LeaveRequest> updateLeaveRequestToApprovedOrDenied(LeaveRequest leaveRequest) throws SQLException;
-    
+
+
+
     /**
      * Retrieves all leave requests for a specified contractor of which the requests are pending
      * @param contractor
@@ -86,4 +88,5 @@ public interface LeaveRequestRepo {
      * @throws SQLException 
      */
     Optional<LeaveRequest> retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws SQLException;
+    List<LeaveRequest> retrieveListOfAllRequests() throws SQLException;
 }

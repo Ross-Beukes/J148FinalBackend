@@ -13,6 +13,7 @@ import com.j148.backend.leave_request.model.LeaveRequest.Decision;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
 import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -65,11 +66,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             throw new FileNotFoundException("No file found for leave request");
         }
     }
-
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequests() throws Exception {
         HashMap<Long, LeaveRequest> copyMap = (HashMap<Long, LeaveRequest>) leaveRequestRepo.retrieveAll();
         for (Long l : copyMap.keySet()) {
+
             if (l == 0 || l == null) {
                 throw new IllegalArgumentException("Invalid ID in key set (null or 0) for retrieve all leave requests map");
             }
@@ -79,18 +80,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
         return copyMap;
     }
-    public List<LeaveRequest>retrieveAllLeaveRequest()throws Exception{
-        HashMap<Long, LeaveRequest> copyMap = (HashMap<Long, LeaveRequest>) leaveRequestRepo.retrieveAll();
-        for (Long l : copyMap.keySet()) {
-            if (l == 0 || l == null) {
-                throw new IllegalArgumentException("Invalid ID in key set (null or 0) for retrieve all leave requests map");
-            }
-            if (copyMap.get(l) == null) {
-                throw new IllegalArgumentException("Leave Request Map cannot have null values");
-            }
-        }
-        return new ArrayList<>(copyMap.values());
-    }
+
 
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception {
@@ -163,6 +153,18 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                     -> new Exception("There was an error in retrieving leave request by ID"));
         } else {
             throw new NullPointerException("Leave request parameter cannot be null when retrieving leave request by ID");
+        }
+    }
+
+    @Override
+    public List<LeaveRequest> retrieveListOfAllLeaveRequests()throws Exception{
+
+        List<LeaveRequest> copyOfLeaveRequests = leaveRequestRepo.retrieveListOfAllRequests();
+        if (copyOfLeaveRequests != null && !copyOfLeaveRequests.isEmpty()) {
+            return leaveRequestRepo.retrieveListOfAllRequests();
+        } else {
+            throw new Exception("Error retrieving leave request");
+
         }
     }
 
