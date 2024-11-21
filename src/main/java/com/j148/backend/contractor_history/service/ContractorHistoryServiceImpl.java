@@ -11,6 +11,7 @@ import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -53,7 +54,7 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
                 }
                 
                 
-            }catch(Exception e){
+            }catch(SQLException e){
                 LOG.log(Level.SEVERE, "Error collecting a contractor disciplinary history", e);
             }
             

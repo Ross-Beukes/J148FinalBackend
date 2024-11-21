@@ -131,6 +131,7 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
           
           }catch(Exception e){
                LOG.log(Level.SEVERE, "Error while updating a contract, Try again later", e);
+               throw e;
           }
             
             
