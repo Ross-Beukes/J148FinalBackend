@@ -8,6 +8,10 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,16 +20,20 @@ import java.util.Optional;
 /**
  * @author glenl
  */
+@ApplicationScoped
 public class WarningServiceImpl implements WarningService {
 
-    private final WarningRepo warningRepo = new WarningRepoImpl();
-    private final ContractorRepo contractorRepo = new ContractorRepoImpl();
+    @Inject
+    private WarningRepo warningRepo;
+    @Inject
+    private ContractorRepo contractorRepo;
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Warning lateComingWarning(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
             if (contractor.getContractorId() != null) {
-                return warningRepo.createLateWarning(contractor).orElseThrow(() -> new Exception("Warning could not be issued"));
+                return warningRepo.createLateWarning(contractor).orElseThrow(() -> new RuntimeException("Warning could not be issued"));
             } else {
                 throw new IllegalArgumentException("Contract ID is null");
             }
@@ -34,11 +42,12 @@ public class WarningServiceImpl implements WarningService {
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Warning absentWarning(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
             if (contractor.getContractorId() != null) {
-                return warningRepo.createAbsentWarning(contractor).orElseThrow(() -> new Exception("Warning could not be issued"));
+                return warningRepo.createAbsentWarning(contractor).orElseThrow(() -> new RuntimeException("Warning could not be issued"));
             } else {
                 throw new IllegalArgumentException("Contract ID is null");
             }
@@ -52,14 +61,14 @@ public class WarningServiceImpl implements WarningService {
         return null;
     }
 
-
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
-    public Warning appealWarning(Warning warning) throws Exception {
+    public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
 
         if (warning == null) {
             throw new IllegalArgumentException("Warning is null");
         }
-        if (warning.getContractor() == null) {
+        if (contractor == null) {
             throw new IllegalArgumentException("Contractor is null");
         }
 
@@ -67,11 +76,11 @@ public class WarningServiceImpl implements WarningService {
             throw new IllegalArgumentException("Warning id is null");
         }
 
-        if (warning.getContractor().getContractorId() == null) {
+        if (contractor.getContractorId() == null) {
             throw new IllegalArgumentException("Contractor id is null");
         }
 
-        if (contractorRepo.findById(warning.getContractor()).isEmpty()) {
+        if (contractorRepo.findById(contractor).isEmpty()) {
             throw new IllegalArgumentException("Could not find contractor");
         }
 
@@ -79,9 +88,8 @@ public class WarningServiceImpl implements WarningService {
             throw new IllegalArgumentException("Could not find warning");
         }
 
-        warning.setState(Warning.WarningState.APPEALED);
-
-        return warningRepo.updateState(warning).get();
+        return warningRepo.updateState(warning)
+                .orElseThrow(() -> new RuntimeException("Failed to appeal warning"));
 
     }
 

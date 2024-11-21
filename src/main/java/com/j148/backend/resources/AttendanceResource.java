@@ -4,7 +4,8 @@ import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.attendance.service.AttendanceService;
 import com.j148.backend.attendance.service.AttendanceServiceImpl;
 import com.j148.backend.contractor.model.Contractor;
-import jakarta.validation.Valid;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
@@ -14,12 +15,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
+@RequestScoped
 @Path("attendance")
 public class AttendanceResource {
 
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
-    private AttendanceService attendanceService = new AttendanceServiceImpl();
+    @Inject
+    private AttendanceService attendanceService;
 
     @GET
     public Response pingAttendanceResource() {
@@ -29,7 +31,7 @@ public class AttendanceResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("check-in")
-    public Response createAttendanceRecord(@Valid Attendance attendance) {
+    public Response createAttendanceRecord(Attendance attendance) {
         try {
             return Response.ok(this.attendanceService.createAttendenceRecord(attendance)).build();
         } catch (IllegalArgumentException e) {
@@ -44,7 +46,7 @@ public class AttendanceResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("check-out")
-    public Response checkOut(@Valid Attendance attendance) {
+    public Response checkOut(Attendance attendance) {
         try {
             return Response.ok(this.attendanceService.checkOut(attendance)).build();
         } catch (IllegalArgumentException e) {

@@ -15,13 +15,18 @@ import com.j148.backend.files.service.FileEntityServiceImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
-import jakarta.validation.Valid;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,19 +34,24 @@ import java.util.logging.Logger;
  *
  * @author yusuf
  */
+@RequestScoped
 @Path("contract")
 public class ContractResource {
 
-    private ContractService contractService = new ContractServiceImpl();
-    private UserService userService = new UserServiceImpl();
-    private AptitudeTestService aptitudeTestService = new AptitudeTestServiceImpl();
-    private FileEntityService fileEntityService = new FileEntityServiceImpl();
+    @Inject
+    private ContractService contractService;
+    @Inject
+    private UserService userService;
+    @Inject
+    private AptitudeTestService aptitudeTestService;
+    @Inject
+    private FileEntityService fileEntityService;
 
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("offer-contract")
-    public Response offerContract(@Valid User user) {
+    public Response offerContract(User user) {
         try {
             User foundUser = userService.findUserByEmail(user);
             AptitudeTest aptitudeTest = aptitudeTestService.retrieveAptitudeTestByUserId(foundUser);

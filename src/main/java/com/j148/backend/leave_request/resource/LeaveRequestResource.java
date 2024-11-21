@@ -13,15 +13,18 @@ import com.j148.backend.leave_request.service.LeaveRequestServiceImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
-import jakarta.validation.Valid;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,20 +33,23 @@ import java.util.logging.Logger;
  *
  * @author yusuf
  */
-
+@RequestScoped
 @Path("leave-request")
 public class LeaveRequestResource {
     
-    private LeaveRequestService leaveRequestService = new LeaveRequestServiceImpl();
-    private UserService userService = new UserServiceImpl();
-    private ContractorService contractorService = new ContractorServiceImpl();
+    @Inject
+    private LeaveRequestService leaveRequestService;
+    @Inject
+    private UserService userService;
+    @Inject
+    private ContractorService contractorService;
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
     
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("submit-leave-request")
-    public Response submitLeaveRequest(@Valid LeaveRequest leaveRequest){
+    public Response submitLeaveRequest(LeaveRequest leaveRequest){
         try {
             User user = userService.findUserByEmail(User.builder().email(leaveRequest.getContractor().getUser().getEmail()).build());
             Contractor contractor = contractorService.retrieveContractorByUserID(Contractor.builder().user(user).build());
@@ -114,7 +120,7 @@ public class LeaveRequestResource {
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("update-leave-request-decision")
-    public Response updateLeaveRequestDecision(@Valid LeaveRequest leaveRequest){
+    public Response updateLeaveRequestDecision(LeaveRequest leaveRequest){
         try {
             return Response.ok(leaveRequestService.updateLeaveRequestDecision(leaveRequest)).build();
         } catch (Exception ex) {

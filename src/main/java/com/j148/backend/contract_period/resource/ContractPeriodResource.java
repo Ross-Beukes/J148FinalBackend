@@ -3,11 +3,12 @@ package com.j148.backend.contract_period.resource;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
-import jakarta.validation.Valid;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 /**
  * ContractPeriodResource handles HTTP requests related to contract period operations.
  */
+@RequestScoped
 @Path("contract-period")
 public class ContractPeriodResource {
 
@@ -33,7 +35,7 @@ public class ContractPeriodResource {
     @POST
     @Path("save-contract-period")
     @Consumes(APPLICATION_JSON)
-    public Response saveContractPeriod(@Valid ContractPeriod contractPeriod) {
+    public Response saveContractPeriod(ContractPeriod contractPeriod) {
         try {
             if (contractPeriod == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Contract period must not be null.").build();
@@ -61,9 +63,9 @@ public class ContractPeriodResource {
     @POST
     @Path("update-contract-period")
     @Consumes(APPLICATION_JSON)
-    public Response updateContractPeriod(@Valid ContractPeriod contractPeriod) {
+    public Response updateContractPeriod(ContractPeriod contractPeriod) {
         try {
-            if (contractPeriod == null) {
+            if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Contract period and ID must not be null.").build();
             }
 
@@ -116,7 +118,7 @@ public class ContractPeriodResource {
     @Path("find-period-by-id")
     public Response findContractPeriodById(ContractPeriod contractPeriod) {
         try {
-            if (contractPeriod == null) {
+            if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Contract period or ID must not be null.").build();
             }
 
@@ -124,7 +126,7 @@ public class ContractPeriodResource {
 
             return Response.ok(foundContractPeriod).build();
         } catch (NoSuchElementException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Contract period not found with ID: ").build();
+            return Response.status(Response.Status.NOT_FOUND).entity("Contract period not found with ID: " + contractPeriod.getContractPeriodId()).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "An unexpected error occurred", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();

@@ -22,7 +22,7 @@ public interface FileEntityRepo {
      * @param fileEntity the file entity to be saved
      * @return Optional containing the saved FileEntity with generated ID if successful, empty Optional otherwise
      */
-    Optional<FileEntity> saveFile(FileEntity fileEntity);
+    Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException;
 
     /**
      * Saves both the physical file and its metadata in the database.
@@ -93,38 +93,38 @@ public interface FileEntityRepo {
      * @return List of all FileEntity objects in the database
      */
     List<FileEntity> getAllFiles();
-    
+
     /**
 
 
      * Uploads a file from your local machine to the Amazon simple storage service
-     * file storage 
-     * 
-     * @param fileEntity     
-     * @return     
-     * @throws java.sql.SQLException     
+     * file storage
+     *
+     * @param fileEntity
+     * @return
+     * @throws java.sql.SQLException
      */
-    
+
     Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException;
-    
+
     /**
      * Downloads a file from the Amazon simple storage service file storage to
      * your local machine
-     *     
+     *
      * @param fileEntity
-     * @return     
-     * @throws java.sql.SQLException     
+     * @return
+     * @throws java.sql.SQLException
      */
-    
+
     Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException;
-    
-    
-    
-    
 
 
-/**     
- * Retrieves a specific file from a specific user.
+
+
+
+
+    /**
+     * Retrieves a specific file from a specific user.
      * @param user
      * @param category
      * @throws SQLException

@@ -6,20 +6,29 @@ import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepo;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
+
 import java.sql.SQLException;
 
 import com.j148.backend.warning.repo.WarningRepo;
 import com.j148.backend.warning.repo.WarningRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@ApplicationScoped
 public class HearingServiceImpl implements HearingService {
 
-    private final HearingRepo hearingRepo = new HearingRepoImpl();
-    private final ContractorRepo contractorRepo = new ContractorRepoImpl();
-    private final WarningRepo warningRepo = new WarningRepoImpl();
-   
+    @Inject
+    private HearingRepo hearingRepo;
+    @Inject
+    private ContractorRepo contractorRepo;
+    @Inject
+    private WarningRepo warningRepo;
+
 
     @Override
     public LocalDateTime scheduleHearing() throws Exception {
@@ -29,6 +38,7 @@ public class HearingServiceImpl implements HearingService {
         return hearingDate;
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Hearing IssueHearing(Contractor contractor) throws Exception {
 
@@ -41,7 +51,7 @@ public class HearingServiceImpl implements HearingService {
                 hearingCount = hearingRepo.findContractorHearingHistory(contractor).size();
             } catch (SQLException ex) {
                 Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing disciplinary hearing history", ex);
-               
+
             }
             //Obtain count based on a Contractors amount of active warnings
             try {
@@ -50,9 +60,9 @@ public class HearingServiceImpl implements HearingService {
                 Logger.getLogger(HearingServiceImpl.class.getName()).log(Level.SEVERE, "Error while viewing warning history", ex);
             }
 
-            if(warningCount % 3 == 0 && warningCount > 0){
+            if (warningCount % 3 == 0 && warningCount > 0) {
 
-                if(hearingCount * 3 != warningCount){
+                if (hearingCount * 3 != warningCount) {
 
                     Hearing hearing = Hearing.builder()
                             .scheduleDate(scheduleHearing())
@@ -61,11 +71,11 @@ public class HearingServiceImpl implements HearingService {
                             .reason("Contractor has received three or more warnings for being late or absent")
                             .outcome(Hearing.Outcome.NULL)
                             .build();
-                    
+
                     //Add a new Disciplinary hearing to database
-                   return hearingRepo.createHearing(hearing).orElseThrow(() -> new Exception("Error, A disciplinary hearing was not issued to the contractor"));
-                    
-                    
+                    return hearingRepo.createHearing(hearing).orElseThrow(() -> new RuntimeException("Error, A disciplinary hearing was not issued to the contractor"));
+
+
                 }
 
             }
@@ -73,6 +83,7 @@ public class HearingServiceImpl implements HearingService {
         return null;
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Hearing rescheduleHearing(Hearing hearing, Contractor contractor) throws Exception {
 
@@ -104,6 +115,6 @@ public class HearingServiceImpl implements HearingService {
         }
 
         return hearingRepo.updateHearing(hearing)
-                .orElseThrow(() -> new Exception("Failed to reschedule hearing"));      
+                .orElseThrow(() -> new RuntimeException("Failed to reschedule hearing"));
     }
 }

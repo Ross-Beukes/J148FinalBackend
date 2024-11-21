@@ -3,15 +3,21 @@ package com.j148.backend.contract_period.service;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.repo.ContractPeriodRepo;
 import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@ApplicationScoped
 public class ContractPeriodServiceImpl implements ContractPeriodService {
 
-    private final ContractPeriodRepo contractPeriodRepo = new ContractPeriodRepoImpl();
+    @Inject
+    private ContractPeriodRepo contractPeriodRepo;
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public ContractPeriod saveContractPeriod(ContractPeriod contractPeriod) throws Exception {
         if (contractPeriod == null) {
@@ -19,7 +25,6 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         }
 
         Optional<ContractPeriod> savedContractPeriod = contractPeriodRepo.saveContractPeriod(contractPeriod);
-        System.out.println(savedContractPeriod);
         return savedContractPeriod.orElseThrow(() ->
                 new IllegalStateException("Failed to save contract period. Please ensure all fields are correctly filled and formatted.")
         );
@@ -48,6 +53,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public ContractPeriod updateContractPeriod(ContractPeriod contractPeriod) throws Exception {
         if (contractPeriod == null) {
@@ -68,13 +74,14 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
 
     @Override
     public ContractPeriod getCurrentContractPeriod() throws SQLException, Exception {
-        return contractPeriodRepo.getCurrentContractPeriod().orElseThrow(() -> new Exception("Contract Period not found"));
+        return contractPeriodRepo.getCurrentContractPeriod().orElseThrow(() -> new RuntimeException("Contract Period not found"));
     }
 
     @Override
     public ContractPeriod getNextContractPeriod() throws SQLException, Exception {
-        return contractPeriodRepo.getNextContractPeriod().orElseThrow(() -> new Exception("Next Contract Period not found"));
+        return contractPeriodRepo.getNextContractPeriod().orElseThrow(() -> new RuntimeException("Next Contract Period not found"));
     }
+
     @Override
     public double enrollmentAveragesForYear(int year) throws SQLException {
         return contractPeriodRepo.enrollmentAveragesForYear(year);

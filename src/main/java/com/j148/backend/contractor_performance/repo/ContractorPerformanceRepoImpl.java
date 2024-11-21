@@ -18,6 +18,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.jfree.chart.*;
 import org.jfree.data.*;
 import org.apache.commons.dbcp2.*;
@@ -44,8 +47,11 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.ss.util.CellRangeAddress;
+@ApplicationScoped
+public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo {
 
-public class ContractorPerformanceRepoImpl extends DBConfig implements ContractorPerformanceRepo {
+    @Inject
+    private DBConfig DBConfig;
 
     @Override
     public Optional<ContractorPerformance> getContractorPerformance(User user) throws SQLException {
@@ -71,7 +77,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 + "LEFT JOIN hearings ON contractor.contractor_id = hearings.contractor_id "
                 + "WHERE user.user_id = ?;";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, user.getUserId());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -181,7 +187,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
         Map<Long, Set<Long>> hearingIdsMap = new HashMap<>();
         Map<Long, Set<Long>> attendanceIdsMap = new HashMap<>();
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     long contractorId = rs.getLong("contractor_id");
@@ -719,7 +725,7 @@ public class ContractorPerformanceRepoImpl extends DBConfig implements Contracto
                 + "FROM user "
                 + "JOIN contractor ON user.user_id = contractor.user_id";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             List<ContractorPerformance> cpList = new ArrayList<>();  // Initialize list outside the loop
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

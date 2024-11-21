@@ -4,8 +4,10 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.service.HearingService;
 import com.j148.backend.hearing.service.HearingServiceImpl;
-import jakarta.validation.Valid;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
@@ -13,10 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
+@RequestScoped
 @Path("hearing")
 public class RescheduleHearingResource {
-    private HearingService hearingService = new HearingServiceImpl();
+    @Inject
+    private HearingService hearingService;
     private static final Logger LOG = Logger.getLogger(RescheduleHearingResource.class.getName());
 
 //    @GET
@@ -27,7 +30,7 @@ public class RescheduleHearingResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("reschedule-hearing/{contractorId}")
-    public Response rescheduleHearing(@Valid Hearing hearing, @PathParam("contractorId")long contractorId){
+    public Response rescheduleHearing(Hearing hearing, @PathParam("contractorId")long contractorId){
         try{
             Contractor contractor = Contractor.builder().contractorId(contractorId).build();
             Hearing rescheduled = hearingService.rescheduleHearing(hearing, contractor);
