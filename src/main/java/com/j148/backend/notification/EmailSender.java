@@ -9,6 +9,7 @@ package com.j148.backend.notification;
  * @author Tshireletso
  */
 
+import jakarta.ejb.Singleton;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.PasswordAuthentication;
@@ -28,7 +29,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+@Singleton
 public class EmailSender {
     
     

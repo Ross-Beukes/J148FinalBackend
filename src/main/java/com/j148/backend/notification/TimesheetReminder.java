@@ -6,13 +6,12 @@ package com.j148.backend.notification;
 
 /**
  *
- * @author arshr
+ * @author arshr and mulalo
  */
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
-import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
-import jakarta.mail.MessagingException;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,145 +22,42 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * TimeSheetReminder is scheduled service class for sending reminder emails to contractors
+ * and notifying admins regarding outstanding timesheet submissions.
+ *
+ * This class uses scheduled methods annotated with @Scheduled to automatically run at specific times,
+ * sending reminders 7 days, 3 days and 1 day before the timesheet deadlines, as well as  notifying admins
+ * the day after the deadline
+ * */
 @Singleton
-public class TimesheetReminder extends DBConfig {
+public class TimesheetReminder {
 
-    @Schedule(hour = "14", minute = "34", dayOfMonth = "13", persistent = false)
-    public void SevenDayReminder() {
-        try {
-            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
-            LocalDate today = LocalDate.now();
-            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-            StringBuilder greetings = new StringBuilder("Dear ");
-            StringBuilder sb = new StringBuilder();
-            sb.append("We hope you are doing well!").append("\n")
-                    .append("We have noticed that you have not uploaded your timesheet for last month. ")
-                    .append("Please do so before the 8th of " + LocalDate.now().getMonth() + ".").append("\n\n")
-                    .append("Kind regards").append("\n")
-                    .append("The HR Department");
 
-            for (User user : remindUsers) {
-                StringBuilder msg = new StringBuilder();
-                msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
-                msg.append(sb);
-                System.out.println("Hello world");
+    @Inject
+    private DBConfig DBConfig;
 
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MessagingException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Schedule(hour = "13", minute = "52", dayOfMonth = "13", persistent = false)
-    public void ThreeDayReminder() {
-        try {
-            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
-            LocalDate today = LocalDate.now();
-            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-            StringBuilder greetings = new StringBuilder("Dear ");
-            StringBuilder sb = new StringBuilder();
-            sb.append("We hope you are doing well!").append("\n")
-                    .append("We have noticed that you have not uploaded your timesheet for last month.").append("\n")
-                    .append("Please do so before the 8th of " + LocalDate.now().getMonth() + ".").append("\n\n")
-                    .append("Kind regards").append("\n")
-                    .append("The HR Department");
-
-            for (User user : remindUsers) {
-                StringBuilder msg = new StringBuilder();
-                msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
-                msg.append(sb);
-                System.out.println("Hello world");
-
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MessagingException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Schedule(hour = "13", minute = "55", dayOfMonth = "13", persistent = false)
-    public void OneDayReminder() {
-        try {
-            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
-            LocalDate today = LocalDate.now();
-            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-            StringBuilder greetings = new StringBuilder("Dear ");
-            StringBuilder sb = new StringBuilder();
-            sb.append("We hope you are doing well!").append("\n")
-                    .append("We have noticed that you have not uploaded your timesheet for last month.").append("\n")
-                    .append("Please do so before the 8th of " + LocalDate.now().getMonth() + ".").append("\n\n")
-                    .append("Kind regards").append("\n")
-                    .append("The HR Department");
-
-            for (User user : remindUsers) {
-                StringBuilder msg = new StringBuilder();
-                msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
-                msg.append(sb);
-                System.out.println("Hello world");
-
-                EmailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
-
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MessagingException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    @Schedule(hour = "14", minute = "28", dayOfMonth = "13", persistent = false)
-    public void AdminReminder() {
-        try {
-            int daysToSubtract = calculateDaysTo15thOfPreviousMonth();
-            LocalDate today = LocalDate.now();
-            List<User> remindUsers = TimesheetOutstanding(today, daysToSubtract);
-            List<User> emailAdmins = getAdmins();
-
-            StringBuilder sb = new StringBuilder();
-            int count = 0;
-
-            for (User user : remindUsers) {
-                count++;
-                sb.append("Contractor " + count + "\n")
-                        .append("Name: ")
-                        .append(user.getName()).append("\n")
-                        .append("Surname: ")
-                        .append(user.getSurname()).append("\n")
-                        .append("Email: ")
-                        .append(user.getEmail()).append("\n\n");
-                        
-
-            }
-
-            for (User admin : emailAdmins) {
-                StringBuilder email = new StringBuilder();
-                email.append("Dear ").append(admin.getName()).append(" ").append(admin.getSurname()).append("\n")
-                        .append("Please see the list of contractors who have not uploaded timesheets.").append("\n\n")
-                        .append(sb).append("\n")
-                        .append("System generated response");
-                EmailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (MessagingException ex) {
-            Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private int calculateDaysTo15thOfPreviousMonth() {
+    /**
+     * Calculates the number of days from the 15th of the previous month to the current date.
+     *
+     * @return the number of days between the 15th of the previous month and today.
+     */
+    public int calculateDaysTo15thOfPreviousMonth() {
         LocalDate today = LocalDate.now();
         LocalDate fifteenthOfLastMonth = today.minusMonths(1).withDayOfMonth(15);
         return (int) java.time.temporal.ChronoUnit.DAYS.between(fifteenthOfLastMonth, today);
     }
 
-    List<User> TimesheetOutstanding(LocalDate currentDate, int days) throws SQLException {
+    /**
+     * Retrieves a list of contractors who have not uploaded their timesheets by a calculated date.
+     *
+     * @param currentDate the date to base the calculation on.
+     * @param days the number of days to subtract from the current date.
+     * @return a list of users who have not uploaded their timesheets by the calculated date.
+     * @throws SQLException if there is an error executing the query or retrieving data from the database.
+     */
+    public List<User> TimesheetOutstanding(LocalDate currentDate, int days) throws SQLException {
         List<User> users = new ArrayList<>();
         LocalDate calculatedDate = currentDate.minusDays(days);
         java.sql.Date sqlCalculatedDate = java.sql.Date.valueOf(calculatedDate);
@@ -178,7 +74,7 @@ public class TimesheetReminder extends DBConfig {
                 + "    AND files.date_added >= ?"
                 + ")";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setDate(1, sqlCalculatedDate);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -194,10 +90,16 @@ public class TimesheetReminder extends DBConfig {
         }
     }
 
-    List<User> getAdmins() throws SQLException {
+    /**
+     * Retrieves a list of admins from the database to notify about outstanding timesheets.
+     *
+     * @return a list of admins.
+     * @throws SQLException if there is an error executing the query or retrieving data from the database.
+     */
+    public List<User> getAdmins() throws SQLException {
         String query = "SELECT * FROM user WHERE user.role = 'ADMIN'";
         List<User> admins = new ArrayList<>();
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     User admin = User.builder()

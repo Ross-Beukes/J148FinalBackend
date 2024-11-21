@@ -11,52 +11,14 @@ import java.sql.SQLException;
  */
 public interface UserService {
 
-    /**
-     * Generates a unique admin token.
-     *
-     * <p>
-     * The token is composed of the prefix "A" followed by a sequence of five
-     * random characters. Characters are selected randomly from the ASCII range
-     * between uppercase 'A' (65) and lowercase 'z' (122), which includes
-     * uppercase letters, lowercase letters, and some punctuation characters.
-     *
-     * @return A generated instructor token in the format "Axxxxx" where xxxxx
-     * are random characters.
-     */
-    String generateAdminToken();
-
-    /**
-     * Generates a unique instructor token.
-     *
-     * <p>
-     * The token is composed of the prefix "I" followed by a sequence of five
-     * random characters. Characters are selected randomly from the ASCII range
-     * between uppercase 'A' (65) and lowercase 'z' (122), which includes
-     * uppercase letters, lowercase letters, and some punctuation characters.
-     *
-     * @return A generated instructor token in the format "Ixxxxx" where xxxxx
-     * are random characters.
-     */
-
-    String generateInstructorToken();
-
-    /**
-     * Promotes a user to the role of contractor.
-     *
-     * <p>
-     * This method updates the user's role to {@link User.Role#CONTRACTOR} and
-     * saves the update in the database. If the promotion fails, an exception is
-     * thrown.
-     *
-     * @param user The {@link User} object representing the user to be promoted.
-     * @return The updated {@link User} object with the new role.
-     * @throws SQLException if an error occurs during database access.
-     * @throws Exception if the promotion fails or if the user is null.
-     * @throws IllegalArgumentException if the user is null.
-     */
     User promoteUser(User user) throws SQLException, Exception;
-
+            
     /**
+
+
+            
+    /**
+
      * Attempts to log in a user by verifying the provided email and password.
      *
      * @param user A User object containing the email and plain-text password
@@ -97,11 +59,18 @@ public interface UserService {
     User findUserByEmail(User user) throws Exception;
 
     /**
-     *Promotes Applicant to Contractor
+     * Promotes a user to the role of contractor.
      *
-     * @param user the user entity to be promoted
-     * @return Optional containing the user that is promoted, empty otherwise
-     * @throws Exception if an error occurs
+     * <p>
+     * This method updates the user's role to {@link User.Role#CONTRACTOR} and
+     * saves the update in the database. If the promotion fails, an exception is
+     * thrown.
+     *
+     * @param user The {@link User} object representing the user to be promoted.
+     * @return The updated {@link User} object with the new role.
+     * @throws SQLException if an error occurs during database access.
+     * @throws Exception if the promotion fails or if the user is null.
+     * @throws IllegalArgumentException if the user is null.
      */
     User promoteApplicant(User user) throws Exception;
 
@@ -113,4 +82,6 @@ public interface UserService {
      * @throws Exception if an error occurs
      */
     User findUserById(User user) throws Exception;
+    
+    User PromoteStaff(User user) throws Exception;
 }

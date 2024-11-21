@@ -22,7 +22,7 @@ public interface FileEntityRepo {
      * @param fileEntity the file entity to be saved
      * @return Optional containing the saved FileEntity with generated ID if successful, empty Optional otherwise
      */
-    Optional<FileEntity> saveFile(FileEntity fileEntity);
+    Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException;
 
     /**
      * Saves both the physical file and its metadata in the database.
@@ -36,7 +36,7 @@ public interface FileEntityRepo {
     Optional<FileEntity> save(Part filePart, User user, FileEntity.Category category) throws SQLException;
 
     /**
-     * Deletes a file from both the filesystem and database.
+     * Deletes a file from both the file system and database.
      *
      * @param fileEntity the file entity to be deleted
      * @return Optional containing true if deletion was successful, false otherwise
@@ -93,17 +93,10 @@ public interface FileEntityRepo {
      * @return List of all FileEntity objects in the database
      */
     List<FileEntity> getAllFiles();
-    
-    /**
-     * Retrieves a specific file from a specific user.
-     * @param user
-     * @param category
-     * @throws SQLException
-     * @return Optional containing file that corresponds to userID and category.
-     */
-    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
 
     /**
+
+
      * Uploads a file from your local machine to the Amazon simple storage service
      * file storage
      *
@@ -124,6 +117,21 @@ public interface FileEntityRepo {
      */
 
     Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException;
+
+
+
+
+
+
+    /**
+     * Retrieves a specific file from a specific user.
+     * @param user
+     * @param category
+     * @throws SQLException
+     * @return Optional containing file that corresponds to userID and category.
+     */
+    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
+
 
 
 

@@ -3,22 +3,25 @@ package com.j148.backend.resources;
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.attendance.service.AttendanceService;
 import com.j148.backend.attendance.service.AttendanceServiceImpl;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
+import com.j148.backend.contractor.model.Contractor;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
+@RequestScoped
 @Path("attendance")
 public class AttendanceResource {
 
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
-    private AttendanceService attendanceService = new AttendanceServiceImpl();
+    @Inject
+    private AttendanceService attendanceService;
 
     @GET
     public Response pingAttendanceResource() {
@@ -54,4 +57,57 @@ public class AttendanceResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
+
+
+    /**
+     * Get list of contractors who haven't checked in today.
+     *
+     * @param contractors List of contractors to check
+     * @return Response with list of contractors who haven't checked in today
+     */
+
+    @POST
+    @Path("not-checked-in")
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    public Response getContractorsNotCheckedIn(List<Contractor> contractors) {
+        try {
+            List<Attendance> notCheckedIn = attendanceService.contractorsNotCheckedIn(contractors);
+            return Response.status(Response.Status.OK).entity(notCheckedIn).build();
+
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+
+        }
+    }
+
+    /**
+     * Mark absent contractors for today
+     *
+     * @return Response with a list of absent attendance records
+     */
+    @POST
+    @Path("absent")
+    @Produces(APPLICATION_JSON)
+    public Response markAbsentContractors() {
+        try {
+            List<Attendance> absentContractors = attendanceService.createAbsentContractors();
+            return Response.status(Response.Status.OK).entity(absentContractors).build();
+
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error while absent contractors ", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error while absent contractors ", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
+        }
+    }
+
+
 }
