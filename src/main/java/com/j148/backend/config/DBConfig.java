@@ -26,15 +26,14 @@ public class DBConfig {
             config.setDriverClassName("com.mysql.cj.jdbc.Driver");
 
             // Get configuration from environment variables
-            String url = System.getenv("RDS_URL");
             String username = System.getenv("RDS_USERNAME");
             String password = System.getenv("RDS_PASSWORD");
 
-            if (url == null || username == null || password == null) {
+            if (username == null || password == null) {
                 throw new IllegalStateException("Database configuration environment variables not set");
             }
 
-            config.setJdbcUrl(url);
+            config.setJdbcUrl("jdbc:mysql://hrms.ctqm24m4mbs5.af-south-1.rds.amazonaws.com:3306/hrms");
             config.setUsername(username);
             config.setPassword(password);
 
