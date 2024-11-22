@@ -10,12 +10,7 @@ import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.user.model.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Savepoint;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -142,15 +137,13 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
     }
 
     @Override
-    public List<LeaveRequest> retrieveListOfAllRequests() throws SQLException {
+    public  List<LeaveRequest> retrieveListOfAllRequests() throws SQLException {
         List<LeaveRequest> leaveRequests = new ArrayList<>();
         String query = "SELECT " +
                 "lr.start_date, " +
                 "lr.end_date, " +
-                "lr.decision, " +
-                "u.name AS user_name, " +   // Correct alias for 'name' field
-                "u.surname AS user_surname, " +  // Alias for surname
-                "u.email AS user_email, " +
+                "u.name AS name, " +
+                "u.email AS email, " +
                 "f.file_id, " +
                 "f.category " +
                 "FROM leave_request lr " +
@@ -168,9 +161,8 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
                 // Mapping contractor and user details
                 Contractor contractor = Contractor.builder()
                         .user(User.builder()
-                                .name(rs.getString("user_name"))  // Mapping 'name' column
-                                .surname(rs.getString("user_surname"))  // Mapping 'surname' column
-                                .email(rs.getString("user_email"))  // Mapping 'email' column
+                                .name(rs.getString("name"))
+                                .email(rs.getString("email"))  // Mapping 'email' column
                                 .build()
                         )
                         .build();
@@ -180,9 +172,8 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
                         .startDate(rs.getDate("start_date").toLocalDate())
                         .endDate(rs.getDate("end_date").toLocalDate())
                         .contractor(contractor)
+                        .file(fileEntity)
                         .build();
-
-                // Adding the leave request to the list
                 leaveRequests.add(leaveRequest);
             }
         }

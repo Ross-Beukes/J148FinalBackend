@@ -7,6 +7,7 @@ package com.j148.backend.leave_request.service;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.DateNotFoundException;
 import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
@@ -156,17 +157,17 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
     }
 
+
     @Override
-    public List<LeaveRequest> retrieveListOfAllLeaveRequests()throws Exception{
-
-        List<LeaveRequest> copyOfLeaveRequests = leaveRequestRepo.retrieveListOfAllRequests();
-        if (copyOfLeaveRequests != null && !copyOfLeaveRequests.isEmpty()) {
-            return leaveRequestRepo.retrieveListOfAllRequests();
+    public List<LeaveRequest> retrieveListOfAllLeaveRequests() throws LeaveRequestNotFoundException, SQLException {
+        List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveListOfAllRequests(); // Retrieve once
+        if (leaveRequests != null && !leaveRequests.isEmpty()) {
+            return leaveRequests;
         } else {
-            throw new Exception("Error retrieving leave request");
-
+            throw new LeaveRequestNotFoundException("No leave requests found");
         }
     }
+
 
     private void validateLeaveRequestRetrievalByID(LeaveRequest leaveRequest) {
         if (leaveRequest.getLeaveRequestId() == 0) {
