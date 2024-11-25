@@ -1,5 +1,6 @@
 package com.j148.backend.files.s3;
 
+import com.j148.backend.files.model.FileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -21,12 +22,10 @@ public class S3Resource {
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@FormParam("file") InputStream fileStream,
-                               @FormParam("fileSize") long fileSize,
-                               @FormParam("fileName") String fileName,
-                               @FormParam("contentType") String contentType) {
+                               FileEntity fileEntity) {
         try {
-            s3Service.uploadFile(fileName, fileStream, fileSize, contentType);
-            return Response.ok("File uploaded successfully: " + fileName).build();
+            s3Service.uploadFile( fileStream, fileEntity);
+            return Response.ok("File uploaded successfully: ").build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("File upload failed: " + e.getMessage())
@@ -36,11 +35,11 @@ public class S3Resource {
 
     // Download endpoint
     @GET
-    @Path("/download/{key}")
+    @Path("/download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response downloadFile(@PathParam("key") String key) {
+    public Response downloadFile(com.j148.backend.files.model.FileEntity fileEntity) {
         try {
-            InputStream fileStream = s3Service.downloadFile(key);
+            InputStream fileStream = s3Service.downloadFile(fileEntity.getFileId().toString());
 
             StreamingOutput stream = output -> {
                 byte[] buffer = new byte[4096];
@@ -52,11 +51,10 @@ public class S3Resource {
             };
 
             return Response.ok(stream)
-                    .header("Content-Disposition", "attachment; filename=\"" + key + "\"")
                     .build();
         } catch (Exception e) {
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("File not found: " + key)
+                    .entity("File not found: ")
                     .build();
         }
     }

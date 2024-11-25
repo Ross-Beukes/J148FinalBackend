@@ -3,6 +3,7 @@ package com.j148.backend.files.s3;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.j148.backend.files.model.FileEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -14,12 +15,12 @@ public class S3Repo {
     @Inject
     private AmazonS3 amazonS3;
 
-    public void uploadFile(String bucketName, String key, InputStream fileStream, long fileSize, String contentType) {
+    public void uploadFile(String bucketName, InputStream fileStream, FileEntity fileEntity) {
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(fileSize);
-        metadata.setContentType(contentType);
+        metadata.setContentLength(fileEntity.getFileSize());
+        metadata.setContentType(fileEntity.getFileType());
 
-        amazonS3.putObject(bucketName, key, fileStream, metadata);
+        amazonS3.putObject(bucketName, fileEntity.getFileId().toString(), fileStream, metadata);
     }
 
     public InputStream downloadFile(String bucketName, String key) {

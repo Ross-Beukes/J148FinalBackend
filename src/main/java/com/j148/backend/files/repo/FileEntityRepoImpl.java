@@ -4,59 +4,32 @@ import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.servlet.http.Part;
 import com.j148.backend.files.model.FileEntity;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 @ApplicationScoped
-public class FileEntityRepoImpl implements FileEntityRepo {
+public class FileEntityRepoImpl implements FileEntityRepo{
     private static final Logger LOGGER = Logger.getLogger(FileEntityRepoImpl.class.getName());
-    private static final Path UPLOAD_DIR;
 
     @Inject
     private DBConfig DBConfig;
 
-    static {
-        try {
-            // Initialize upload directory in user's home directory
-            UPLOAD_DIR = Paths.get(
-                    System.getProperty("hrms.upload.dir",
-                            Paths.get(System.getProperty("user.home"), "hrms", "uploads").toString()
-                    )
-            );
-            Files.createDirectories(UPLOAD_DIR);
-            LOGGER.info("Upload directory initialized at: " + UPLOAD_DIR);
-        } catch (IOException e) {
-            LOGGER.severe("Failed to create upload directory: " + e.getMessage());
-            throw new ExceptionInInitializerError(e);
-        }
-    }
-
     @Override
     public Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException {
-        String query = "INSERT INTO files(fileType, category, dateAdded, path, user, verified) Values(?, ?, ?, ?, ?, ?)";
+        String query = " INSERT INTO files (user_id, file_type, category, date_added, verified, path) VALUES (?, ?, ?, ?, ?, ?) ";
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, fileEntity.getFileType());
-            ps.setString(2, String.valueOf(fileEntity.getCategory()));
-            ps.setTimestamp(3, Timestamp.valueOf(fileEntity.getDateAdded()));
-            ps.setString(4, fileEntity.getPath());
-            ps.setLong(5, fileEntity.getUser().getUserId());
-            ps.setString(6, fileEntity.getVerified().toString());
+            ps.setLong(1, fileEntity.getUser().getUserId());
+            ps.setString(2, fileEntity.getFileType());
+            ps.setInt(3, fileEntity.getFileSize());
+            ps.setString(4, String.valueOf(fileEntity.getCategory()));
+            ps.setTimestamp(5, Timestamp.valueOf(fileEntity.getDateAdded()));
+            ps.setString(6, String.valueOf(fileEntity.getVerified()));
 
             if (ps.executeUpdate() > 0) {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -71,99 +44,15 @@ public class FileEntityRepoImpl implements FileEntityRepo {
         return Optional.empty();
     }
 
-    @Override
-    public Optional<FileEntity> save(Part filePart, User user, FileEntity.Category category)//
-            throws SQLException {
-        String fileName = "";
-
-        try (Connection con = DBConfig.getCon()) {
-            try {
-                // Generate unique filename
-                fileName = generateUniqueFileName(filePart);
-                Path fullPath = UPLOAD_DIR.resolve(fileName);
-
-                // Save physical file
-                savePhysicalFile(filePart, fileName);
-
-                // Save to database using normalized path
-                String sql = """
-                    INSERT INTO files (user_id, file_type, category, date_added, path, verified) 
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    """;
-
-                try (PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                    ps.setLong(1, user.getUserId());
-                    ps.setString(2, filePart.getContentType());
-                    ps.setString(3, category.toString());
-                    ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
-                    ps.setString(5, fullPath.normalize().toString());
-                    ps.setString(6, FileEntity.Verified.WAITING.toString());
-
-                    if (ps.executeUpdate() > 0) {
-                        try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                            if (generatedKeys.next()) {
-                                FileEntity savedFile = FileEntity.builder()
-                                        .fileId(generatedKeys.getLong(1))
-                                        .user(user)
-                                        .fileType(filePart.getContentType())
-                                        .category(category)
-                                        .dateAdded(LocalDateTime.now())
-                                        .path(fullPath.normalize().toString())
-                                        .verified(FileEntity.Verified.WAITING)
-                                        .build();
-                                LOGGER.info("File saved successfully: " + fileName);
-                                return Optional.of(savedFile);
-                            }
-                        }
-                    }
-
-                    return Optional.empty();
-                }
-            } catch (Exception e) {
-                handleSaveError(fileName, e);
-                throw new SQLException("Failed to save file", e);
-            }
-        }
-    }
-
-    @Override
-    public Optional<Boolean> deleteFile(FileEntity fileEntity) throws SQLException {
-        try (Connection con = DBConfig.getCon()) {
-
-            try {
-                // Delete physical file first
-                Path filePath = Paths.get(fileEntity.getPath());
-                if (!Files.deleteIfExists(filePath)) {
-                    LOGGER.warning("Physical file not found: " + fileEntity.getPath());
-                }
-
-                // Delete database record
-                String sql = "DELETE FROM files WHERE file_id = ?";
-                try (PreparedStatement ps = con.prepareStatement(sql)) {
-                    ps.setLong(1, fileEntity.getFileId());
-
-                    if (ps.executeUpdate() > 0) {
-                        LOGGER.info("File deleted successfully: " + fileEntity.getPath());
-                        return Optional.of(true);
-                    }
-
-                    return Optional.of(false);
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, "Error deleting file", e);
-                throw new SQLException("Failed to delete file", e);
-            }
-        }
-    }
 
     @Override
     public Optional<FileEntity> findById(FileEntity fileEntity) throws SQLException {
         String sql = """
-            SELECT f.*, u.* 
-            FROM files f
-            JOIN user u ON f.user_id = u.user_id
-            WHERE f.file_id = ?
-            """;
+                SELECT f.*, u.* 
+                FROM files f
+                JOIN user u ON f.user_id = u.user_id
+                WHERE f.file_id = ?
+                """;
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(sql)) {
@@ -179,65 +68,15 @@ public class FileEntityRepoImpl implements FileEntityRepo {
         return Optional.empty();
     }
 
-    @Override
-    public Optional<byte[]> downloadFile(FileEntity file) throws SQLException, IOException {
-        Optional<FileEntity> fileRecord = findById(file);
-        if (fileRecord.isEmpty()) {
-            LOGGER.warning("File record not found in database: " + file.getFileId());
-            return Optional.empty();
-        }
-
-        Path filePath = Paths.get(fileRecord.get().getPath());
-        if (!Files.exists(filePath)) {
-            LOGGER.severe("File missing from filesystem: " + filePath);
-            return Optional.empty();
-        }
-
-        return Optional.of(Files.readAllBytes(filePath));
-    }
-
-    private String generateUniqueFileName(Part filePart) {
-        return LocalDateTime.now().toString().replace(":", "-")
-                + "_" + getSubmittedFileName(filePart);
-    }
-
-    private void savePhysicalFile(Part filePart, String fileName) throws IOException {
-        Path filePath = UPLOAD_DIR.resolve(fileName);
-        try (InputStream input = filePart.getInputStream()) {
-            Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING);
-        }
-    }
-
-    private void handleSaveError(String fileName, Exception e) {
-        try {
-            if (!fileName.isEmpty()) {
-                Path filePath = UPLOAD_DIR.resolve(fileName);
-                Files.deleteIfExists(filePath);
-            }
-        } catch (IOException deleteError) {
-            LOGGER.severe("Failed to delete file after error: " + deleteError.getMessage());
-        }
-        LOGGER.log(Level.SEVERE, "Error saving file", e);
-    }
-
-    private String getSubmittedFileName(Part part) {
-        String header = part.getHeader("content-disposition");
-        for (String token : header.split(";")) {
-            if (token.trim().startsWith("filename")) {
-                return token.substring(token.indexOf('=') + 1).trim().replace("\"", "");
-            }
-        }
-        return "unknown";
-    }
 
     private FileEntity mapFileFromResultSet(ResultSet rs) throws SQLException {
         return FileEntity.builder()
                 .fileId(rs.getLong("file_id"))
                 .user(mapUserFromResultSet(rs))
                 .fileType(rs.getString("file_type"))
+                .fileSize(rs.getInt("file_size"))
                 .category(FileEntity.Category.valueOf(rs.getString("category")))
                 .dateAdded(rs.getTimestamp("date_added").toLocalDateTime())
-                .path(rs.getString("path"))
                 .verified(FileEntity.Verified.valueOf(rs.getString("verified")))
                 .build();
     }
@@ -258,153 +97,30 @@ public class FileEntityRepoImpl implements FileEntityRepo {
     }
 
     @Override
-    public List<FileEntity> findById(long fileId) {
-        String query = "SELECT * FROM files WHERE fileId = ?";
-        List<FileEntity> files = new ArrayList<>();
-
-        try (Connection con = DBConfig.getCon();
-             PreparedStatement ps = con.prepareStatement(query)) {
-
-            ps.setLong(1, fileId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    files.add(new FileEntity(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            FileEntity.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            FileEntity.Verified.valueOf(rs.getString(7))
-                    ));
-                }
-            }
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Error finding files by ID", ex);
-        }
-        return files;
-    }
-
-    @Override
-    public List<FileEntity> findByCategory(FileEntity.Category category) {
-        String query = "SELECT * FROM files WHERE category = ?";
-        List<FileEntity> files = new ArrayList<>();
-
-        try (Connection con = DBConfig.getCon();
-             PreparedStatement ps = con.prepareStatement(query)) {
-
-            ps.setString(1, category.toString());
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    files.add(new FileEntity(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            FileEntity.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            FileEntity.Verified.valueOf(rs.getString(7))
-                    ));
-                }
-            }
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Error finding files by category", ex);
-        }
-        return files;
-    }
-
-    @Override
-    public List<FileEntity> findByStatus(FileEntity.Verified verified) {
-        String query = "SELECT * FROM files WHERE verified = ?";
-        List<FileEntity> files = new ArrayList<>();
-
-        try (Connection con = DBConfig.getCon();
-             PreparedStatement ps = con.prepareStatement(query)) {
-
-            ps.setString(1, verified.toString());
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    files.add(new FileEntity(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            FileEntity.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            FileEntity.Verified.valueOf(rs.getString(7))
-                    ));
-                }
-            }
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Error finding files by status", ex);
-        }
-        return files;
-    }
-
-    @Override
-    public List<FileEntity> getAllFiles() {
-        String query = "SELECT * FROM files";
-        List<FileEntity> files = new ArrayList<>();
-
-        try (Connection con = DBConfig.getCon();
-             PreparedStatement ps = con.prepareStatement(query)) {
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    files.add(new FileEntity(
-                            rs.getLong(1),
-                            rs.getString(2),
-                            FileEntity.Category.valueOf(rs.getString(3)),
-                            rs.getTimestamp(4).toLocalDateTime(),
-                            rs.getString(5),
-                            User.builder().userId(rs.getLong(6)).build(),
-                            FileEntity.Verified.valueOf(rs.getString(7))
-                    ));
-                }
-            }
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Error retrieving all files", ex);
-        }
-        return files;
-    }
-
-    @Override
-    public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException{
+    public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException {
         String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
-            ps.setString(1, category.toString());
+            ps.setString(1, fileEntity.getCategory().toString());
             ps.setLong(2, user.getUserId());
             try (ResultSet rs = ps.executeQuery()) {
-                if(rs.next()){
-                    FileEntity fileEntity = FileEntity.builder()
+                if (rs.next()) {
+                    FileEntity returnedFile = FileEntity.builder()
                             .fileId(rs.getLong(1))
                             .user(user)
                             .fileType(rs.getString(3))
-                            .category(FileEntity.Category.valueOf(rs.getString(4)))
-                            .dateAdded(rs.getTimestamp(5).toLocalDateTime())
-                            .path(rs.getString(6))
+                            .fileSize(rs.getInt(4))
+                            .category(FileEntity.Category.valueOf(rs.getString(5)))
+                            .dateAdded(rs.getTimestamp(6).toLocalDateTime())
                             .verified(FileEntity.Verified.valueOf(rs.getString(7)))
                             .build();
 
-                    return Optional.of(fileEntity);
+                    return Optional.of(returnedFile);
                 }
 
             }
-        } catch (SQLException ex) {
-            LOGGER.log(Level.SEVERE, "Error finding file by category and user ID", ex);
         }
         return Optional.empty();
     }

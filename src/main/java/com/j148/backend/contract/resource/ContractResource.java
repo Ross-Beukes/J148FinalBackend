@@ -25,13 +25,15 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
+
 import static jakarta.ws.rs.core.MediaType.*;
+
 import jakarta.ws.rs.core.Response.ResponseBuilder;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
  * @author yusuf
  */
 @RequestScoped
@@ -55,8 +57,12 @@ public class ContractResource {
         try {
             User foundUser = userService.findUserByEmail(user);
             AptitudeTest aptitudeTest = aptitudeTestService.retrieveAptitudeTestByUserId(foundUser);
-            FileEntity idFile = fileEntityService.retrieveFileByUserIdAndCategory(foundUser, FileEntity.Category.ID);
-            FileEntity matricCertificateFile = fileEntityService.retrieveFileByUserIdAndCategory(foundUser, FileEntity.Category.MATRIC_CERTIFICATE);
+            FileEntity idFile = fileEntityService.retrieveFileByUserIdAndCategory(foundUser, FileEntity.builder()
+                    .category(FileEntity.Category.ID)
+                    .build());
+            FileEntity matricCertificateFile = fileEntityService.retrieveFileByUserIdAndCategory(foundUser, FileEntity.builder()
+                    .category(FileEntity.Category.MATRIC_CERTIFICATE)
+                    .build());
             return Response.ok(this.contractService.offerContract(foundUser, aptitudeTest, idFile, matricCertificateFile)).build();
         } catch (Exception ex) {
             Logger.getLogger(ContractResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
