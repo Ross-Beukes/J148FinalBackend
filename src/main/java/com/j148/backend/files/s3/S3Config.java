@@ -5,7 +5,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.ws.rs.Produces;
+import jakarta.enterprise.inject.Produces;
 
 import java.util.logging.Logger;
 
