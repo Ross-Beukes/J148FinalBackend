@@ -7,6 +7,8 @@ package com.j148.backend.leave_request.service;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.sun.jdi.AbsentInformationException;
+
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.List;
@@ -32,5 +34,6 @@ public interface LeaveRequestService {
     AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws Exception;
     
     LeaveRequest retrieveLeaveRequestByID (LeaveRequest leaveRequest) throws Exception;
+    List<LeaveRequest> retrieveAllLeaveRequest() throws Exception;
 
 }

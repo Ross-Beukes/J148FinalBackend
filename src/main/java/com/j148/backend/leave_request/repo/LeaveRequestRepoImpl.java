@@ -144,22 +144,30 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         }
         return requestMap;
     }
-    public List<LeaveRequest> retrieveAlll() throws SQLException {
+    @Override
+    public List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException {
         List<LeaveRequest> leaveRequests = new ArrayList<>();
-        String query = "SELECT lr.start_date, lr.end_date, u.name, u.email " +
+        String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, " +
+                "u.name, u.email, f.path " +
                 "FROM leave_request lr " +
                 "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
-                "JOIN user u ON c.user_id = u.user_id";
+                "JOIN user u ON c.user_id = u.user_id " +
+                "JOIN files f ON lr.file_id = f.file_id";
         try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 LeaveRequest leaveRequest = LeaveRequest.builder()
+                        .leaveRequestId(rs.getLong("leave_request_id"))
                         .startDate(rs.getDate("start_date").toLocalDate())
                         .endDate(rs.getDate("end_date").toLocalDate())
+                        .decision(LeaveRequest.Decision.valueOf(rs.getString("decision").toUpperCase()))
                         .contractor(Contractor.builder()
                                 .user(User.builder()
                                         .name(rs.getString("name"))
                                         .email(rs.getString("email"))
                                         .build())
+                                .build())
+                        .file(FileEntity.builder()
+                                .path(rs.getString("path"))
                                 .build())
                         .build();
                 leaveRequests.add(leaveRequest);

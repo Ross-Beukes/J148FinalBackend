@@ -7,12 +7,14 @@ package com.j148.backend.leave_request.service;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.DateNotFoundException;
 import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
 import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -79,17 +81,19 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
         return copyMap;
     }
-    public List<LeaveRequest>retrieveAllLeaveRequest()throws Exception{
-        HashMap<Long, LeaveRequest> copyMap = (HashMap<Long, LeaveRequest>) leaveRequestRepo.retrieveAll();
-        for (Long l : copyMap.keySet()) {
-            if (l == 0 || l == null) {
-                throw new IllegalArgumentException("Invalid ID in key set (null or 0) for retrieve all leave requests map");
+    @Override
+    public List<LeaveRequest> retrieveAllLeaveRequest() {
+        try {
+            List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
+
+            if (leaveRequests == null || leaveRequests.isEmpty()) {
+                throw new LeaveRequestNotFoundException("No leave requests found in the system.");
             }
-            if (copyMap.get(l) == null) {
-                throw new IllegalArgumentException("Leave Request Map cannot have null values");
-            }
+
+            return leaveRequests;
+        } catch (SQLException e) {
+            throw new FileNotFoundException("No file related to leave request found.");
         }
-        return new ArrayList<>(copyMap.values());
     }
 
     @Override
