@@ -7,6 +7,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import java.io.InputStream;
 
@@ -21,8 +22,8 @@ public class S3Resource {
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadFile(@FormParam("file") InputStream fileStream,
-                               FileEntity fileEntity) {
+    public Response uploadFile(@FormDataParam("file") InputStream fileStream,
+                               @FormDataParam("metadata") FileEntity fileEntity) {
         try {
             s3Service.uploadFile( fileStream, fileEntity);
             return Response.ok("File uploaded successfully: ").build();
@@ -34,7 +35,7 @@ public class S3Resource {
     }
 
     // Download endpoint
-    @GET
+    @POST
     @Path("/download")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response downloadFile(com.j148.backend.files.model.FileEntity fileEntity) {
