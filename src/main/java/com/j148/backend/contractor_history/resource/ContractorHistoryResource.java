@@ -7,9 +7,12 @@ package com.j148.backend.contractor_history.resource;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
+import com.j148.backend.contractor.repo.ContractorRepo;
 import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.contractor_history.service.ContractorHistoryService;
 import com.j148.backend.contractor_history.service.ContractorHistoryServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
@@ -21,13 +24,14 @@ import java.util.logging.Logger;
  *
  * @author Tshireletso
  */
-
+@RequestScoped
 @Path("contractor-history")
 public class ContractorHistoryResource {
     
-    private final ContractorHistoryService contractorHistoryService= new ContractorHistoryServiceImpl();
+    @Inject
+    private ContractorHistoryService contractorHistoryService;
     private static final Logger LOG = Logger.getLogger(ContractorHistoryResource.class.getName());
-    private final ContractorRepoImpl c = new ContractorRepoImpl();
+    @Inject private ContractorRepo contractorRepo;
    
     
     

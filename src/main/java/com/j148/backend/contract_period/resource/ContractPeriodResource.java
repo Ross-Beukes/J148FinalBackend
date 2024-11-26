@@ -3,6 +3,7 @@ package com.j148.backend.contract_period.resource;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.GET;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 /**
  * ContractPeriodResource handles HTTP requests related to contract period operations.
  */
+@RequestScoped
 @Path("contract-period")
 public class ContractPeriodResource {
 

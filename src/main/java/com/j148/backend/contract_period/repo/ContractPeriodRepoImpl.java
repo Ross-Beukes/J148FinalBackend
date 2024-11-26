@@ -2,37 +2,35 @@ package com.j148.backend.contract_period.repo;
 
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contract_period.model.ContractPeriod;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.*;
 import java.util.Optional;
 /**Martinez*/
+@ApplicationScoped
+public class ContractPeriodRepoImpl implements ContractPeriodRepo {
 
-public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRepo {
-
+    @Inject
+    private DBConfig DBConfig;
     @Override
     public Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException {
         String query = "INSERT INTO contractor_period (name, start_date, end_date) VALUES (?, ?, ?)";
 
-        try (Connection con = getCon()) {
-            con.setAutoCommit(false);
+        try (Connection con = DBConfig.getCon()) {
 
             try (PreparedStatement stmt = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 stmt.setString(1, contractPeriod.getName());
                 stmt.setDate(2, Date.valueOf(contractPeriod.getStartDate()));
                 stmt.setDate(3, Date.valueOf(contractPeriod.getEndDate()));
-                Savepoint savepoint = con.setSavepoint("BeforeInsert");
-
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows > 0) {
                     try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                         if (generatedKeys.next()) {
                             contractPeriod.setContractPeriodId(generatedKeys.getLong(1));
-                            con.commit();
                             return Optional.of(contractPeriod);
                         }
                     }
-                } else {
-                    con.rollback(savepoint);
                 }
 
             }
@@ -91,7 +89,7 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
     @Override
     public double enrollmentAveragesForYear(int year) throws SQLException {
         String query = "SELECT COUNT(*) AS yearly_average FROM contractor_period WHERE YEAR(start_date) = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             // The int data type will work in this sql statement.
             ps.setInt(1, year);
             try (ResultSet rs = ps.executeQuery()) {
@@ -111,7 +109,7 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
                 + "FROM contractor_period "
                 + "WHERE YEAR(start_date) BETWEEN ? AND ?";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setInt(1, startYear);
             ps.setInt(2, endYear);
 
@@ -137,23 +135,18 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
         String query = "UPDATE contractor_period SET name = ?, start_date = ?, end_date = ? WHERE contractor_period_id = ?";
 
         try (Connection con = DBConfig.getCon()) {
-            con.setAutoCommit(false);
 
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, contractPeriod.getName());
                 stmt.setDate(2, Date.valueOf(contractPeriod.getStartDate()));
                 stmt.setDate(3, Date.valueOf(contractPeriod.getEndDate()));
                 stmt.setLong(4, contractPeriod.getContractPeriodId());
-                Savepoint savepoint = con.setSavepoint("BeforeUpdate");
 
                 int affectedRows = stmt.executeUpdate();
                 if (affectedRows > 0) {
-                    con.commit();
                     return Optional.of(contractPeriod);
                 }
-                else{
-                    con.rollback(savepoint);
-                }
+
             }
         }
         return Optional.empty();
@@ -162,7 +155,7 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
     @Override
     public Optional<ContractPeriod> getCurrentContractPeriod() throws SQLException {
         String query = "SELECT * FROM contractor_period WHERE start_date < CURDATE() AND end_date > CURDATE()";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     ContractPeriod contractPeriod = new ContractPeriod();
@@ -181,7 +174,7 @@ public class ContractPeriodRepoImpl extends DBConfig implements ContractPeriodRe
     @Override
     public Optional<ContractPeriod> getNextContractPeriod() throws SQLException {
         String query = "SELECT * FROM contractor_period WHERE start_date > CURDATE()";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     ContractPeriod contractPeriod = ContractPeriod.builder().build();

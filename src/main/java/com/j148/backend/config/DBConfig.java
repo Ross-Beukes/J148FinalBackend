@@ -1,48 +1,34 @@
 package com.j148.backend.config;
 
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.dbcp2.BasicDataSource;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 
-
-public abstract class DBConfig {
+@ApplicationScoped  // Make it injectable
+public class DBConfig {
+    private static final Logger logger = Logger.getLogger(DBConfig.class.getName());
     private static BasicDataSource basicDataSource;
 
     static {
-        try {
-            basicDataSource = new BasicDataSource();
-            basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-
-            // RDS Configuration - replace with your actual RDS details
-            basicDataSource.setUrl(System.getenv("com.mysql.cj.jdbc.Driver//localhost:8080/J148FinalBackend/hrms"));
-            basicDataSource.setUsername(System.getenv("root"));
-            basicDataSource.setPassword(System.getenv("root"));
-
-            // Connection Pool Settings
-            basicDataSource.setMinIdle(20);
-            basicDataSource.setMaxIdle(20);
-            basicDataSource.setMaxOpenPreparedStatements(150);
-//
-//            // RDS-specific optimizations
-//            basicDataSource.setValidationQuery("SELECT 1");
-//            basicDataSource.setTestOnBorrow(true);
-//            basicDataSource.setMaxWaitMillis(20000);
-
-        } catch (Exception e) {
-            throw new ExceptionInInitializerError("Database initialization failed: " + e.getMessage());
-        }
+        basicDataSource = new BasicDataSource();
+        basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        basicDataSource.setUsername("root");
+        basicDataSource.setPassword("root");
+        basicDataSource.setUrl("jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false");
+        basicDataSource.setMinIdle(10);
+        basicDataSource.setMaxIdle(10);
+        basicDataSource.setMaxOpenPreparedStatements(100);
     }
 
-    protected static Connection getCon() throws SQLException {
-
+    public Connection getCon() throws SQLException {
         Connection con = basicDataSource.getConnection();
         con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
         return con;
     }
 
-    public static void close() throws SQLException {
+    public void close() throws SQLException {
         if (basicDataSource != null) {
             basicDataSource.close();
         }

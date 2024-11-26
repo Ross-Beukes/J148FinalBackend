@@ -61,31 +61,15 @@
             <artifactId>jakarta.mail</artifactId>
             <version>2.0.1</version> <!-- check for the latest version -->
         
-
-    </dependency>
+        </dependency>
     
-    <dependency>
-        
-    <groupId>software.amazon.awssdk</groupId>
-    <artifactId>s3</artifactId>
-    <version>2.20.20</version> <!-- Check for the latest version -->
-    
-    </dependency>
-    
-    <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-    <dependency>
-    <groupId>jakarta.validation</groupId>
-    <artifactId>jakarta.validation-api</artifactId>
-    <version>3.1.0</version>
-    </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.5.5</version>
         </dependency>
-
+        
         <!-- https://mvnrepository.com/artifact/com.itextpdf/itext7-core -->
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -122,16 +106,6 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.13.4</version>
         </dependency>
-
-
-
-    <dependency>
-
-    <groupId>software.amazon.awssdk</groupId>
-    <artifactId>s3</artifactId>
-    <version>2.20.20</version> <!-- Check for the latest version -->
-
-    </dependency>
 
 
 

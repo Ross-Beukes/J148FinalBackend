@@ -1,8 +1,9 @@
 package com.j148.backend.files.repo;
 
-import com.j148.backend.Exceptions.FileNotFoundException;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.servlet.http.Part;
 import com.j148.backend.files.model.FileEntity;
 
@@ -10,6 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -18,20 +21,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3Client;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-
-public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
+@ApplicationScoped
+public class FileEntityRepoImpl implements FileEntityRepo {
     private static final Logger LOGGER = Logger.getLogger(FileEntityRepoImpl.class.getName());
     private static final Path UPLOAD_DIR;
+
+    @Inject
+    private DBConfig DBConfig;
 
     static {
         try {
@@ -50,15 +46,11 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     }
 
     @Override
-    public Optional<FileEntity> saveFile(FileEntity fileEntity) {
+    public Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException {
         String query = "INSERT INTO files(fileType, category, dateAdded, path, user, verified) Values(?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
-
-            con.setAutoCommit(false);
-            Savepoint beforeUserInsert = con.setSavepoint();
-
             ps.setString(1, fileEntity.getFileType());
             ps.setString(2, String.valueOf(fileEntity.getCategory()));
             ps.setTimestamp(3, Timestamp.valueOf(fileEntity.getDateAdded()));
@@ -70,15 +62,11 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                 try (ResultSet rs = ps.getGeneratedKeys()) {
                     if (rs.next()) {
                         fileEntity.setFileId(rs.getLong(1));
-                        con.commit();
                         return Optional.of(fileEntity);
                     }
                 }
             }
 
-            con.rollback(beforeUserInsert);
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error saving file entity", e);
         }
         return Optional.empty();
     }
@@ -88,10 +76,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
             throws SQLException {
         String fileName = "";
 
-        try (Connection con = getCon()) {
-            con.setAutoCommit(false);
-            Savepoint beforeFileSave = con.setSavepoint();
-
+        try (Connection con = DBConfig.getCon()) {
             try {
                 // Generate unique filename
                 fileName = generateUniqueFileName(filePart);
@@ -126,19 +111,15 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                                         .path(fullPath.normalize().toString())
                                         .verified(FileEntity.Verified.WAITING)
                                         .build();
-
-                                con.commit();
                                 LOGGER.info("File saved successfully: " + fileName);
                                 return Optional.of(savedFile);
                             }
                         }
                     }
 
-                    con.rollback(beforeFileSave);
                     return Optional.empty();
                 }
             } catch (Exception e) {
-                con.rollback(beforeFileSave);
                 handleSaveError(fileName, e);
                 throw new SQLException("Failed to save file", e);
             }
@@ -147,9 +128,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
 
     @Override
     public Optional<Boolean> deleteFile(FileEntity fileEntity) throws SQLException {
-        try (Connection con = getCon()) {
-            con.setAutoCommit(false);
-            Savepoint beforeFileDelete = con.setSavepoint();
+        try (Connection con = DBConfig.getCon()) {
 
             try {
                 // Delete physical file first
@@ -164,16 +143,13 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
                     ps.setLong(1, fileEntity.getFileId());
 
                     if (ps.executeUpdate() > 0) {
-                        con.commit();
                         LOGGER.info("File deleted successfully: " + fileEntity.getPath());
                         return Optional.of(true);
                     }
 
-                    con.rollback(beforeFileDelete);
                     return Optional.of(false);
                 }
             } catch (Exception e) {
-                con.rollback(beforeFileDelete);
                 LOGGER.log(Level.SEVERE, "Error deleting file", e);
                 throw new SQLException("Failed to delete file", e);
             }
@@ -189,7 +165,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
             WHERE f.file_id = ?
             """;
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setLong(1, fileEntity.getFileId());
@@ -286,7 +262,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE fileId = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setLong(1, fileId);
@@ -314,7 +290,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE category = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, category.toString());
@@ -342,7 +318,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files WHERE verified = ?";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, verified.toString());
@@ -370,7 +346,7 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         String query = "SELECT * FROM files";
         List<FileEntity> files = new ArrayList<>();
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -393,103 +369,20 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
     }
 
     @Override
-
     public Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException {
-      
-     if(fileEntity != null){
-        String accessKey = "";
-        String SecretKey =  "";
-        String bucketName = "";
-        Region region = Region.AF_SOUTH_1;
-        
-        //Uploading file to S3 File Storage , needs to be tested
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey,SecretKey );
-        S3Client s3Client = S3Client.builder()
-                .region(region)
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .build();
-        
-        PutObjectRequest putRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(Paths.get(fileEntity.getPath()).getFileName().toString())
-                .build();
-        
-        s3Client.putObject(putRequest, Paths.get(fileEntity.getPath()));
-        System.out.println("File has been successfully uploaded ");
-      
-    try{    
-        
-    //Add a file record to the Database
-    return saveFile(fileEntity);
-    
-    }catch(Exception e){
-          LOGGER.log(Level.SEVERE, "Error saving uploaded file to Database", e);
-    }
-     }else {
-         throw new FileNotFoundException("Error , it was not possible to find this file");
-     }
-             
-            
         return Optional.empty();
-            
     }
-    
 
     @Override
     public Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException {
-        if(fileEntity != null){
-            
-        String accessKey = "";
-        String SecretKey =  "";
-        String bucketName = "";
-        Region region = Region.AF_SOUTH_1;
-        
-        //Find file Entity
-        fileEntity = findById(fileEntity).get();
-        
-        if(fileEntity.getPath() != null){    
-        //Download File Entity
-        AwsBasicCredentials awsCreds = AwsBasicCredentials.create(accessKey,SecretKey );
-        S3Client s3Client = S3Client.builder()
-                .region(region)
-                .credentialsProvider(StaticCredentialsProvider.create(awsCreds))
-                .build();
-        
-         GetObjectRequest getRequest = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(Path.of(fileEntity.getPath()).getFileName().toString())
-                .build();
-         
-         //Construct destination path
-         String userHome = System.getProperty("user.home");
-         String downloadsPath = userHome + "/Downloads/" + Path.of(fileEntity.getPath()).getFileName();
-
-        s3Client.getObject(getRequest, Paths.get(downloadsPath));
-        System.out.println("File downloaded successfully!");
-        return Optional.of(fileEntity);
-        
-        }//If statement end
-        else{
-            
-        throw new FileNotFoundException("The File Path does not exist, File was not found ");
-       
-        }
-        
-        }else{
-            throw new FileNotFoundException("Sorry, The No such file Exists ");
-        }
-        
-        
-      
+        return Optional.empty();
     }
-    
-    
-    
 
+    @Override
     public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException{
         String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
 
-        try (Connection con = getCon();
+        try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
 
             ps.setString(1, category.toString());
@@ -497,14 +390,14 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
             try (ResultSet rs = ps.executeQuery()) {
                 if(rs.next()){
                     FileEntity fileEntity = FileEntity.builder()
-                .fileId(rs.getLong(1))
-                .user(user)
-                .fileType(rs.getString(3))
-                .category(FileEntity.Category.valueOf(rs.getString(4)))
-                .dateAdded(rs.getTimestamp(5).toLocalDateTime())
-                .path(rs.getString(6))
-                .verified(FileEntity.Verified.valueOf(rs.getString(7)))
-                .build();
+                            .fileId(rs.getLong(1))
+                            .user(user)
+                            .fileType(rs.getString(3))
+                            .category(FileEntity.Category.valueOf(rs.getString(4)))
+                            .dateAdded(rs.getTimestamp(5).toLocalDateTime())
+                            .path(rs.getString(6))
+                            .verified(FileEntity.Verified.valueOf(rs.getString(7)))
+                            .build();
 
                     return Optional.of(fileEntity);
                 }
@@ -515,6 +408,4 @@ public class FileEntityRepoImpl extends DBConfig implements FileEntityRepo {
         }
         return Optional.empty();
     }
-
-
 }

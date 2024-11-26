@@ -1,15 +1,17 @@
 package com.j148.backend.resources;
 
-import com.j148.backend.user.EmailService;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.mail.MessagingException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
-
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,16 +21,17 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
  * Controller for User management
  * Includes end point tests for all user management
  */
+@RequestScoped
 @Path("user")
 public class UserResource {
 
 
-
-   private UserService userService = new UserServiceImpl();
+    @Inject
+    private UserService userService;
 
 
     /**
-     *This map is used to temporarily store the generated admin keys.
+     * This map is used to temporarily store the generated admin keys.
      */
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
@@ -36,7 +39,7 @@ public class UserResource {
     public Response pingUserResource() {
         return Response.ok("Successfully pinged User Resource").build();
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("promote-staff")
@@ -53,14 +56,12 @@ public class UserResource {
             LOG.log(Level.SEVERE, "Unable to promote user", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
-    } 
-
-    
+    }
 
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("register")
-    public Response registerUser(User user) {
+    public Response register(User user) {
         try {
             user.setRole(User.Role.APPLICANT);
             return Response.ok(this.userService.registerUser(user)).build();
@@ -70,10 +71,8 @@ public class UserResource {
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
         } catch (IllegalArgumentException e) {
-
-
-
-            LOG.log(Level.SEVERE, e.getMessage());
+            LOG.log(Level.SEVERE, "User object not complete.");
+            System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to register user", e);
@@ -81,17 +80,16 @@ public class UserResource {
         }
     }
 
-
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("update-user")
     public Response updateUser(User user) {
         try {
             return Response.ok(this.userService.updateUser(user)).build();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to update user details in the database");
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -100,24 +98,18 @@ public class UserResource {
         }
     }
 
-
-    @Produces(APPLICATION_JSON)
+    @GET
     @Path("find-user")
     public Response getUserFromEmail(@QueryParam("email") String email) {
         try {
-            User found = userService.findUserByEmail(User.builder().email(email).build());
-
+            User user = User.builder().email(email).build();
+            User found = userService.findUserByEmail(user);
             return Response.ok(found).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to retrieve user from the database.");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (IllegalArgumentException e) {
-
-
-            LOG.log(Level.SEVERE, "User object not complete.");
-            LOG.log(Level.SEVERE, "Email parameter is not valid.");
-
             LOG.log(Level.SEVERE, "User object not complete.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
@@ -148,6 +140,25 @@ public class UserResource {
 
     @POST
     @Consumes(APPLICATION_JSON)
+    @Path("promote-user")
+    public Response promoteUser(User user) {
+        try {
+//            User user = User.builder().idNumber(idNumber).build();
+            return Response.ok(this.userService.promoteApplicant(user)).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");
+            System.out.println("sqlException : " + e.getMessage());
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "User object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to promote user", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+    @POST
+    @Consumes(APPLICATION_JSON)
     @Path("login")
     public Response login(User user) {
         try {
@@ -160,6 +171,5 @@ public class UserResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
-
 
 }

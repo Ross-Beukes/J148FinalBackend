@@ -13,6 +13,9 @@ import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
 import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -22,13 +25,15 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
  * @author yusuf
  */
+@ApplicationScoped
 public class LeaveRequestServiceImpl implements LeaveRequestService {
 
-    private LeaveRequestRepo leaveRequestRepo = new LeaveRequestRepoImpl();
+    @Inject
+    private LeaveRequestRepo leaveRequestRepo;
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) throws Exception {
         if (leaveRequest != null) {
@@ -120,6 +125,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public LeaveRequest updateLeaveRequestDecision(LeaveRequest leaveRequest) throws Exception {
         if (leaveRequest != null) {
@@ -129,7 +135,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             }
             validateUpdateLeaveRequestDecision(leaveRequest);
             return leaveRequestRepo.updateLeaveRequestToApprovedOrDenied(leaveRequest).orElseThrow(()
-                    -> new Exception("There was an error updating the leave request decision"));
+                    -> new RuntimeException("There was an error updating the leave request decision"));
         } else {
             throw new NullPointerException("Leave request cannot be null in updating");
         }
@@ -164,7 +170,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         if (leaveRequest != null) {
             validateLeaveRequestRetrievalByID(leaveRequest);
             return leaveRequestRepo.retrieveLeaveRequestByID(leaveRequest).orElseThrow(()
-                    -> new Exception("There was an error in retrieving leave request by ID"));
+                    -> new RuntimeException("There was an error in retrieving leave request by ID"));
         } else {
             throw new NullPointerException("Leave request parameter cannot be null when retrieving leave request by ID");
         }
