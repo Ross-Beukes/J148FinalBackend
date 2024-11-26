@@ -25,6 +25,10 @@ public class S3Resource {
     public Response uploadFile(@FormDataParam("file") InputStream fileStream,
                                @FormDataParam("metadata") FileEntity fileEntity) {
         try {
+            if (fileEntity == null){
+
+                return Response.status(Response.Status.BAD_REQUEST).entity("the file is null").build();
+            }
             s3Service.uploadFile( fileStream, fileEntity);
             System.out.println(fileEntity);
             return Response.ok("File uploaded successfully: ").build();
