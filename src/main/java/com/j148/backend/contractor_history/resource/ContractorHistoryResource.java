@@ -50,9 +50,6 @@ public class ContractorHistoryResource {
     Contractor contractor = Contractor.builder().contractorId(contractorId).build();
     System.out.println("Contractor : " + contractor.toString());
         
-
-    @Path("disciplinary-history")
-    public Response getDisciplinaryHistory(Contractor contractor){
     if(contractor != null)   
     
     {try {
