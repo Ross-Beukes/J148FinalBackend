@@ -1,6 +1,7 @@
 package com.j148.backend.files.s3;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.j148.backend.files.model.FileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -33,14 +34,17 @@ public class S3Resource {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Metadata is missing").build();
             }
 
-            // Parse metadata JSON into FileEntity object
-            ObjectMapper objectMapper = new ObjectMapper(); // From Jackson library
+            // Create and configure ObjectMapper
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule()); // Register the module for Java 8 Date/Time
+
+            // Deserialize the metadata JSON into FileEntity
             FileEntity fileEntity = objectMapper.readValue(metadata, FileEntity.class);
 
             if (fileEntity == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("The file entity could not be parsed").build();
             }
-            s3Service.uploadFile( fileStream, fileEntity);
+            s3Service.uploadFile(fileStream, fileEntity);
             System.out.println(fileEntity);
             return Response.ok("File uploaded successfully: ").build();
         } catch (Exception e) {
