@@ -1,5 +1,6 @@
 package com.j148.backend.files.s3;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.j148.backend.files.model.FileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -23,14 +24,21 @@ public class S3Resource {
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadFile(@FormDataParam("file") InputStream fileStream,
-                               @FormDataParam("metadata") FileEntity fileEntity) {
+                               @FormDataParam("metadata") String metadata) {
         try {
-            if (fileStream == null){
-                return Response.status(Response.Status.BAD_REQUEST).entity("the file is not read").build();
+            if (fileStream == null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("The file is not read").build();
             }
-            if (fileEntity == null){
+            if (metadata == null || metadata.isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Metadata is missing").build();
+            }
 
-                return Response.status(Response.Status.BAD_REQUEST).entity("the file is null").build();
+            // Parse metadata JSON into FileEntity object
+            ObjectMapper objectMapper = new ObjectMapper(); // From Jackson library
+            FileEntity fileEntity = objectMapper.readValue(metadata, FileEntity.class);
+
+            if (fileEntity == null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("The file entity could not be parsed").build();
             }
             s3Service.uploadFile( fileStream, fileEntity);
             System.out.println(fileEntity);
