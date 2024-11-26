@@ -1,5 +1,8 @@
 package com.j148.backend.files.s3;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.files.repo.FileEntityRepo;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,7 +24,9 @@ public class S3Service {
     private static final String BUCKET_NAME = "vzapbucket";
 
 
-    @Transactional(rollbackOn = {SQLException.class})
+    @Transactional(rollbackOn = {SQLException.class, AmazonS3Exception.class,
+            AmazonServiceException.class,
+            SdkClientException.class,})
     public void uploadFile(InputStream fileStream,FileEntity fileEntity) throws SQLException {
         FileEntity returnedFileEntity = fileEntityRepo.saveFile(fileEntity).get();
         S3Repo.uploadFile(BUCKET_NAME, fileStream, returnedFileEntity);
