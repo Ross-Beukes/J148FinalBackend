@@ -71,6 +71,25 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
         return copyMap;
     }
+<<<<<<< Updated upstream
+=======
+
+    @Override
+    public List<LeaveRequest> retrieveAllLeaveRequest() {
+        try {
+            List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
+
+            if (leaveRequests == null || leaveRequests.isEmpty()) {
+                throw new LeaveRequestNotFoundException("No leave requests found in the system.");
+            }
+
+            return leaveRequests;
+        } catch (SQLException e) {
+            // Rethrow as a custom runtime exception or a standard runtime exception.
+            throw new RuntimeException("An error occurred while retrieving leave requests.", e);
+        }
+    }
+>>>>>>> Stashed changes
 
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception {

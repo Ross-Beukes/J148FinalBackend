@@ -54,4 +54,55 @@ public class AttendanceResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
+<<<<<<< Updated upstream
+=======
+
+
+    /**
+     * Get list of contractors who haven't checked in today.
+     *
+     *
+     * @return Response with list of contractors who haven't checked in today
+     */
+/**
+    @GET
+    @Path("not-checked-in")
+    public Response getContractorsNotCheckedIn() {
+        try {
+            List<Attendance> notCheckedIn = attendanceService.contractorsNotCheckedIn(contractors);
+            return Response.status(Response.Status.OK).entity(notCheckedIn).build();
+
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+
+        }
+    }
+
+     * Mark absent contractors for today
+     *
+     * @return Response with a list of absent attendance records
+     */
+    @POST
+    @Path("absent")
+    @Produces(APPLICATION_JSON)
+    public Response markAbsentContractors() {
+        try {
+            List<Attendance> absentContractors = attendanceService.createAbsentContractors();
+            return Response.status(Response.Status.OK).entity(absentContractors).build();
+
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error while absent contractors ", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error while absent contractors ", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
+        }
+    }
+>>>>>>> Stashed changes
 }
