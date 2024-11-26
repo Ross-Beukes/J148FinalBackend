@@ -167,7 +167,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
         //Might need to play around with this join statement(Consider which is the left table)
         //Might need to null check in the function
         String query = "SELECT "
-                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race, "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race, user.id_number, user.location, "
                 + "contractor.contractor_id, contractor.status, "
                 + "contractor_period.name AS period_name, contractor_period.start_date, contractor_period.end_date, "
                 + "warning.warning_id, warning.date_issue, warning.reason AS warning_reason, warning.state AS warning_state, "
@@ -201,6 +201,8 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
                         User user = User.builder()
                                 .userId(rs.getLong("user_id"))
                                 .name(rs.getString("user_name"))
+                                .idNumber(rs.getString("id_number"))
+                                .location(rs.getString("location"))
                                 .surname(rs.getString("surname"))
                                 .email(rs.getString("email"))
                                 .age(rs.getInt("age"))
@@ -1047,7 +1049,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
                 }
             }
 
-// * SUMMARY SHEET *
+// * SUMMARY SHEET  Warnings Summary*
             Sheet summarySheet = workbook.createSheet("Warnings Summary");
             Row summaryHeader = summarySheet.createRow(0);
             summaryHeader.createCell(0).setCellValue("Category");
@@ -1196,7 +1198,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
             maleChart.plot(maleData);
 
             //-------------------------------------------------------------------------------------------------------------------------
-            // * SUMMARY SHEET *
+            // * SUMMARY SHEET Hearings *
             summarySheet = workbook.createSheet("Hearing Summary");
             summaryHeader = summarySheet.createRow(0);
             summaryHeader.createCell(0).setCellValue("Category");
@@ -1443,7 +1445,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
 //            // Plot the chart with both axes and data
 //            ageChart.plot(ageData);
             //-------------------------------------------------------------------------------------------------------------------------
-            // * SUMMARY SHEET *
+            // * SUMMARY SHEET Contractors*
             summarySheet = workbook.createSheet("Contractors Summary");
             summaryHeader = summarySheet.createRow(0);
             summaryHeader.createCell(0).setCellValue("Category");
@@ -1617,7 +1619,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
             ageChart.plot(ageData);
 
             //------------------------------------------------------------------------------------------------------------------------------------------------------
-            //Aptitude tests
+            //Aptitude tests Summary Sheet
             summarySheet = workbook.createSheet("Aptitude Test Summary");
             summaryHeader = summarySheet.createRow(0);
             summaryHeader.createCell(0).setCellValue("Category");
@@ -1639,12 +1641,12 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
             // Aptitude Mark Bar Chart
             aptitudeTestAnchor = barDrawing.createAnchor(0, 0, 0, 0, 5, 1, 15, 21);
             XSSFChart aptitudeTestChart = barDrawing.createChart(aptitudeTestAnchor);
-            aptitudeTestChart.setTitleText("Contractors by Age Range");
+            aptitudeTestChart.setTitleText("Aptitude Test Marks");
             aptitudeTestChart.getOrAddLegend();
 
             // Create the category axis (X-axis)
             categoryAxis = (XDDFCategoryAxis) aptitudeTestChart.createCategoryAxis(AxisPosition.LEFT);
-            categoryAxis.setTitle("Age Range");
+            categoryAxis.setTitle("Percentage Range");
 
             // Set the data for the category axis (age ranges)
             XDDFDataSource<String> markCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
