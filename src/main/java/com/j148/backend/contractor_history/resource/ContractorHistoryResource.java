@@ -9,6 +9,9 @@ import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.repo.ContractorRepo;
 import com.j148.backend.contractor_history.service.ContractorHistoryService;
+import com.j148.backend.contractor.repo.ContractorRepoImpl;
+import com.j148.backend.contractor_history.service.ContractorHistoryService;
+import com.j148.backend.contractor_history.service.ContractorHistoryServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
@@ -47,11 +50,14 @@ public class ContractorHistoryResource {
     Contractor contractor = Contractor.builder().contractorId(contractorId).build();
     System.out.println("Contractor : " + contractor.toString());
         
+
+    @Path("disciplinary-history")
+    public Response getDisciplinaryHistory(Contractor contractor){
     if(contractor != null)   
     
     {try {
             if(this.contractorHistoryService.viewWarningAndHearingHistory(contractor) != null){
-        
+
             return Response.ok(this.contractorHistoryService.viewWarningAndHearingHistory(contractor)).build();   
             }
             else{
