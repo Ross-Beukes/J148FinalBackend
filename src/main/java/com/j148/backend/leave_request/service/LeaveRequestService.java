@@ -36,5 +36,5 @@ public interface LeaveRequestService {
     LeaveRequest retrieveLeaveRequestByID (LeaveRequest leaveRequest) throws Exception;
     List<LeaveRequest> retrieveAllLeaveRequest() throws Exception;
 
-List<LeaveRequest>retrieveListOfAllLeaveRequests()throws SQLException, Exception;
+
 }

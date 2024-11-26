@@ -35,17 +35,17 @@ import java.util.logging.Logger;
 
 @Path("leave-request")
 public class LeaveRequestResource {
-    
+
     private LeaveRequestService leaveRequestService = new LeaveRequestServiceImpl();
     private UserService userService = new UserServiceImpl();
     private ContractorService contractorService = new ContractorServiceImpl();
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("submit-leave-request")
-    public Response submitLeaveRequest(LeaveRequest leaveRequest){
+    public Response submitLeaveRequest(LeaveRequest leaveRequest) {
         try {
             User user = userService.findUserByEmail(User.builder().email(leaveRequest.getContractor().getUser().getEmail()).build());
             Contractor contractor = contractorService.retrieveContractorByUserID(Contractor.builder().user(user).build());
@@ -57,11 +57,11 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests-by-date-range/{start-date}/{end-date}")
-    public Response getLeaveRequestsInDateRange(@PathParam("start-date") String startDate, @PathParam("end-date") String endDate){
+    public Response getLeaveRequestsInDateRange(@PathParam("start-date") String startDate, @PathParam("end-date") String endDate) {
         try {
             return Response.ok(this.leaveRequestService.retrieveAllLeaveRequestsBetweenDates(LocalDate.parse(startDate), LocalDate.parse(endDate))).build();
         } catch (Exception ex) {
@@ -69,11 +69,11 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests-by-contractor/{email}")
-    public Response getLeaveRequestsByContractor(@PathParam("email") String email){
+    public Response getLeaveRequestsByContractor(@PathParam("email") String email) {
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);
@@ -84,11 +84,11 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-pending-contractor-leave-requests/{email}")
-    public Response getPendingLeaveRequestsByContractor(@PathParam("email") String email){
+    public Response getPendingLeaveRequestsByContractor(@PathParam("email") String email) {
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);
@@ -99,11 +99,11 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests-by-decision/{decision}")
-    public Response getLeaveRequestsByDecision(@PathParam("decision") String decision){
+    public Response getLeaveRequestsByDecision(@PathParam("decision") String decision) {
         try {
             return Response.ok(leaveRequestService.retrieveAllLeaveRequestsByDecision(decision)).build();
         } catch (Exception ex) {
@@ -111,18 +111,18 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("update-leave-request-decision")
-    public Response updateLeaveRequestDecision(LeaveRequest leaveRequest){
+    public Response updateLeaveRequestDecision(LeaveRequest leaveRequest) {
         try {
             return Response.ok(leaveRequestService.updateLeaveRequestDecision(leaveRequest)).build();
         } catch (Exception ex) {
             Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-            
+
         }
     }
 
@@ -149,4 +149,4 @@ public class LeaveRequestResource {
                     .build();
         }
     }
-    }
+}
