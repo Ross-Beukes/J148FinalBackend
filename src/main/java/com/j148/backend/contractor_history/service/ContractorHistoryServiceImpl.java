@@ -6,6 +6,7 @@ package com.j148.backend.contractor_history.service;
 
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
+import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.contractor_history.model.ContractorHistory;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.repo.HearingRepoImpl;
@@ -15,7 +16,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,13 +31,17 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
     private HearingRepoImpl hearingRepo;
     @Inject
     private WarningRepoImpl warningRepo;        
+    @Inject
+    private static final Logger LOG = Logger.getLogger(ContractorHistoryService.class.getName());
     
-
+    @Inject
+    private ContractorRepoImpl contractorRepo;
     @Override
     public ContractorHistory viewWarningAndHearingHistory(Contractor contractor) throws Exception {
         
         if(contractor != null && contractor.getContractorId()!= 0){
             
+            contractor = contractorRepo.findById(contractor).get();
             
             try {
             List<Warning> warningHistory;
@@ -46,18 +50,18 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
                 hearingHistory = hearingRepo.findContractorHearingHistory(contractor);
                 warningHistory = warningRepo.findAllActiveByContractor(contractor).get();
                 
-                ContractorHistory c = ContractorHistory.builder()
+                ContractorHistory contractorHistory = ContractorHistory.builder()
                         .warningHistory(warningHistory)
                         .hearingHistory(hearingHistory)
                         .contractor(contractor)
                         .build();
                 
                
-                return c;
+                return contractorHistory;
                 
                 
             } catch (SQLException ex) {
-               System.out.println("Error while view a contractors disciplinary history");
+               LOG.log(Level.SEVERE, "Error while view a contractors disciplinary history", ex);
 
             }
             
