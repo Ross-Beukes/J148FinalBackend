@@ -20,7 +20,7 @@ public class FileEntityRepoImpl implements FileEntityRepo{
 
     @Override
     public Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException {
-        String query = " INSERT INTO files (user_id, file_type, category, date_added, verified, path) VALUES (?, ?, ?, ?, ?, ?) ";
+        String query = " INSERT INTO files (user_id, file_type, file_size, category, date_added, verified) VALUES (?, ?, ?, ?, ?, ?) ";
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
