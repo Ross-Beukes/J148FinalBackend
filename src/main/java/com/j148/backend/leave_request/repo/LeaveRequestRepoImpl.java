@@ -149,6 +149,14 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         List<LeaveRequest> leaveRequests = new ArrayList<>();
         String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, " +
                 "u.name, u.email, f.path " +
+        String query = "SELECT " +
+                "lr.start_date, " +
+                "lr.end_date, " +
+                "lr.decision," +
+                "u.name AS name, " +
+                "u.email AS email, " +
+                "f.file_id, " +
+                "f.category " +
                 "FROM leave_request lr " +
                 "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
                 "JOIN user u ON c.user_id = u.user_id " +
@@ -169,6 +177,9 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
                         .file(FileEntity.builder()
                                 .path(rs.getString("path"))
                                 .build())
+                        .decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
+                        .contractor(contractor)
+                        .file(fileEntity)
                         .build();
                 leaveRequests.add(leaveRequest);
             }
