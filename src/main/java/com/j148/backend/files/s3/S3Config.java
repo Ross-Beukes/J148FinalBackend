@@ -1,6 +1,7 @@
 package com.j148.backend.files.s3;
 
 import com.amazonaws.auth.InstanceProfileCredentialsProvider;
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import jakarta.annotation.PostConstruct;
@@ -20,12 +21,17 @@ public class S3Config {
     @PostConstruct
     public void init() {
         try {
+            // Disable SSL by setting protocol to HTTP
+            ClientConfiguration clientConfiguration = new ClientConfiguration();
+            clientConfiguration.setProtocol(com.amazonaws.Protocol.HTTP); // Use HTTP instead of HTTPS
+
             s3Client = AmazonS3ClientBuilder.standard()
                     .withRegion(REGION)
+                    .withClientConfiguration(clientConfiguration)
                     .withCredentials(new InstanceProfileCredentialsProvider(false))
                     .build();
 
-            LOGGER.info("S3 client initialized successfully");
+            LOGGER.info("S3 client initialized successfully with SSL disabled");
         } catch (Exception e) {
             LOGGER.severe("Failed to initialize S3 client: " + e.getMessage());
             throw new RuntimeException("Could not create S3 client", e);
