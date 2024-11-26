@@ -178,7 +178,6 @@ CREATE TABLE `files` (
   `date_added` timestamp NOT NULL,
   `verified` enum('NOT_APPLICABLE','WAITING','REJECTED','APPROVED') NOT NULL DEFAULT 'NOT_APPLICABLE',
   PRIMARY KEY (`file_id`),
-  UNIQUE KEY `path_UNIQUE` (`path`),
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `userid` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
