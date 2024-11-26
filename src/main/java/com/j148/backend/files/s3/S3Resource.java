@@ -25,6 +25,9 @@ public class S3Resource {
     public Response uploadFile(@FormDataParam("file") InputStream fileStream,
                                @FormDataParam("metadata") FileEntity fileEntity) {
         try {
+            if (fileStream == null){
+                return Response.status(Response.Status.BAD_REQUEST).entity("the file is not read").build();
+            }
             if (fileEntity == null){
 
                 return Response.status(Response.Status.BAD_REQUEST).entity("the file is null").build();
