@@ -4,6 +4,7 @@
  */
 package com.j148.backend.leave_request.resource;
 
+import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
@@ -124,19 +125,28 @@ public class LeaveRequestResource {
             
         }
     }
+
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-all-leave-requests")
-    public Response getAllLeaveRequests() {
+    @Path("retrieve-all-leave-request")
+    public Response retrieveAllLeaveRequest() {
         try {
-            // Call the service method to retrieve leave requests
-            return Response.ok(leaveRequestService.retrieveListOfAllLeaveRequests()).build();
-        } catch (Exception ex) {
-            // Log the exception with severity
-            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            // Return a BAD_REQUEST response with the exception message as the entity
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex.getMessage()).build();
+            // Successful response
+            return Response.ok(leaveRequestService.retrieveAllLeaveRequest()).build();
+        } catch (LeaveRequestNotFoundException e) {
+            // 404 - No leave requests found
+            Logger.getLogger(LeaveRequestResource.class.getName())
+                    .log(Level.WARNING, "No leave requests found: {0}", e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("No leave requests found.")
+                    .build();
+        } catch (Exception e) {
+            // 500 - Server error
+            Logger.getLogger(LeaveRequestResource.class.getName())
+                    .log(Level.SEVERE, "Error retrieving leave requests: {0}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An unexpected error occurred while retrieving leave requests.")
+                    .build();
         }
     }
-
-}
+    }

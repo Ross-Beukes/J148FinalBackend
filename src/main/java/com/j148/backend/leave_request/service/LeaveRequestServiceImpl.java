@@ -67,11 +67,11 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             throw new FileNotFoundException("No file found for leave request");
         }
     }
+
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequests() throws Exception {
         HashMap<Long, LeaveRequest> copyMap = (HashMap<Long, LeaveRequest>) leaveRequestRepo.retrieveAll();
         for (Long l : copyMap.keySet()) {
-
             if (l == 0 || l == null) {
                 throw new IllegalArgumentException("Invalid ID in key set (null or 0) for retrieve all leave requests map");
             }
@@ -81,7 +81,20 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
         return copyMap;
     }
+    @Override
+    public List<LeaveRequest> retrieveAllLeaveRequest() {
+        try {
+            List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
 
+            if (leaveRequests == null || leaveRequests.isEmpty()) {
+                throw new LeaveRequestNotFoundException("No leave requests found in the system.");
+            }
+
+            return leaveRequests;
+        } catch (SQLException e) {
+            throw new FileNotFoundException("No file related to leave request found.");
+        }
+    }
 
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception {
@@ -156,18 +169,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             throw new NullPointerException("Leave request parameter cannot be null when retrieving leave request by ID");
         }
     }
-
-
-    @Override
-    public List<LeaveRequest> retrieveListOfAllLeaveRequests() throws LeaveRequestNotFoundException, SQLException {
-        List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveListOfAllRequests(); // Retrieve once
-        if (leaveRequests != null && !leaveRequests.isEmpty()) {
-            return leaveRequests;
-        } else {
-            throw new LeaveRequestNotFoundException("No leave requests found");
-        }
-    }
-
 
     private void validateLeaveRequestRetrievalByID(LeaveRequest leaveRequest) {
         if (leaveRequest.getLeaveRequestId() == 0) {
