@@ -4,6 +4,7 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -65,6 +66,26 @@ public class ContractorResource {
             Contractor updatedContractor = contractorService.changeContractorStatus(contractor);
             if (updatedContractor != null) {
                 return Response.ok(updatedContractor).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Contractor not found").build();
+            }
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.WARNING, "Invalid contractor status or ID", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid contractor status or ID").build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "An unexpected error occurred while changing contractor status", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
+        }
+    }
+    
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Path("findContractor")
+    public Response changeContractorStatus(Contractor contractor) {
+        try {
+            Contractor foundContractor = contractorService.retrieveContractorByUserID(contractor);
+            if (foundContractor != null) {
+                return Response.ok(foundContractor).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).entity("Contractor not found").build();
             }
