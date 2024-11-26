@@ -36,7 +36,7 @@ public class WarningResource {
     public Response appealWarning(Warning warning, @PathParam("contractorId") long contractorId) {
         try {
             Contractor contractor = Contractor.builder().contractorId(contractorId).build();
-            
+
             return Response.ok(this.warningService.appealWarning(warning, contractor)).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add warning to the database.  Check for duplicates");
@@ -50,7 +50,7 @@ public class WarningResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
-    
+
     @POST
     @Produces(APPLICATION_JSON)
     @Consumes(APPLICATION_JSON)

@@ -8,21 +8,25 @@ import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.files.repo.FileEntityRepo;
 import com.j148.backend.files.repo.FileEntityRepoImpl;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 /**
- *
  * @author yusuf
  */
+
+@ApplicationScoped
 public class FileEntityServiceImpl implements FileEntityService {
 
-    private FileEntityRepo fileEntityRepo = new FileEntityRepoImpl();
+    @Inject
+    private FileEntityRepo fileEntityRepo;
 
     @Override
     public FileEntity retrieveFileByUserIdAndCategory(User user, FileEntity.Category category) throws Exception {
         if (user != null && category != null) {
             validateUserID(user);
             return fileEntityRepo.findFileByUserIdAndCategory(user, category).orElseThrow(()
-                    -> new Exception("There was an error retrieving the file by userID and category"));
+                    -> new RuntimeException("There was an error retrieving the file by userID and category"));
         } else if (user == null) {
             throw new NullPointerException("User cannot be null when retrieving a file by userID and category");
         } else {

@@ -1,33 +1,42 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.j148.backend.notification;
 
-/**
- *
- * @author Tshireletso
- */
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
+@ApplicationScoped
 public class EmailConfig {
-    
-        private Properties properties;
+    private static final Logger LOGGER = Logger.getLogger(EmailConfig.class.getName());
+    private Properties properties;
 
-    public EmailConfig() {
+    @PostConstruct
+    public void init() {
         properties = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("mail.properties")) {
             if (input == null) {
-                throw new IOException("Sorry, unable to find mail.properties");
+                LOGGER.severe("Unable to find mail.properties");
+                throw new IOException("Unable to find mail.properties");
             }
             properties.load(input);
+            LOGGER.info("Email configuration loaded successfully");
         } catch (IOException ex) {
-            throw new RuntimeException("Error Configuring E-mail services , try again later");
+            LOGGER.log(Level.SEVERE, "Error configuring email services", ex);
+            throw new RuntimeException("Error configuring email services, try again later", ex);
         }
     }
 
+    @Produces
+    @ApplicationScoped
+    public Properties getEmailProperties() {
+        return properties;
+    }
+
+    // Getters now use the injected properties
     public String getHost() {
         return properties.getProperty("mail.smtp.host");
     }
@@ -51,5 +60,4 @@ public class EmailConfig {
     public boolean isStartTLSEnabled() {
         return Boolean.parseBoolean(properties.getProperty("mail.smtp.starttls.enable"));
     }
-    
 }

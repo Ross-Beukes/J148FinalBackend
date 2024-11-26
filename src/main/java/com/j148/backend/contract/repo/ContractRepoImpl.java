@@ -1,80 +1,70 @@
+
 package com.j148.backend.contract.repo;
 
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contract.model.Contract;
-import com.j148.backend.contract_period.model.ContractPeriod;
-import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
-import com.j148.backend.user.model.User;
-import com.j148.backend.user.repo.UserRepoImpl;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//Author : TSHIRELETSO
+//Author : Tshireletso
+@ApplicationScoped
+public class ContractRepoImpl implements ContractRepo {
 
-public class ContractRepoImpl extends DBConfig  implements ContractRepo{
-    
-    private final ContractPeriodRepoImpl cpri = new ContractPeriodRepoImpl();
-    private final UserRepoImpl uri = new UserRepoImpl();
     private static final Logger LOG = Logger.getLogger(ContractRepoImpl.class.getName());
-    
+
+    @Inject
+    private DBConfig DBConfig;
+
 
     @Override
     public Optional<Contract> createContract(Contract contract) throws SQLException {
         String sql = "INSERT INTO contract(contract_period_id,user_id,offer_date,expiration_date) "
                 + " VALUES(?,?,?,?) ";
-        
-        try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)){
-        con.setAutoCommit(false);
-        Savepoint save = con.setSavepoint();
-        
-        try{
-            
-            ps.setLong(1, contract.getContractPeriod().getContractPeriodId());
-            ps.setLong(2,contract.getUser().getUserId());
-            ps.setString(3,String.valueOf(contract.getOfferDate()));
-            ps.setString(4,String.valueOf(contract.getExpirationDate()));
-            
-            if(ps.executeUpdate() > 0){
-                
-                try(ResultSet rs = ps.getGeneratedKeys()){
-                    if(rs.next()){
-                        contract.setContractId(rs.getLong(1));
-                        con.commit();
-                        return Optional.of(contract);
+
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            try {
+
+                ps.setLong(1, contract.getContractPeriod().getContractPeriodId());
+                ps.setLong(2, contract.getUser().getUserId());
+                ps.setString(3, String.valueOf(contract.getOfferDate()));
+                ps.setString(4, String.valueOf(contract.getExpirationDate()));
+
+                if (ps.executeUpdate() > 0) {
+
+                    try (ResultSet rs = ps.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            contract.setContractId(rs.getLong(1));
+                            return Optional.of(contract);
+                        }
+
                     }
-                    else{
-                        con.rollback(save);
-                    }
-                
                 }
+
+
+            }catch (Exception e){
+                LOG.log(Level.SEVERE, "There was an error creating the contract", e);
+                throw e;
             }
-            
-            
-            
-        
-        }catch(Exception e){
-            LOG.log(Level.SEVERE, "", e);
-         System.out.println("Error while creating a new contract");
+
         }
-            
-        }
-        
+
         return Optional.empty();
-       
+
     }
 
     @Override
-    public Optional<Contract> findContract(long contractId) throws SQLException{
+    public Optional<Contract> findContract(long contractId) throws SQLException {
 //         String sql = "SELECT * FROM contract WHERE contract_id = ? ";
 //
-//         try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
+//         try(Connection con = DBConfig.getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
 //
 //             ps.setLong(1,contractId);
 //
@@ -102,43 +92,31 @@ public class ContractRepoImpl extends DBConfig  implements ContractRepo{
 //         }
 //
 //        return Optional.empty();
-        return null;
+        return Optional.empty();
     }
 
     @Override
     public Optional<Contract> updateContract(Contract contract) throws SQLException {
         String sql = "UPDATE contract SET contractor_period_id = ? decision_date = ? decision = ? deleted = ? "
                 + "WHERE contract_id = ?";
-        
-        
-        
-        try(Connection con = getCon() ; PreparedStatement ps = con.prepareStatement(sql)){
-            
-            con.setAutoCommit(false);
-            Savepoint save = con.setSavepoint();
-            
-          try{  ps.setLong(1, contract.getContractPeriod().getContractPeriodId());
-            ps.setString(2,contract.getDecisionDate().toString());
-            ps.setString(3,contract.getDecision().toString());
-            ps.setBoolean(4,contract.isDeleted());
-            
-            if(ps.executeUpdate() > 0){
-                con.commit();
+
+
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, contract.getContractPeriod().getContractPeriodId());
+            ps.setString(2, contract.getDecisionDate().toString());
+            ps.setString(3, contract.getDecision().toString());
+            ps.setBoolean(4, contract.isDeleted());
+
+            if (ps.executeUpdate() > 0) {
                 return Optional.of(contract);
-                
+
             }
-            else {
-                con.rollback(save);
-            }
-          
-          }catch(Exception e){
-              System.out.println("Error while updating a contract, Try again later");
-          }
-            
-            
+
+
         }
         return Optional.empty();
     }
 
-    
+
 }

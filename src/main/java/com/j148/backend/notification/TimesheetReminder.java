@@ -10,9 +10,8 @@ package com.j148.backend.notification;
  */
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
-import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
-import jakarta.mail.MessagingException;
+import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,8 +31,11 @@ import java.util.logging.Logger;
  * the day after the deadline
  * */
 @Singleton
-public class TimesheetReminder extends DBConfig {
+public class TimesheetReminder {
 
+
+    @Inject
+    private DBConfig DBConfig;
 
 
     /**
@@ -72,7 +74,7 @@ public class TimesheetReminder extends DBConfig {
                 + "    AND files.date_added >= ?"
                 + ")";
 
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setDate(1, sqlCalculatedDate);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -97,7 +99,7 @@ public class TimesheetReminder extends DBConfig {
     public List<User> getAdmins() throws SQLException {
         String query = "SELECT * FROM user WHERE user.role = 'ADMIN'";
         List<User> admins = new ArrayList<>();
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     User admin = User.builder()

@@ -2,67 +2,53 @@ package com.j148.backend.user.service;
 
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
-import com.j148.backend.contractor.service.ContractorServiceImpl;
+import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
 import com.j148.backend.user.repo.UserRepoImpl;
+import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 
-@Singleton
+@ApplicationScoped
 public class UserServiceImpl implements UserService {
 
-    private final UserRepo userRepo = new UserRepoImpl();
-    private final ContractorService contractorService = new ContractorServiceImpl();
+    @Inject
+    private UserRepo userRepo;
+
+    @Inject
+    private ContractorService contractorService;
+
+    @Inject
+    private EmailSender emailSender;
+
     /**
-     *This map is used to temporarily store the generated admin keys.
+     * This map is used to temporarily store the generated admin keys.
      */
-    private final Random random = new Random();
-
-    @Override
-    public String generateVerificationToken(){
-        StringBuilder token = new StringBuilder("V");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-    @Override
-    public String generateAdminToken() {
-        StringBuilder token = new StringBuilder("A");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
-    @Override
-    public String generateInstructorToken() {
-        StringBuilder token = new StringBuilder("I");
-        char[] letters = new char[5];
-        for (int i = 0; i < letters.length; i++) {
-            letters[i] = (char) (65 + random.nextInt(122 - 65 + 1));
-            token.append(letters[i]);
-        }
-        return token.toString();
-    }
-
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User promoteUser(User user) throws SQLException, Exception { //promote Applicant to Contractor
         if (user != null && user.getEmail() != null) {
             user.setRole(User.Role.CONTRACTOR);
-            return userRepo.promoteApplicant(user).orElseThrow(() -> new Exception("Applicant was not promoted to Contractor"));
+            return userRepo.promoteApplicant(user).orElseThrow(() -> new RuntimeException("Applicant was not promoted to Contractor"));
         } else {
             throw new IllegalArgumentException("The user is null");
         }
     }
+
 
     @Override
     public User LogIn(User user) throws SQLException, Exception {
@@ -70,11 +56,11 @@ public class UserServiceImpl implements UserService {
             if (user.getEmail() != null && user.getPassword() != null) {
                 String email = user.getEmail();
                 String password = user.getPassword();
-                User foundUser = userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User email not recognised"));
+                User foundUser = userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new RuntimeException("User email not recognised"));
                 if (email.equalsIgnoreCase(foundUser.getEmail()) && password.equals(foundUser.getPassword())) {
                     return foundUser;
                 } else {
-                    throw new Exception("Invalid email or password");
+                    throw new RuntimeException("Invalid email or password");
                 }
             } else {
                 throw new IllegalArgumentException("Email or password is missing");
@@ -84,6 +70,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User registerUser(User user) throws Exception {
 
@@ -92,13 +79,14 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Invalid email format.");
         }
 
-        return this.userRepo.register(user).orElseThrow(() -> new Exception("Unable to insert user into the database."));
+        return this.userRepo.register(user).orElseThrow(() -> new RuntimeException("Unable to insert user into the database."));
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User updateUser(User user) throws Exception {
-        if (user != null){
-            return userRepo.updateUser(user).orElseThrow(() -> new Exception("Unable to update user."));
+        if (user != null) {
+            return userRepo.updateUser(user).orElseThrow(() -> new RuntimeException("Unable to update user."));
         } else {
             throw new IllegalArgumentException("ID number cannot be null.");
         }
@@ -107,14 +95,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserByEmail(User user) throws Exception {
         if (user.getEmail() != null) {
-            return userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new Exception("User with this email address was not found."));
+            return userRepo.retreiveUserFromEmail(user).orElseThrow(() -> new RuntimeException("User with this email address was not found."));
         } else {
             throw new IllegalArgumentException("Email cannot be null.");
         }
     }
 
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User promoteApplicant(User user) throws Exception {
+
         if (user != null){
             User promotedUser = findUserByEmail(user);
             Contractor contractor = contractorService.promoteToContractor(promotedUser);
@@ -127,7 +117,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findUserById(User user) throws Exception {
         if (user != null && user.getUserId() != null) {
-            return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new Exception("User with this user id was not found."));
+            return userRepo.retrieveUserFromUserID(user).orElseThrow(() -> new RuntimeException("User with this user id was not found."));
         } else {
             throw new IllegalArgumentException("User id cannot be null.");
         }
@@ -138,10 +128,12 @@ public class UserServiceImpl implements UserService {
         return email != null && email.matches(emailRegex);
     }
 
+
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public User PromoteStaff(User user) throws Exception {
-        if (user != null){
-            return userRepo.promoteStaff(user).orElseThrow(() -> new Exception("User not promoted."));
+        if (user != null) {
+            return userRepo.promoteStaff(user).orElseThrow(() -> new RuntimeException("User not promoted."));
         } else {
             throw new IllegalArgumentException("User cannot be null.");
         }

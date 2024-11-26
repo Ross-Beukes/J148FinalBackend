@@ -8,6 +8,8 @@ import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.aptitude_test.service.AptitudeTestService;
 import com.j148.backend.aptitude_test.service.AptitudeTestServiceImpl;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.core.Response;
@@ -19,10 +21,12 @@ import java.util.logging.Logger;
  *
  * @author glenl
  */
+@RequestScoped
 @Path("aptitude-test")
 public class AptitudeTestResource {
-    
-    private AptitudeTestService aptitudeTestService = new AptitudeTestServiceImpl();
+
+    @Inject
+   private AptitudeTestService aptitudeTestService;
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
     
     @GET
@@ -32,8 +36,8 @@ public class AptitudeTestResource {
     
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("schedule_aptitude_test/{userId}")
-    public Response scheduleAptitudeTest(AptitudeTest aptitudeTest, @PathParam("userId") long userId) {
+    @Path("schedule_aptitude_test")
+    public Response scheduleAptitudeTest(AptitudeTest aptitudeTest, @QueryParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
             System.out.println(userId);
@@ -53,8 +57,8 @@ public class AptitudeTestResource {
     
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("reschedule_aptitude_test/{userId}")
-    public Response rescheduleAptitudeTest(AptitudeTest aptitudeTest, @PathParam("userId") long userId) {
+    @Path("reschedule_aptitude_test")
+    public Response rescheduleAptitudeTest(AptitudeTest aptitudeTest, @QueryParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
             System.out.println(userId);

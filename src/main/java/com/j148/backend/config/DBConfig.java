@@ -1,17 +1,17 @@
 package com.j148.backend.config;
 
-import com.j148.backend.contractor.model.Contractor;
+import jakarta.enterprise.context.ApplicationScoped;
 import org.apache.commons.dbcp2.BasicDataSource;
-
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.logging.Logger;
 
-public abstract class DBConfig {
+@ApplicationScoped  // Make it injectable
+public class DBConfig {
+    private static final Logger logger = Logger.getLogger(DBConfig.class.getName());
     private static BasicDataSource basicDataSource;
 
     static {
-
         basicDataSource = new BasicDataSource();
         basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         basicDataSource.setUsername("root");
@@ -22,13 +22,13 @@ public abstract class DBConfig {
         basicDataSource.setMaxOpenPreparedStatements(100);
     }
 
-    public static Connection getCon() throws SQLException {
+    public Connection getCon() throws SQLException {
         Connection con = basicDataSource.getConnection();
         con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
         return con;
     }
 
-    public static void close() throws SQLException {
+    public void close() throws SQLException {
         if (basicDataSource != null) {
             basicDataSource.close();
         }

@@ -12,7 +12,12 @@ import com.j148.backend.hearing.service.HearingServiceImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
+import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -23,13 +28,19 @@ import java.util.Objects;
 /**
  * @author glenl
  */
+@ApplicationScoped
 public class AttendanceServiceImpl implements AttendanceService {
 
-    private AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
-    private ContractorService contractorService = new ContractorServiceImpl();
-    private WarningService warningService = new WarningServiceImpl();
-    private HearingService hearingService = new HearingServiceImpl();
+    @Inject
+    private AttendanceRepo attendanceRepo;
+    @Inject
+    private ContractorService contractorService;
+    @Inject
+    private WarningService warningService;
+    @Inject
+    private HearingService hearingService;
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in
 
@@ -51,7 +62,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                     attendance.setRegister(Attendance.Register.PRESENT);
                 }
                 return this.attendanceRepo.createAttendanceRecord(attendance).
-                        orElseThrow(() -> new Exception("Unable to insert attendance into the database"));
+                        orElseThrow(() -> new RuntimeException("Unable to insert attendance into the database"));
             } else {
                 throw new IllegalArgumentException("Contractor has already checked in");
             }
@@ -60,6 +71,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
     }
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public Attendance checkOut(Attendance attendance) throws SQLException, Exception { //check out
         Attendance foundAttendance;
@@ -78,17 +90,18 @@ public class AttendanceServiceImpl implements AttendanceService {
             Contractor contractor = foundAttendance.getContractor();
             Long contractorID = contractor.getContractorId();
             if (timeOut != null) {
-                throw new Exception("Contractor already checked out");
+                throw new RuntimeException("Contractor already checked out");
             }
             if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L) {
                 foundAttendance.setTimeOut(LocalDateTime.now());
                 return this.attendanceRepo.updateAttendance(foundAttendance).
-                        orElseThrow(() -> new Exception("Unable to update database"));
+                        orElseThrow(() -> new RuntimeException("Unable to update database"));
             }
         }
         return attendance;
     }
 
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public List<Attendance> createAbsentContractors() throws SQLException, Exception {
         List<Contractor> contractors = contractorService.findCurrentContractors();
@@ -97,7 +110,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             for (Attendance value : attendances) {
                 value.setRegister(Attendance.Register.ABSENT);
                 Attendance attendance = this.attendanceRepo.createAttendanceRecord(value).
-                        orElseThrow(() -> new Exception("unable to add attendance record"));
+                        orElseThrow(() -> new RuntimeException("unable to add attendance record"));
                 Contractor contractor = attendance.getContractor();
                 Warning warning = warningService.absentWarning(contractor);
                 Hearing hearing = hearingService.IssueHearing(contractor);
