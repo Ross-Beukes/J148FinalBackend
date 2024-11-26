@@ -26,6 +26,7 @@ public class S3Resource {
                                @FormDataParam("metadata") FileEntity fileEntity) {
         try {
             s3Service.uploadFile( fileStream, fileEntity);
+            System.out.println(fileEntity);
             return Response.ok("File uploaded successfully: ").build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
