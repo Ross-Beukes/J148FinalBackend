@@ -16,16 +16,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author yusuf
@@ -144,16 +140,12 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         }
         return requestMap;
     }
+
     @Override
     public List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException {
         List<LeaveRequest> leaveRequests = new ArrayList<>();
-        String query = "SELECT " +
-                "lr.leave_request_id"+
-                "lr.start_date, " +
-                "lr.end_date, " +
-                "lr.decision," +
-                "f.file_id, " +
-                "f.category " +
+        String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, " +
+                "u.name, u.email, f.path " +
                 "FROM leave_request lr " +
                 "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
                 "JOIN user u ON c.user_id = u.user_id " +
@@ -175,7 +167,6 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
                                 .path(rs.getString("path"))
                                 .build())
                         .build();
-
                 leaveRequests.add(leaveRequest);
             }
         }
@@ -202,49 +193,4 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         }
         return requestMap;
     }
-
-    @Override
-    public AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws SQLException {
-        HashMap<Long, LeaveRequest> requestMap = new HashMap<>();
-        String query = "SELECT * FROM leave_request WHERE decision = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, LeaveRequest.Decision.valueOf(decision).toString());
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
-                            .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
-                            .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
-                            .build());
-
-                }
-
-            }
-        }
-        return requestMap;
-    }
-
-    @Override
-    public Optional<LeaveRequest> retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws SQLException {
-        String query = "SELECT * FROM leave_request WHERE leave_request_id = ?";
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setLong(1, leaveRequest.getLeaveRequestId());
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    LeaveRequest foundRequest = LeaveRequest.builder().leaveRequestId(rs.getLong("leave_request_id")).startDate(rs.getDate("start_date").toLocalDate())
-                            .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
-                            .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
-                            .build();
-                    return Optional.of(foundRequest);
-                }
-
-            }
-        }
-        return Optional.empty();
-    }
-
-
-
-
 }

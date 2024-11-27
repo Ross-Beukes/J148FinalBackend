@@ -17,80 +17,34 @@ import java.util.Optional;
  * @author yusuf
  */
 public interface LeaveRequestRepo {
-    /**
-    * 
-    *Creates a new leave request
-    * @param leaveRequest
-    * @return
-    * @throws SQLException 
-    */
     Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException;
-    
-    /**
-    * 
-    *Retrieves all leave requests of a specific contractor regardless of whether they are pending, approved or denied.
-    * @param contractor
-    * @return
-    * @throws SQLException 
+    /*
+    Creates a new leave request
     */
-    AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws SQLException;
 
-    /**
-    *
-    *This retrieve all method maps an ID to the key and the rest of the object to the value in the key value pair making the key set the reference point for
-    *any updates or other logic that may need to be implemented to a leave request object instead of returning the list of objects in an array list
-    * @return
-    * @throws SQLException
+    AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws SQLException;
+    /*
+    Retrieves all leave requests of a specific contractor regardless of whether they are pending, approved or denied.
     */
+
     AbstractMap<Long, LeaveRequest> retrieveAll() throws SQLException;
-    
-    /**
-    * 
-    *Retrieves all leave requests between a specific set of dates
-    * @param startDate
-    * @param endDate
-    * @return
-    * @throws SQLException 
+    /*
+    This retrieve all method maps an ID to the key and the rest of the object to the value in the key value pair making the key set the reference point for
+    any updates or othr logic that may need to be implemented to a leave request object instead of returning the list of objects in an array list
     */
+
     AbstractMap<Long, LeaveRequest> retrieveLeaveRequestsByStartAndEndDate(LocalDate startDate, LocalDate endDate) throws SQLException;
-    
-    /**
-    * 
-    *Updates the leave request to approved or denied
-    * @param leaveRequest
-     * @return
-     * @throws SQLException 
+    /*
+    Retrieves all leave requests between a specific set of dates
     */
+
     Optional<LeaveRequest> updateLeaveRequestToApprovedOrDenied(LeaveRequest leaveRequest) throws SQLException;
-    
+    /*
+    Updates the leave request to approved or denied
+    */
+    AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws SQLException;
     /**
      * Retrieves all leave requests for a specified contractor of which the requests are pending
-     * @param contractor
-     * @return
-     * @throws SQLException 
-     */
-    AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws SQLException;
-    
-    /**
-     *  Retrieves all leave requests based on their respective decision, i.e. "PENDING", "APPROVED", "DENIED" 
-     * @param decision
-     * @return
-     * @throws SQLException 
-     */
-    AbstractMap<Long,LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws SQLException;
-    
-    /**
-     * Retrieves a leave request by it's ID.
-     * @param leaveRequest
-     * @return
-     * @throws SQLException 
-     */
-    Optional<LeaveRequest> retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws SQLException;
-
-    /**
-     * Retrives all leave requests.
-     * @return List of leave requests.
-     * @throws SQLException
      */
     List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException;
 }

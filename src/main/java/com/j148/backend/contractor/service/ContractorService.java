@@ -22,7 +22,7 @@ public interface ContractorService {
      *
      * <p>
      * This method first obtains the current contract period from the
-     * {@link ContractPeriodService}. It then queries the contractor repository
+     * . It then queries the contractor repository
      * to fetch contractors associated with this contract period.
      *
      * @return A list of {@link Contractor} objects representing the contractors
@@ -68,6 +68,6 @@ public interface ContractorService {
      */
     public Contractor updateContractor (Contractor contractor) throws Exception;
     Contractor changeContractorStatus(Contractor contractor) throws Exception;
-    
-    Contractor retrieveContractorByUserID (Contractor contractor) throws Exception;
+
+    Contractor retrieveContractorByUserID(Contractor contractor) throws Exception;
 }

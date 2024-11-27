@@ -99,7 +99,7 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-
+/**
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests-by-decision/{decision}")
@@ -110,7 +110,7 @@ public class LeaveRequestResource {
             Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
-    }
+    }**/
 
     @POST
     @Consumes(APPLICATION_JSON)
@@ -127,7 +127,6 @@ public class LeaveRequestResource {
     }
 
     @GET
-    @Produces(APPLICATION_JSON)
     @Path("retrieve-all-leave-request")
     public Response retrieveAllLeaveRequest() {
         try {
@@ -149,4 +148,6 @@ public class LeaveRequestResource {
                     .build();
         }
     }
+
 }
+ 
