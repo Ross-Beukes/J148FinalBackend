@@ -9,6 +9,8 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.user.model.User;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,8 +28,10 @@ import java.util.Optional;
 /**
  * @author yusuf
  */
+@ApplicationScoped
 public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
-
+@Inject
+    private DBConfig config;
     @Override
     public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException {
         String query = "INSERT INTO leave_request (contractor_id, file_id, start_date, end_date, decision) VALUES(?, ?, ?, ?, ?)";
