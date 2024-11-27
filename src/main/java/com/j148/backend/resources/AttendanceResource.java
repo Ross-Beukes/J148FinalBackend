@@ -108,5 +108,40 @@ public class AttendanceResource {
         }
     }
 
+    @GET
+    @Path("currentAttendance")
+    @Produces(APPLICATION_JSON)
+    public Response retrieveAttendanceByCurrentContractors() {
+        try {
+            List<Attendance> currentContractors = attendanceService.retrieveAttendanceByCurrent();
+            return Response.status(Response.Status.OK).entity(currentContractors).build();
 
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error while absent contractors ", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error while absent contractors ", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
+        }
+    }
+    
+    @POST
+    @Path("get-attendance")
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    public Response getAttendanceByContractor(Contractor contractor){
+        try {
+            Attendance attendance = attendanceService.getAttendanceByContractorId(Attendance.builder().contractor(contractor).build());
+            return Response.status(Response.Status.OK).entity(attendance).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+
+        }
+    }
 }
