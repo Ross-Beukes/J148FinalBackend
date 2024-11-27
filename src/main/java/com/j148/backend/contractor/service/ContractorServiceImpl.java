@@ -1,6 +1,7 @@
 package com.j148.backend.contractor.service;
 
 import com.j148.backend.Exceptions.UserNotFoundException;
+import com.j148.backend.config.DBConfig;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
@@ -19,7 +20,7 @@ import java.util.Optional;
 /**
  * @author glenl
  */
-public class ContractorServiceImpl implements ContractorService {
+public class ContractorServiceImpl extends DBConfig implements ContractorService {
 
     private ContractorRepo contractorRepo = new ContractorRepoImpl();
     private final ContractPeriodService contractPeriodService = new ContractPeriodServiceImpl();
@@ -78,6 +79,11 @@ public class ContractorServiceImpl implements ContractorService {
 
         return contractorRepo.updateStatus(contractor).orElseThrow(() -> new Exception("Failed to change contractor status"));
 
+    }
+
+    @Override
+    public Contractor retrieveContractorByUserID(Contractor contractor) throws Exception {
+        return null;
     }
 
     public Contractor updateContractor(Contractor contractor) throws Exception{

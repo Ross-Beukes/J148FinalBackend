@@ -8,6 +8,7 @@ import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.leave_request.model.LeaveRequest;
+import com.j148.backend.user.model.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,16 +16,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author yusuf
@@ -145,6 +142,38 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
     }
 
     @Override
+    public List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException {
+        List<LeaveRequest> leaveRequests = new ArrayList<>();
+        String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, " +
+                "u.name, u.email, f.path " +
+                "FROM leave_request lr " +
+                "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
+                "JOIN user u ON c.user_id = u.user_id " +
+                "JOIN files f ON lr.file_id = f.file_id";
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                LeaveRequest leaveRequest = LeaveRequest.builder()
+                        .leaveRequestId(rs.getLong("leave_request_id"))
+                        .startDate(rs.getDate("start_date").toLocalDate())
+                        .endDate(rs.getDate("end_date").toLocalDate())
+                        .decision(LeaveRequest.Decision.valueOf(rs.getString("decision").toUpperCase()))
+                        .contractor(Contractor.builder()
+                                .user(User.builder()
+                                        .name(rs.getString("name"))
+                                        .email(rs.getString("email"))
+                                        .build())
+                                .build())
+                        .file(FileEntity.builder()
+                                .path(rs.getString("path"))
+                                .build())
+                        .build();
+                leaveRequests.add(leaveRequest);
+            }
+        }
+        return leaveRequests;
+    }
+
+    @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws SQLException {
         HashMap<Long, LeaveRequest> requestMap = new HashMap<>();
         String query = "SELECT * FROM leave_request WHERE contractor_id = ? AND decision = \"PENDING\"";
@@ -164,6 +193,4 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
         }
         return requestMap;
     }
-
-
 }

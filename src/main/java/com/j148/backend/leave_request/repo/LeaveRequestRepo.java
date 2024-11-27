@@ -42,9 +42,9 @@ public interface LeaveRequestRepo {
     /*
     Updates the leave request to approved or denied
     */
-
     AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws SQLException;
     /**
      * Retrieves all leave requests for a specified contractor of which the requests are pending
      */
+    List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException;
 }

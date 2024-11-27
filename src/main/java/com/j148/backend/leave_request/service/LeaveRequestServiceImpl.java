@@ -7,15 +7,18 @@ package com.j148.backend.leave_request.service;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.DateNotFoundException;
 import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
 import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -71,8 +74,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         }
         return copyMap;
     }
-<<<<<<< Updated upstream
-=======
 
     @Override
     public List<LeaveRequest> retrieveAllLeaveRequest() {
@@ -89,7 +90,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             throw new RuntimeException("An error occurred while retrieving leave requests.", e);
         }
     }
->>>>>>> Stashed changes
 
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception {
