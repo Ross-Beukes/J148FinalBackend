@@ -21,32 +21,21 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.jfree.chart.*;
-import org.jfree.data.*;
-import org.apache.commons.dbcp2.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
-import org.apache.poi.ss.util.AreaReference;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.ss.util.AreaReference;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.ss.usermodel.CellRange;
 import org.apache.poi.xssf.usermodel.XSSFChart;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.apache.poi.xssf.usermodel.XSSFDrawing;
 import org.apache.poi.xddf.usermodel.chart.*;
-import org.apache.poi.xddf.usermodel.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.commons.collections4.map.LinkedMap;
 import org.apache.poi.ss.util.CellRangeAddress;
+
 @ApplicationScoped
 public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo {
 
@@ -55,108 +44,138 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
 
     @Override
     public Optional<ContractorPerformance> getContractorPerformance(User user) throws SQLException {
-        ContractorPerformance cp = ContractorPerformance.builder()
-                .warningList(new ArrayList<>())
-                .attendanceList(new ArrayList<>())
-                .hearingList(new ArrayList<>())
-                .build();
+        ContractorPerformance newContractorPerformance;
+        Map<Long, ContractorPerformance> contractorMap = new LinkedMap<>();
 
+        //Might need to play around with this join statement(Consider which is the left table)
+        //Might need to null check in the function
         String query = "SELECT "
-                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race,"
-                + "contractor.contractor_id, contractor.status, contractor.contractor_period_id, "
-                + "contractor_period.contractor_period_id, contractor_period.name AS period_name, "
-                + "contractor_period.start_date, contractor_period.end_date, "
-                + "warning.date_issue, warning.reason AS warning_reason, warning.state AS warning_state, "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race, user.id_number, user.location, "
+                + "contractor.contractor_id, contractor.status, "
+                + "contractor_period.name AS period_name, contractor_period.start_date, contractor_period.end_date, "
+                + "warning.warning_id, warning.date_issue, warning.reason AS warning_reason, warning.state AS warning_state, "
                 + "attendance.attendance_id, attendance.time_in, attendance.time_out, attendance.register AS attendance_register, "
-                + "hearings.schedule_date AS hearing_schedule_date, hearings.outcome AS hearing_outcome, hearings.reason AS hearing_reason "
+                + "hearings.hearings_id, hearings.schedule_date AS hearing_schedule_date, hearings.outcome AS hearing_outcome, hearings.reason AS hearing_reason, "
+                + "aptitude_test.aptitude_test_id, aptitude_test.test_mark, aptitude_test.test_date "
                 + "FROM user "
                 + "JOIN contractor ON user.user_id = contractor.user_id "
                 + "JOIN contractor_period ON contractor.contractor_period_id = contractor_period.contractor_period_id "
                 + "LEFT JOIN warning ON contractor.contractor_id = warning.contractor_id "
                 + "LEFT JOIN attendance ON contractor.contractor_id = attendance.contractor_id "
                 + "LEFT JOIN hearings ON contractor.contractor_id = hearings.contractor_id "
+                + "LEFT JOIN aptitude_test ON user.user_id = aptitude_test.user_id "
                 + "WHERE user.user_id = ?;";
+
+        // HashMaps to track processed warning, hearing, and attendance IDs for each contractor
+        Map<Long, Set<Long>> warningIdsMap = new HashMap<>();
+        Map<Long, Set<Long>> hearingIdsMap = new HashMap<>();
+        Map<Long, Set<Long>> attendanceIdsMap = new HashMap<>();
 
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, user.getUserId());
-
             try (ResultSet rs = ps.executeQuery()) {
-                boolean hasResults = false;
                 while (rs.next()) {
-                    hasResults = true;
+                    long contractorId = rs.getLong("contractor_id");
 
-                    // Populate User information (only once)
-                    if (cp.getUser() == null) {
-                        User dbUser = User.builder()
+                    // Retrieve or create ContractorPerformance
+                    ContractorPerformance cp = contractorMap.get(contractorId);
+                    if (cp == null) {
+                        cp = new ContractorPerformance();
+
+                        // Populate User
+                        User createUser = User.builder()
                                 .userId(rs.getLong("user_id"))
                                 .name(rs.getString("user_name"))
+                                .idNumber(rs.getString("id_number"))
+                                .location(rs.getString("location"))
                                 .surname(rs.getString("surname"))
                                 .email(rs.getString("email"))
                                 .age(rs.getInt("age"))
                                 .race(rs.getString("race"))
                                 .gender(rs.getString("gender"))
                                 .build();
-                        cp.setUser(dbUser);  // Set the singular user
-                    }
+                        cp.setUser(createUser);
 
-                    // Populate Contractor information (only once)
-                    if (cp.getContractor() == null) {
+                        // Populate Contractor
                         Contractor contractor = Contractor.builder()
-                                .contractorId(rs.getLong("contractor_id"))
+                                .contractorId(contractorId)
                                 .status(Contractor.Status.valueOf(rs.getString("status")))
                                 .build();
-                        cp.setContractor(contractor);  // Set the singular contractor
-                    }
+                        cp.setContractor(contractor);
 
-                    // Populate ContractPeriod information (only once)
-                    if (cp.getContractPeriod() == null) {
+                        // Populate ContractPeriod
                         ContractPeriod contractPeriod = ContractPeriod.builder()
                                 .name(rs.getString("period_name"))
                                 .startDate(rs.getDate("start_date").toLocalDate())
                                 .endDate(rs.getDate("end_date").toLocalDate())
                                 .build();
-                        cp.setContractPeriod(contractPeriod);  // Set the singular contract period
+                        cp.setContractPeriod(contractPeriod);
+
+                        // Initialize tracking maps for this contractor if not present
+                        warningIdsMap.putIfAbsent(contractorId, new HashSet<>());
+                        hearingIdsMap.putIfAbsent(contractorId, new HashSet<>());
+                        attendanceIdsMap.putIfAbsent(contractorId, new HashSet<>());
+
+                        // Add to map for tracking
+                        contractorMap.put(contractorId, cp);
                     }
 
-                    // Populate Warning information (if present)
-                    if (rs.getTimestamp("date_issue") != null) {
+                    // Populate Warning
+                    long warningId = rs.getLong("warning_id");
+                    if (warningId != 0 && !warningIdsMap.get(contractorId).contains(warningId)) {
                         Warning warning = Warning.builder()
+                                .warningId(warningId)
                                 .dateIssue(rs.getTimestamp("date_issue").toLocalDateTime())
                                 .reason(Warning.WarningReason.valueOf(rs.getString("warning_reason")))
                                 .state(Warning.WarningState.valueOf(rs.getString("warning_state")))
                                 .build();
-                        cp.getWarningList().add(warning);  // Add warning to the list
+                        cp.getWarningList().add(warning);
+                        warningIdsMap.get(contractorId).add(warningId); // Track processed warning ID
                     }
 
-                    // Populate Attendance information (if present)
-                    if (rs.getTimestamp("time_in") != null) {
+                    // Populate Attendance
+                    long attendanceId = rs.getLong("attendance_id");
+                    if (attendanceId != 0 && !attendanceIdsMap.get(contractorId).contains(attendanceId)) {
                         Attendance attendance = Attendance.builder()
-                                .attendanceId(rs.getLong("attendance_id"))
+                                .attendanceId(attendanceId)
                                 .timeIn(rs.getTimestamp("time_in").toLocalDateTime())
                                 .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
                                 .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
                                 .build();
-                        cp.getAttendanceList().add(attendance);  // Add attendance to the list
+                        cp.getAttendanceList().add(attendance);
+                        attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
                     }
 
-                    // Populate Hearing information (if present)
-                    if (rs.getTimestamp("hearing_schedule_date") != null) {
+                    // Populate Hearing
+                    long hearingId = rs.getLong("hearings_id");
+                    if (hearingId != 0 && !hearingIdsMap.get(contractorId).contains(hearingId)) {
                         Hearing hearing = Hearing.builder()
+                                .hearingsId(hearingId)
                                 .scheduleDate(rs.getTimestamp("hearing_schedule_date").toLocalDateTime())
                                 .outcome(Hearing.Outcome.valueOf(rs.getString("hearing_outcome")))
                                 .reason(rs.getString("hearing_reason"))
                                 .build();
-                        cp.getHearingList().add(hearing);  // Add hearing to the list
+                        cp.getHearingList().add(hearing);
+                        hearingIdsMap.get(contractorId).add(hearingId); // Track processed hearing ID
                     }
-                }
 
-                if (!hasResults) {
-                    return Optional.empty();
+                    // Populate AptitudeTest if not already set (only one aptitude test per contractor)
+                    if (rs.getLong("aptitude_test_id") != 0 && cp.getAptitudeTest() == null) {
+                        AptitudeTest aptitudeTest = AptitudeTest.builder()
+                                .aptitudeTestId(rs.getLong("aptitude_test_id"))
+                                .testMark(rs.getInt("test_mark"))
+                                .testDate(rs.getTimestamp("test_date").toLocalDateTime())
+                                .build();
+                        cp.setAptitudeTest(aptitudeTest);  // Set single AptitudeTest object
+                    }
                 }
             }
         }
 
-        return Optional.of(cp);
+        // Collect all ContractorPerformance objects
+        Long firstKey = contractorMap.keySet().iterator().next();
+        newContractorPerformance = contractorMap.get(firstKey);
+        return Optional.of(newContractorPerformance);
     }
 
     @Override
@@ -294,171 +313,6 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
 
     @Override
     public List<ContractorPerformance> filterContractorPerformance(String filters, List<ContractorPerformance> cp) throws SQLException {
-//        String[] filterList = filters.toLowerCase().split(",");
-//        for (int i = 0; i < filterList.length; i++) {
-//            int operatorPos = 0;
-//            operatorLoop:
-//            for (int j = 0; j < filterList[i].length(); j++) {
-//                switch (filterList[i].charAt(j)) {
-//                    case '=': {
-//                        operatorPos = filterList[i].indexOf("=");
-//                        String filterName = filterList[i].substring(0, operatorPos);
-//                        switch (filterName) {
-//                            case "attendance-time-in": {
-//
-//                                break;
-//                            }
-//                            case "attendance-register": {
-//
-//                                break;
-//                            }
-//                            case "contractor-period-start-date": {
-//
-//                                break;
-//                            }
-//                            case "contractor-period-end-date": {
-//
-//                                break;
-//                            }
-//                            case "contractor-status": {
-//
-//                                break;
-//                            }
-//                            case "hearings-schedule-date": {
-//
-//                                break;
-//                            }
-//                            case "hearings-outcome": {
-//
-//                                break;
-//                            }
-//                            case "user-gender": {
-//
-//                                break;
-//                            }
-//                            case "user-race": {
-//
-//                                break;
-//                            }
-//                            case "user-age": {
-//
-//                                break;
-//                            }
-//                            case "warning-date-issued": {
-//
-//                                break;
-//                            }
-//                            case "warning-reason": {
-//
-//                                break;
-//                            }
-//                            case "warning-state": {
-//
-//                                break;
-//                            }
-//                            case "aptitude-test-mark": {
-//
-//                                break;
-//                            }
-//                            case "aptitude-test-date": {
-//
-//                                break;
-//                            }
-//                            default:{
-//                                return new ArrayList<>();
-//                            }
-//                        }
-//                        break operatorLoop;
-//                    }
-//                    case '>': {
-//                        operatorPos = filterList[i].indexOf(">");
-//                        String filterName = filterList[i].substring(0, operatorPos);
-//                        switch (filterName) {
-//                            case "attendance-time-in": {
-//                                
-//                                break;
-//                            }
-//                            case "contractor-period-start-date": {
-//
-//                                break;
-//                            }
-//                            case "contractor-period-end-date": {
-//
-//                                break;
-//                            }
-//                            case "hearings-schedule-date": {
-//
-//                                break;
-//                            }
-//                            case "user-age": {
-//
-//                                break;
-//                            }
-//                            case "warning-date-issued": {
-//
-//                                break;
-//                            }
-//                            case "aptitude-test-mark": {
-//
-//                                break;
-//                            }
-//                            case "aptitude-test-date": {
-//
-//                                break;
-//                            }
-//                            default:{
-//                                return new ArrayList<>();
-//                            }
-//                        }
-//                        break operatorLoop;
-//                    }
-//                    case '<': {
-//                        operatorPos = filterList[i].indexOf("<");
-//                        String filterName = filterList[i].substring(0, operatorPos);
-//                        String filterVal = filterList[i].substring(operatorPos, filterList[i].length());
-//                        switch (filterName) {
-//                            case "attendance-time-in": {
-//
-//                                break;
-//                            }
-//                            case "contractor-period-start-date": {
-//
-//                                break;
-//                            }
-//                            case "contractor-period-end-date": {
-//
-//                                break;
-//                            }
-//                            case "hearings-schedule-date": {
-//
-//                                break;
-//                            }
-//                            case "user-age": {
-//
-//                                break;
-//                            }
-//                            case "warning-date-issued": {
-//
-//                                break;
-//                            }
-//                            case "aptitude-test-mark": {
-//
-//                                break;
-//                            }
-//                            case "aptitude-test-date": {
-//
-//                                break;
-//                            }
-//                            default:{
-//                                return new ArrayList<>();
-//                            }
-//                        }
-//                        break operatorLoop;
-//                    }
-//                }
-//            }
-//
-//        }
         String[] filterList = filters.toLowerCase().split(",");
 
         for (String filter : filterList) {
