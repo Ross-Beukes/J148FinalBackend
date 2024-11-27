@@ -39,9 +39,14 @@ public interface LeaveRequestRepo {
     */
 
     Optional<LeaveRequest> updateLeaveRequestToApprovedOrDenied(LeaveRequest leaveRequest) throws SQLException;
+
+    AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws SQLException;
+
+    Optional<LeaveRequest> retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws SQLException;
+
     /*
-    Updates the leave request to approved or denied
-    */
+            Updates the leave request to approved or denied
+            */
     AbstractMap<Long, LeaveRequest> retrieveAllPendingContractorLeaveRequests(Contractor contractor) throws SQLException;
     /**
      * Retrieves all leave requests for a specified contractor of which the requests are pending

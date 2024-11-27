@@ -99,18 +99,18 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-/**
-    @GET
-    @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-decision/{decision}")
-    public Response getLeaveRequestsByDecision(@PathParam("decision") String decision) {
-        try {
-            return Response.ok(leaveRequestService.retrieveAllLeaveRequestsByDecision(decision)).build();
-        } catch (Exception ex) {
-            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-        }
-    }**/
+
+//    @GET
+//    @Produces(APPLICATION_JSON)
+//    @Path("get-leave-requests-by-decision/{decision}")
+//    public Response getLeaveRequestsByDecision(@PathParam("decision") String decision) {
+//        try {
+//            return Response.ok(leaveRequestService.retrieveAllLeaveRequestsByDecision(decision)).build();
+//        } catch (Exception ex) {
+//            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+//            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
+//        }
+//    }
 
     @POST
     @Consumes(APPLICATION_JSON)
