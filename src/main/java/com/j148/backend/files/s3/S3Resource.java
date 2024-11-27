@@ -43,10 +43,8 @@ public class S3Resource {
 
             if (fileEntity == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("The file entity could not be parsed").build();
-            }
-            s3Service.uploadFile(fileStream, fileEntity);
-            System.out.println(fileEntity);
-            return Response.ok("File uploaded successfully: ").build();
+            }FileEntity returnedFile = s3Service.uploadFile(fileStream, fileEntity);
+            return Response.ok(returnedFile).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("File upload failed: " + e.getMessage())
