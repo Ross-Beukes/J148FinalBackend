@@ -65,9 +65,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         if (leaveRequest.getEndDate() == null) {
             throw new DateNotFoundException("No date found for end date on leave request");
         }
-        if (leaveRequest.getFile() == null) {
-            throw new FileNotFoundException("No file found for leave request");
-        }
+       
     }
 
     @Override

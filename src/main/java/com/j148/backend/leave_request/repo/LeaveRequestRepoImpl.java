@@ -41,13 +41,12 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
 
     @Override
     public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException {
-        String query = "INSERT INTO leave_request (contractor_id, file_id, start_date, end_date, decision) VALUES(?, ?, ?, ?, ?)";
+        String query = "INSERT INTO leave_request (contractor_id, start_date, end_date, decision) VALUES(?, ?, ?, ?)";
         try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, leaveRequest.getContractor().getContractorId());
-            ps.setLong(2, leaveRequest.getFile().getFileId());
-            ps.setString(3, String.valueOf(leaveRequest.getStartDate()));
-            ps.setString(4, String.valueOf(leaveRequest.getEndDate()));
-            ps.setString(5, "PENDING");
+            ps.setString(2, String.valueOf(leaveRequest.getStartDate()));
+            ps.setString(3, String.valueOf(leaveRequest.getEndDate()));
+            ps.setString(4, "PENDING");
             if (ps.executeUpdate() > 0) {
                 try (ResultSet keys = ps.getGeneratedKeys()) {
                     if (keys.next()) {
