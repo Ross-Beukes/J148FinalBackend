@@ -34,6 +34,9 @@ public class S3Resource {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Metadata is missing").build();
             }
 
+            System.out.println(fileStream.available());
+            System.out.println(metadata);
+
             // Create and configure ObjectMapper
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.registerModule(new JavaTimeModule()); // Register the module for Java 8 Date/Time
@@ -48,9 +51,11 @@ public class S3Resource {
             System.out.println(fileEntity);
             return Response.ok("File uploaded successfully: ").build();
         } catch (Exception e) {
+            e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("File upload failed: " + e.getMessage())
                     .build();
+
         }
     }
 
