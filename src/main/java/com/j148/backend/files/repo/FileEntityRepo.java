@@ -16,124 +16,12 @@ import javax.swing.plaf.synth.Region;
  */
 public interface FileEntityRepo {
 
-    /**
-     * Saves a file entity to the database without physical file handling.
-     *
-     * @param fileEntity the file entity to be saved
-     * @return Optional containing the saved FileEntity with generated ID if successful, empty Optional otherwise
-     */
+
     Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException;
 
-    /**
-     * Saves both the physical file and its metadata in the database.
-     *
-     * @param filePart the file content from HTTP multipart request
-     * @param user the user who is uploading the file
-     * @param category the category of the file being uploaded
-     * @return Optional containing the saved FileEntity if successful, empty Optional otherwise
-     * @throws SQLException if database operation fails
-     */
-    Optional<FileEntity> save(Part filePart, User user, FileEntity.Category category) throws SQLException;
-
-    /**
-     * Deletes a file from both the file system and database.
-     *
-     * @param fileEntity the file entity to be deleted
-     * @return Optional containing true if deletion was successful, false otherwise
-     * @throws SQLException if database operation fails
-     */
-    Optional<Boolean> deleteFile(FileEntity fileEntity) throws SQLException;
-
-    /**
-     * Finds a file entity by its ID with full user information.
-     *
-     * @param fileEntity the file entity containing the ID to search for
-     * @return Optional containing the found FileEntity with user details if exists, empty Optional otherwise
-     * @throws SQLException if database operation fails
-     */
     Optional<FileEntity> findById(FileEntity fileEntity) throws SQLException;
 
-    /**
-     * Downloads the physical file content from the file system.
-     *
-     * @param file the file entity to download
-     * @return Optional containing the file bytes if found, empty Optional otherwise
-     * @throws SQLException if database operation fails
-     * @throws IOException if file reading fails
-     */
-    Optional<byte[]> downloadFile(FileEntity file) throws SQLException, IOException;
+    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException;
 
-    /**
-     * Finds all files with a specific ID.
-     *
-     * @param fileId the ID to search for
-     * @return List of FileEntity objects matching the ID
-     */
-    List<FileEntity> findById(long fileId);
-
-    /**
-     * Finds all files of a specific category.
-     *
-     * @param category the category to search for
-     * @return List of FileEntity objects matching the category
-     */
-    List<FileEntity> findByCategory(FileEntity.Category category);
-
-    /**
-     * Finds all files with a specific verification status.
-     *
-     * @param verified the verification status to search for
-     * @return List of FileEntity objects matching the verification status
-     */
-    List<FileEntity> findByStatus(FileEntity.Verified verified);
-
-    /**
-     * Retrieves all files in the system.
-     *
-     * @return List of all FileEntity objects in the database
-     */
-    List<FileEntity> getAllFiles();
-
-    /**
-
-
-     * Uploads a file from your local machine to the Amazon simple storage service
-     * file storage
-     *
-     * @param fileEntity
-     * @return
-     * @throws java.sql.SQLException
-     */
-
-    Optional<FileEntity> UploadFileS3(FileEntity fileEntity) throws SQLException;
-
-    /**
-     * Downloads a file from the Amazon simple storage service file storage to
-     * your local machine
-     *
-     * @param fileEntity
-     * @return
-     * @throws java.sql.SQLException
-     */
-
-    Optional<FileEntity> downloadFileS3(FileEntity fileEntity) throws SQLException;
-
-
-
-
-
-
-    /**
-     * Retrieves a specific file from a specific user.
-     * @param user
-     * @param category
-     * @throws SQLException
-     * @return Optional containing file that corresponds to userID and category.
-     */
-    Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity.Category category) throws SQLException;
-
-
-
-
-
+    Optional<FileEntity> fileVerification(FileEntity fileEntity) throws SQLException;
 }

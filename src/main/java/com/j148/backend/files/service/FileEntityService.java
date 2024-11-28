@@ -12,5 +12,6 @@ import com.j148.backend.user.model.User;
  * @author yusuf
  */
 public interface FileEntityService {
-    FileEntity retrieveFileByUserIdAndCategory (User user, FileEntity.Category category) throws Exception;
+    FileEntity retrieveFileByUserIdAndCategory(User user, FileEntity fileEntity) throws Exception;
+    FileEntity fileVerification(FileEntity fileEntity) throws Exception;
 }

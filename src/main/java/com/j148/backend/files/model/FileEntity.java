@@ -12,12 +12,10 @@ import java.time.LocalDateTime;
 public class FileEntity {
     @Min(value = 1, message = "Leave request ID cannot be less than 1")
     private Long fileId;
-    @NotBlank(message = "A file type is required")
     private String fileType;
+    private int fileSize;
     private Category category;
     private LocalDateTime dateAdded;
-    @NotBlank(message = "A file path is required")
-    private String path;
     private User user;
     private Verified verified;
 

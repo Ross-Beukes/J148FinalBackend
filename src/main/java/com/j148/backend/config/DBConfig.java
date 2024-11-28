@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 
 @ApplicationScoped  // Make it injectable
 public class DBConfig {
+
     private static final Logger logger = Logger.getLogger(DBConfig.class.getName());
     private static BasicDataSource basicDataSource;
 
@@ -16,7 +17,7 @@ public class DBConfig {
         basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
         basicDataSource.setUsername("root");
         basicDataSource.setPassword("root");
-        basicDataSource.setUrl("jdbc:mysql://localhost:3306/hrms?autoReconnect=true&useSSL=false");
+        basicDataSource.setUrl("jdbc:mysql://Localhost:3306/hrms?autoReconnect=true&useSSL=false");
         basicDataSource.setMinIdle(10);
         basicDataSource.setMaxIdle(10);
         basicDataSource.setMaxOpenPreparedStatements(100);
