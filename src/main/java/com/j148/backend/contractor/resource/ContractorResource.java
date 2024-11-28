@@ -11,6 +11,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.sql.SQLException;
@@ -60,12 +61,12 @@ public class ContractorResource {
      * @param contractor   Contractor object containing the updated status.
      * @return HTTP Response indicating the result of the status update operation.
      */
-    @PUT
-    @Path("changeStatus/{contractorId}")
+    @POST
+    @Path("changeStatus")
     @Consumes(APPLICATION_JSON)
-    public Response changeContractorStatus(@PathParam("contractorId") long contractorId, Contractor contractor) {
+    @Produces(APPLICATION_JSON)
+    public Response changeContractorStatus(Contractor contractor) {
         try {
-            contractor.setContractorId(contractorId);
             Contractor updatedContractor = contractorService.changeContractorStatus(contractor);
             if (updatedContractor != null) {
                 return Response.ok(updatedContractor).build();
