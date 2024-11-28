@@ -62,25 +62,15 @@ public class WarningServiceImpl implements WarningService {
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
 
-    public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
+    public Warning appealWarning(Warning warning) throws Exception {
 
         if (warning == null) {
             throw new IllegalArgumentException("Warning is null");
         }
-        if (contractor == null) {
-            throw new IllegalArgumentException("Contractor is null");
-        }
+        
 
         if (warning.getWarningId() == null) {
             throw new IllegalArgumentException("Warning id is null");
-        }
-
-        if (contractor.getContractorId() == null) {
-            throw new IllegalArgumentException("Contractor id is null");
-        }
-
-        if (contractorRepo.findById(contractor).isEmpty()) {
-            throw new IllegalArgumentException("Could not find contractor");
         }
 
         if (warningRepo.findById(warning).isEmpty()) {
@@ -118,7 +108,8 @@ public class WarningServiceImpl implements WarningService {
 
     @Override
     public Warning updateState(Warning warning) throws SQLException {
-        return null;
+        warning.setState(Warning.WarningState.APPEALED);
+        return warning;
     }
 
     @Override
@@ -151,10 +142,6 @@ public class WarningServiceImpl implements WarningService {
         return null;
     }
 
-    @Override
-    public Warning appealWarning(Warning warning) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
     
     @Override
     public ArrayList<Warning> findAllAppealedWarnings() throws SQLException{
