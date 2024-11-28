@@ -32,7 +32,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
             throw new IllegalArgumentException("Aptitude test is null");
         }
 
-        if (aptitudeTest.getAptitudeTestId() == null || aptitudeTest.getTestDate() == null) {
+        if (aptitudeTest.getTestDate() == null) {
 
 
             throw new IllegalArgumentException("Aptitude test date or id is null");
