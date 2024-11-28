@@ -86,12 +86,13 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
 
     @Override
     public Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException {
-        String query = "UPDATE aptitude_test SET test_date = ? WHERE user_id = ?";
+        String query = "UPDATE aptitude_test SET test_mark = ?, test_date = ? WHERE user_id = ?";
         System.out.println(query);
         try (Connection conn = DBConfig.getCon();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setTimestamp(1, Timestamp.valueOf(aptitudeTest.getTestDate()));
-            stmt.setLong(2, aptitudeTest.getUser().getUserId());
+            stmt.setInt(1, aptitudeTest.getTestMark());
+            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
+            stmt.setLong(3, aptitudeTest.getUser().getUserId());
 
             if (stmt.executeUpdate() > 0) {
                 return Optional.of(aptitudeTest);

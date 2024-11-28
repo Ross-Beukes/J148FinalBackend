@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Contract {
+    @NotNull(message = "contract ID cannot be Null")
     @Min(value = 1, message = "Contract ID cannot be less than 1")
     private Long contractId;
     private ContractPeriod contractPeriod;
