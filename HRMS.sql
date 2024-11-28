@@ -1,5 +1,4 @@
-USE `hrms`;
--- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
 -- Host: localhost    Database: hrms
 -- ------------------------------------------------------
@@ -12,7 +11,6 @@ USE `hrms`;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-CREATE DATABASE  IF NOT EXISTS `hrms` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
@@ -123,7 +121,7 @@ CREATE TABLE `contractor` (
   KEY `contractor_period_id_idx` (`contractor_period_id`),
   CONSTRAINT `contractor_period_id` FOREIGN KEY (`contractor_period_id`) REFERENCES `contractor_period` (`contractor_period_id`),
   CONSTRAINT `iduser` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,6 +130,7 @@ CREATE TABLE `contractor` (
 
 LOCK TABLES `contractor` WRITE;
 /*!40000 ALTER TABLE `contractor` DISABLE KEYS */;
+INSERT INTO `contractor` VALUES (1,1,'ACTIVE',1);
 /*!40000 ALTER TABLE `contractor` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -149,7 +148,7 @@ CREATE TABLE `contractor_period` (
   `end_date` date NOT NULL,
   PRIMARY KEY (`contractor_period_id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -158,6 +157,7 @@ CREATE TABLE `contractor_period` (
 
 LOCK TABLES `contractor_period` WRITE;
 /*!40000 ALTER TABLE `contractor_period` DISABLE KEYS */;
+INSERT INTO `contractor_period` VALUES (1,'j148','2024-12-12','2024-12-13');
 /*!40000 ALTER TABLE `contractor_period` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -208,7 +208,7 @@ CREATE TABLE `hearings` (
   PRIMARY KEY (`hearings_id`),
   KEY `conid_idx` (`contractor_id`),
   CONSTRAINT `conid` FOREIGN KEY (`contractor_id`) REFERENCES `contractor` (`contractor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -217,6 +217,7 @@ CREATE TABLE `hearings` (
 
 LOCK TABLES `hearings` WRITE;
 /*!40000 ALTER TABLE `hearings` DISABLE KEYS */;
+INSERT INTO `hearings` VALUES (1,1,'2024-12-23 00:00:00','NULL','i hate him');
 /*!40000 ALTER TABLE `hearings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -273,7 +274,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
   UNIQUE KEY `id_number_UNIQUE` (`id_number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -282,6 +283,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'Sinister','Sinestra','abs@gmail.com','MALE','0123456789123','CONTRACTOR','Black','San Siro, Italy',18,'12345'),(2,'Arshiv','Ramsahai','p@gmail.com','Male','9602150232025','ADMIN','Black','South America',28,'Arshy'),(3,'Peter','Ramsahai','chris@gmail.com','Male','960215023202','APPLICANT','Black','South America',28,'Arshy'),(5,'Peter','Ramsahai','chri@gmail.com','Male','9602150232020','APPLICANT','Black','South America',28,'v'),(8,'Peter','Ramsahai','chriq@gmail.com','Male','9602150232029','APPLICANT','Black','South America',28,'GennyTheBoose');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -301,7 +303,7 @@ CREATE TABLE `warning` (
   PRIMARY KEY (`warning_id`),
   KEY `con_id_idx` (`contractor_id`),
   CONSTRAINT `con_id` FOREIGN KEY (`contractor_id`) REFERENCES `contractor` (`contractor_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -310,6 +312,7 @@ CREATE TABLE `warning` (
 
 LOCK TABLES `warning` WRITE;
 /*!40000 ALTER TABLE `warning` DISABLE KEYS */;
+INSERT INTO `warning` VALUES (1,1,'2024-12-12 00:00:00','LATE','APPEALED'),(2,1,'2024-12-12 00:00:00','LATE','ACTIVE'),(3,1,'2024-12-12 00:00:00','LATE','ACTIVE');
 /*!40000 ALTER TABLE `warning` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -322,4 +325,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-07 10:20:09
+-- Dump completed on 2024-11-28 14:50:14
