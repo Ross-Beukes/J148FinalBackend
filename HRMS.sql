@@ -1,3 +1,4 @@
+CREATE DATABASE  IF NOT EXISTS `hrms` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `hrms`;
 -- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
 --
@@ -172,12 +173,11 @@ CREATE TABLE `files` (
   `file_id` bigint NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
   `file_type` varchar(45) NOT NULL,
+  `file_size` int NOT NULL,
   `category` enum('TIMESHEET','MATRIC_CERTIFICATE','ID','CONTRACT','LEAVE_FORM','PROJECT','OTHER') NOT NULL,
   `date_added` timestamp NOT NULL,
-  `path` varchar(255) NOT NULL,
   `verified` enum('NOT_APPLICABLE','WAITING','REJECTED','APPROVED') NOT NULL DEFAULT 'NOT_APPLICABLE',
   PRIMARY KEY (`file_id`),
-  UNIQUE KEY `path_UNIQUE` (`path`),
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `userid` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

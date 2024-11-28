@@ -36,7 +36,7 @@ public class AptitudeTestResource {
     
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("schedule_aptitude_test")
+    @Path("schedule_aptitude_test/{userId}")
     public Response scheduleAptitudeTest(AptitudeTest aptitudeTest, @QueryParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
@@ -57,7 +57,7 @@ public class AptitudeTestResource {
     
     @POST
     @Consumes(APPLICATION_JSON)
-    @Path("reschedule_aptitude_test")
+    @Path("reschedule_aptitude_test/{userId}")
     public Response rescheduleAptitudeTest(AptitudeTest aptitudeTest, @QueryParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
