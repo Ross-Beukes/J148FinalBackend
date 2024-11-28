@@ -174,7 +174,7 @@ CREATE TABLE `files` (
   `user_id` bigint NOT NULL,
   `file_type` varchar(45) NOT NULL,
   `file_size` int NOT NULL,
-  `category` enum('TIMESHEET','MATRIC_CERTIFICATE','ID','CONTRACT','LEAVE_FORM','PROJECT','OTHER') NOT NULL,
+  `category` enum('TIMESHEET','MATRIC_CERTIFICATE','ID','CONTRACT','OTHER') NOT NULL,
   `date_added` timestamp NOT NULL,
   `verified` enum('NOT_APPLICABLE','WAITING','REJECTED','APPROVED') NOT NULL DEFAULT 'NOT_APPLICABLE',
   PRIMARY KEY (`file_id`),
@@ -230,15 +230,12 @@ DROP TABLE IF EXISTS `leave_request`;
 CREATE TABLE `leave_request` (
   `leave_request_id` bigint NOT NULL AUTO_INCREMENT,
   `contractor_id` bigint NOT NULL,
-  `file_id` bigint NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `decision` enum('APPROVED','DENIED','PENDING') NOT NULL DEFAULT 'PENDING',
   PRIMARY KEY (`leave_request_id`),
   KEY `contid_idx` (`contractor_id`),
-  KEY `file_id_idx` (`file_id`),
-  CONSTRAINT `contid` FOREIGN KEY (`contractor_id`) REFERENCES `contractor` (`contractor_id`),
-  CONSTRAINT `file_id` FOREIGN KEY (`file_id`) REFERENCES `files` (`file_id`)
+  CONSTRAINT `contid` FOREIGN KEY (`contractor_id`) REFERENCES `contractor` (`contractor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
