@@ -13,4 +13,5 @@ import com.j148.backend.user.model.User;
  */
 public interface FileEntityService {
     FileEntity retrieveFileByUserIdAndCategory(User user, FileEntity fileEntity) throws Exception;
+    FileEntity fileVerification(FileEntity fileEntity) throws Exception;
 }

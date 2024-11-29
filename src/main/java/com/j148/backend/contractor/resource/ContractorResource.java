@@ -1,5 +1,6 @@
 package com.j148.backend.contractor.resource;
 
+import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
@@ -11,10 +12,10 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,12 +62,12 @@ public class ContractorResource {
      * @param contractor   Contractor object containing the updated status.
      * @return HTTP Response indicating the result of the status update operation.
      */
-    @POST
-    @Path("changeStatus")
+    @PUT
+    @Path("changeStatus/{contractorId}")
     @Consumes(APPLICATION_JSON)
-    @Produces(APPLICATION_JSON)
-    public Response changeContractorStatus(Contractor contractor) {
+    public Response changeContractorStatus(@PathParam("contractorId") long contractorId, Contractor contractor) {
         try {
+            contractor.setContractorId(contractorId);
             Contractor updatedContractor = contractorService.changeContractorStatus(contractor);
             if (updatedContractor != null) {
                 return Response.ok(updatedContractor).build();
@@ -85,7 +86,7 @@ public class ContractorResource {
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("findContractor")
-    public Response findContractorByUserID(Contractor contractor) {
+    public Response retrieveContractor(Contractor contractor) {
         try {
             Contractor foundContractor = contractorService.retrieveContractorByUserID(contractor);
             if (foundContractor != null) {

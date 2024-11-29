@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
-public class FileEntityRepoImpl implements FileEntityRepo{
+public class FileEntityRepoImpl implements FileEntityRepo {
     private static final Logger LOGGER = Logger.getLogger(FileEntityRepoImpl.class.getName());
 
     @Inject
@@ -124,4 +124,18 @@ public class FileEntityRepoImpl implements FileEntityRepo{
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<FileEntity> fileVerification(FileEntity fileEntity) throws SQLException {
+        String query = "UPDATE files SET verified = ? WHERE file_id = ?";
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            ps.setString(1, fileEntity.getVerified().name());
+            ps.setLong(2, fileEntity.getFileId());
+            if (ps.executeUpdate() > 0) {
+                return Optional.of(fileEntity);
+            }
+        }
+        return Optional.empty();
+    }
+
 }

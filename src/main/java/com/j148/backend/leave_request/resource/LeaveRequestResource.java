@@ -51,11 +51,7 @@ public class LeaveRequestResource {
     @Path("submit-leave-request")
     public Response submitLeaveRequest(LeaveRequest leaveRequest){
         try {
-            User user = userService.findUserByEmail(User.builder().email(leaveRequest.getContractor().getUser().getEmail()).build());
-            Contractor contractor = contractorService.retrieveContractorByUserID(Contractor.builder().user(user).build());
-            LeaveRequest submission = LeaveRequest.builder().contractor(contractor).startDate(leaveRequest.getStartDate())
-                    .endDate(leaveRequest.getEndDate()).file(leaveRequest.getFile()).build();
-            return Response.ok(this.leaveRequestService.createLeaveRequest(submission)).build();
+            return Response.ok(this.leaveRequestService.createLeaveRequest(leaveRequest)).build();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
