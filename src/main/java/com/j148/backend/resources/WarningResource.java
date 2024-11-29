@@ -8,6 +8,7 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
 import com.j148.backend.warning.service.WarningServiceImpl;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import jakarta.ws.rs.core.Response;
@@ -22,7 +23,8 @@ import java.util.logging.Logger;
 @Path("warning")
 public class WarningResource {
 
-    private WarningService warningService = new WarningServiceImpl();
+    @Inject
+    private WarningService warningService;
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
     @GET
