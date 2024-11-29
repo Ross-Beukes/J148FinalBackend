@@ -59,7 +59,6 @@ public class ContractorResource {
     } /**
      * Updates the status of an existing contractor in the database.
      *
-     * @param contractorId ID of the contractor to update.
      * @param contractor   Contractor object containing the updated status.
      * @return HTTP Response indicating the result of the status update operation.
      */
@@ -84,25 +83,25 @@ public class ContractorResource {
         }
     }
 
-    @POST
-    @Consumes(APPLICATION_JSON)
-    @Path("findContractor")
-    public Response findContractorByUserID(Contractor contractor) {
-        try {
-            Contractor foundContractor = contractorService.retrieveContractorByUserID(contractor);
-            if (foundContractor != null) {
-                return Response.ok(foundContractor).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Contractor not found").build();
-            }
-        } catch (IllegalArgumentException e) {
-            LOG.log(Level.WARNING, "Invalid contractor status or ID", e);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid contractor status or ID").build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "An unexpected error occurred while changing contractor status", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
-        }
-    }
+//    @POST
+//    @Consumes(APPLICATION_JSON)
+//    @Path("findContractor")
+//    public Response findContractorByUserID(Contractor contractor) {
+//        try {
+//            Contractor foundContractor = contractorService.retrieveContractorByUserID(contractor);
+//            if (foundContractor != null) {
+//                return Response.ok(foundContractor).build();
+//            } else {
+//                return Response.status(Response.Status.NOT_FOUND).entity("Contractor not found").build();
+//            }
+//        } catch (IllegalArgumentException e) {
+//            LOG.log(Level.WARNING, "Invalid contractor status or ID", e);
+//            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid contractor status or ID").build();
+//        } catch (Exception e) {
+//            LOG.log(Level.SEVERE, "An unexpected error occurred while changing contractor status", e);
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
+//        }
+//    }
 
     @POST
     @Consumes(APPLICATION_JSON)
