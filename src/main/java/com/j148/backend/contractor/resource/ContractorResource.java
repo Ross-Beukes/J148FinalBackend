@@ -1,5 +1,6 @@
 package com.j148.backend.contractor.resource;
 
+import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
@@ -15,6 +16,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -81,11 +83,31 @@ public class ContractorResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
         }
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("findContractor")
     public Response findContractorByUserID(Contractor contractor) {
+        try {
+            Contractor foundContractor = contractorService.retrieveContractorByUserID(contractor);
+            if (foundContractor != null) {
+                return Response.ok(foundContractor).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Contractor not found").build();
+            }
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.WARNING, "Invalid contractor status or ID", e);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid contractor status or ID").build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "An unexpected error occurred while changing contractor status", e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
+        }
+    }
+
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Path("findContractor")
+    public Response retrieveContractor(Contractor contractor) {
         try {
             Contractor foundContractor = contractorService.retrieveContractorByUserID(contractor);
             if (foundContractor != null) {

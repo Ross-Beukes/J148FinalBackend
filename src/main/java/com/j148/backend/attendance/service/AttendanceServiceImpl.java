@@ -3,6 +3,8 @@ package com.j148.backend.attendance.service;
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.attendance.repo.AttendanceRepo;
 import com.j148.backend.attendance.repo.AttendanceRepoImpl;
+import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
@@ -39,11 +41,12 @@ public class AttendanceServiceImpl implements AttendanceService {
     private WarningService warningService;
     @Inject
     private HearingService hearingService;
+    @Inject
+    private ContractPeriodService contractPeriodService;
 
-    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Attendance createAttendenceRecord(Attendance attendance) throws SQLException, Exception { //check in
-
         if (attendance != null && attendance.getContractor().getContractorId() != null) {
             Attendance foundAttendance;
             foundAttendance = attendanceRepo.retreiveAttendanceByContractor(attendance).orElse(null);
@@ -71,7 +74,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
     }
 
-    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Attendance checkOut(Attendance attendance) throws SQLException, Exception { //check out
         Attendance foundAttendance;
@@ -101,7 +104,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendance;
     }
 
-    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public List<Attendance> createAbsentContractors() throws SQLException, Exception {
         List<Contractor> contractors = contractorService.findCurrentContractors();
@@ -143,6 +146,22 @@ public class AttendanceServiceImpl implements AttendanceService {
             missingAttendances.add(attendance);
         }
         return missingAttendances;
+    }
+
+    @Override
+    public List<Attendance> retrieveAttendanceByCurrent() throws SQLException, Exception {
+        ContractPeriod contractPeriod = contractPeriodService.getCurrentContractPeriod();
+        return attendanceRepo.retrieveAttendanceByCurrent(contractPeriod);
+    }
+
+    @Override
+    public Attendance getAttendanceByContractorId(Attendance attendance) throws SQLException, Exception {
+        if (attendance != null && attendance.getContractor().getContractorId() != null) {
+            return this.attendanceRepo.retreiveAttendanceByContractor(attendance).
+                    orElseThrow(() -> new RuntimeException("Unable to insert attendance into the database"));
+        } else {
+            throw new IllegalArgumentException("Attendance cannot be null");
+        }
     }
 
 }
