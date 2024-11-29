@@ -296,7 +296,7 @@ CREATE TABLE `warning` (
   `warning_id` bigint NOT NULL AUTO_INCREMENT,
   `contractor_id` bigint NOT NULL,
   `date_issue` timestamp NOT NULL,
-  `reason` enum('LATE','ABSENT') NOT NULL,
+  `reason` enum('LATE','ABSENT','MISCONDUCT') NOT NULL,
   `state` enum('APPEALED','ACTIVE','REMOVED','FINAL') NOT NULL,
   PRIMARY KEY (`warning_id`),
   KEY `con_id_idx` (`contractor_id`),
