@@ -136,14 +136,16 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
                     // Populate Attendance
                     long attendanceId = rs.getLong("attendance_id");
                     if (attendanceId != 0 && !attendanceIdsMap.get(contractorId).contains(attendanceId)) {
-                        Attendance attendance = Attendance.builder()
-                                .attendanceId(attendanceId)
-                                .timeIn(rs.getTimestamp("time_in").toLocalDateTime())
-                                .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
-                                .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
-                                .build();
-                        cp.getAttendanceList().add(attendance);
-                        attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        
+                            Attendance attendance = Attendance.builder()
+                                    .attendanceId(attendanceId)
+                                    .timeIn(rs.getTimestamp("time_in").toLocalDateTime())
+                                    .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
+                                    .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
+                                    .build();
+                            cp.getAttendanceList().add(attendance);
+                            attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        
                     }
 
                     // Populate Hearing
@@ -271,14 +273,16 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
                     // Populate Attendance
                     long attendanceId = rs.getLong("attendance_id");
                     if (attendanceId != 0 && !attendanceIdsMap.get(contractorId).contains(attendanceId)) {
-                        Attendance attendance = Attendance.builder()
-                                .attendanceId(attendanceId)
-                                .timeIn(rs.getTimestamp("time_in").toLocalDateTime())
-                                .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
-                                .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
-                                .build();
-                        cp.getAttendanceList().add(attendance);
-                        attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        
+                            Attendance attendance = Attendance.builder()
+                                    .attendanceId(attendanceId)
+                                    .timeIn(rs.getTimestamp("time_in").toLocalDateTime())
+                                    .timeOut(rs.getTimestamp("time_out").toLocalDateTime())
+                                    .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
+                                    .build();
+                            cp.getAttendanceList().add(attendance);
+                            attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        
                     }
 
                     // Populate Hearing
@@ -1646,5 +1650,4 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
 //        }
 //
 //    }
-
 }
