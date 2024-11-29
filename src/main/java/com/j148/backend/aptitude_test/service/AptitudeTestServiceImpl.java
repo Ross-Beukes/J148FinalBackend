@@ -59,7 +59,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         if (user == null || user.getUserId() == null) {
             throw new IllegalArgumentException("User is null");
         }
-        if ( aptitudeTest.getTestDate() == null) {
+        if (aptitudeTest.getTestMark() < 0 || aptitudeTest.getTestDate() == null) {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 

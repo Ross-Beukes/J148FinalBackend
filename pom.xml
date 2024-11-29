@@ -84,16 +84,16 @@
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>2.0.1</version> <!-- check for the latest version -->
-        
+
         </dependency>
-    
+
         <!-- https://mvnrepository.com/artifact/org.jfree/jfreechart -->
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.5.5</version>
         </dependency>
-        
+
         <!-- https://mvnrepository.com/artifact/com.itextpdf/itext7-core -->
         <dependency>
             <groupId>com.itextpdf</groupId>
@@ -136,6 +136,15 @@
             <version>5.1.0</version>
         </dependency>
 
+    <dependency>
+
+    <groupId>software.amazon.awssdk</groupId>
+    <artifactId>s3</artifactId>
+    <version>2.20.20</version> <!-- Check for the latest version -->
+
+    </dependency>
+
+
 
     </dependencies>
 
@@ -151,6 +160,8 @@
                     <compilerArgs>
                         <args>-Djava.endorsed.dirs=${endorsed.dir}</args>
                     </compilerArgs>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
             <plugin>
