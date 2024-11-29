@@ -22,4 +22,6 @@ public interface FileEntityRepo {
     Optional<FileEntity> findById(FileEntity fileEntity) throws SQLException;
 
     Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException;
+
+    Optional<FileEntity> fileVerification(FileEntity fileEntity) throws SQLException;
 }

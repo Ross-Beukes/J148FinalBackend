@@ -79,6 +79,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Invalid email format.");
         }
 
+        if(userRepo.isUserExists(user)){
+            throw new SQLException("User already exists.");
+        }
+
         return this.userRepo.register(user).orElseThrow(() -> new RuntimeException("Unable to insert user into the database."));
     }
 

@@ -40,7 +40,6 @@ public class AptitudeTestResource {
     public Response scheduleAptitudeTest(AptitudeTest aptitudeTest, @QueryParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
-            System.out.println(userId);
             return Response.ok(this.aptitudeTestService.scheduleTest(aptitudeTest, user)).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add aptitude test to the database.  Check for duplicates");
@@ -61,7 +60,6 @@ public class AptitudeTestResource {
     public Response rescheduleAptitudeTest(AptitudeTest aptitudeTest, @QueryParam("userId") long userId) {
         try {
             User user = User.builder().userId(userId).build();
-            System.out.println(userId);
             return Response.ok(this.aptitudeTestService.rescheduleTest(aptitudeTest, user)).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to change aptitude test in the database.");
@@ -72,6 +70,28 @@ public class AptitudeTestResource {
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to add Aptitude Test", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+
+    @GET
+    @Path("find-test")
+    public Response findTest(@QueryParam("userId") long userId){
+        try{
+            User user = User.builder()
+                    .userId(userId)
+                    .build();
+
+            return Response.ok(this.aptitudeTestService.retrieveAptitudeTestByUserId(user)).build();
+        }catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to change aptitude test in the database.");
+            System.out.println("sqlException : " + e.getMessage());
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "Aptitude Test object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to find Aptitude Test", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
