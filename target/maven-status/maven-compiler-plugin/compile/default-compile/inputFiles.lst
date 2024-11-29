@@ -25,6 +25,7 @@ C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\resources\AptitudeTestResource.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contractor_performance\service\ContractorPerformanceService.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\repo\FileEntityRepoImpl.java
+C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\s3\S3Config.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\user\service\UserServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contractor_history\service\ContractorHistoryServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\hearing\service\HearingServiceImpl.java
@@ -33,7 +34,9 @@ C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\attendance\service\AttendanceServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\warning\model\Warning.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contract\service\ContractServiceImpl.java
+C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\s3\S3Resource.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\resources\AuthenticationResource.java
+C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\s3\S3Repo.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\Exceptions\DateNotFoundException.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contractor_performance\model\ContractorPerformance.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contract_period\repo\ContractPeriodRepoImpl.java
@@ -83,6 +86,7 @@ C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\model\FileEntity.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\warning\service\WarningServiceImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\contractor_performance\repo\ContractorPerformanceRepo.java
+C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\files\s3\S3Service.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\hearing\repo\HearingRepoImpl.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\leave_request\model\LeaveRequest.java
 C:\Users\prudy\Documents\Vzap Final project\J148FinalBackend\src\main\java\com\j148\backend\warning\repo\WarningRepoImpl.java

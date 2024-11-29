@@ -17,6 +17,7 @@ com\j148\backend\scheduler\Scheduler.class
 com\j148\backend\attendance\model\Attendance.class
 com\j148\backend\aptitude_test\repo\AptitudeTestRepoImpl.class
 com\j148\backend\contract\repo\ContractRepo.class
+com\j148\backend\files\s3\S3Service.class
 com\j148\backend\contract\resource\ContractResource.class
 com\j148\backend\contractor_history\model\ContractorHistory.class
 com\j148\backend\user\model\User$Role.class
@@ -28,6 +29,7 @@ com\j148\backend\contract\repo\ContractRepoImpl.class
 com\j148\backend\files\service\FileEntityService.class
 com\j148\backend\warning\model\Warning.class
 com\j148\backend\user\repo\UserRepoImpl.class
+com\j148\backend\files\s3\S3Resource.class
 com\j148\backend\contractor_performance\service\ContractorPerformanceServiceImpl.class
 com\j148\backend\contractor_performance\repo\ContractorPerformanceRepo.class
 com\j148\backend\contractor\resource\ContractorResource.class
@@ -47,6 +49,7 @@ com\j148\backend\warning\model\Warning$WarningState.class
 com\j148\backend\Exceptions\ContractorNotFoundException.class
 com\j148\backend\attendance\service\AttendanceServiceImpl.class
 com\j148\backend\contractor_history\service\ContractorHistoryService.class
+com\j148\backend\files\s3\S3Repo.class
 com\j148\backend\warning\repo\WarningRepoImpl.class
 com\j148\backend\contractor\repo\ContractorRepo.class
 com\j148\backend\Exceptions\WarningNotFoundException.class
@@ -93,6 +96,7 @@ com\j148\backend\contractor_history\resource\ContractorHistoryResource.class
 com\j148\backend\hearing\model\Hearing$Outcome.class
 com\j148\backend\leave_request\model\LeaveRequest$LeaveRequestBuilder.class
 com\j148\backend\Exceptions\UserNotFoundException.class
+com\j148\backend\files\s3\S3Config.class
 com\j148\backend\files\model\FileEntity$Verified.class
 com\j148\backend\config\DBConfig.class
 com\j148\backend\contract\model\Contract$Decision.class
