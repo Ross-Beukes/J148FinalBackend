@@ -1,5 +1,8 @@
 package com.j148.backend.files.s3;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.files.repo.FileEntityRepo;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -21,23 +24,16 @@ public class S3Service {
     private static final String BUCKET_NAME = "vzapbucket";
 
 
-    @Transactional(rollbackOn = {Exception.class})
-    public FileEntity uploadFile(InputStream fileStream, FileEntity fileEntity) throws RuntimeException, SQLException {
-        try {
-
-            S3Repo.uploadFile(BUCKET_NAME, fileStream, fileEntity);
-            FileEntity returnedFileEntity = fileEntityRepo.saveFile(fileEntity).get();
-            return returnedFileEntity;
-        } catch (Exception e) {
-            throw new RuntimeException("S3 upload failed", e);
-        }
+    @Transactional(rollbackOn = {SQLException.class, AmazonS3Exception.class,
+            AmazonServiceException.class,
+            SdkClientException.class,})
+    public FileEntity uploadFile(InputStream fileStream,FileEntity fileEntity) throws SQLException {
+        FileEntity returnedFileEntity = fileEntityRepo.saveFile(fileEntity).get();
+        S3Repo.uploadFile(BUCKET_NAME, fileStream, returnedFileEntity);
+        return returnedFileEntity;
     }
 
-    public InputStream downloadFile(String key) throws RuntimeException {
-        try {
-            return S3Repo.downloadFile(BUCKET_NAME, key);
-        } catch (Exception e) {
-            throw new RuntimeException("S3 download failed", e);
-        }
+    public InputStream downloadFile(String key) {
+        return S3Repo.downloadFile(BUCKET_NAME, key);
     }
 }
