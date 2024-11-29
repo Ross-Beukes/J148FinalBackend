@@ -27,6 +27,7 @@ com\j148\backend\contract_period\resource\ContractPeriodResource.class
 com\j148\backend\aptitude_test\service\AptitudeTestService.class
 com\j148\backend\contract\repo\ContractRepoImpl.class
 com\j148\backend\files\service\FileEntityService.class
+com\j148\backend\resources\WarningResource.class
 com\j148\backend\warning\model\Warning.class
 com\j148\backend\user\repo\UserRepoImpl.class
 com\j148\backend\files\s3\S3Resource.class

@@ -65,7 +65,6 @@ public class AttendanceResource {
      * @param contractors List of contractors to check
      * @return Response with list of contractors who haven't checked in today
      */
-
     @POST
     @Path("not-checked-in")
     @Consumes(APPLICATION_JSON)

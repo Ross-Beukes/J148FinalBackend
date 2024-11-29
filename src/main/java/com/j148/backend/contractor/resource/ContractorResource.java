@@ -3,44 +3,39 @@ package com.j148.backend.contractor.resource;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
-import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
-
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ *
  * ContractorResource handles HTTP requests related to contractor operations.
  */
-@RequestScoped
 @Path("contractor")
 public class ContractorResource {
 
-    @Inject
-    private ContractorService contractorService;
+    private final ContractorService contractorService = new ContractorServiceImpl();
     private static final Logger LOG = Logger.getLogger(ContractorResource.class.getName());
 
     /**
      * Updates an existing contractor in the database.
-     *
-     * @param contractor Updated contractor details.
+     * @param contractorId ID of the contractor to update.
+     * @param contractor   Updated contractor details.
      * @return HTTP Response indicating the result of the update operation.
      */
-    @POST
-    @Path("update")
+    @PUT
+    @Path("update/{contractorId}")
     @Consumes(APPLICATION_JSON)
-    public Response updateContractor(@Valid Contractor contractor) {
+    public Response updateContractor(@PathParam("contractorId") long contractorId, Contractor contractor) {
         try {
+            contractor.setContractorId(contractorId);
 
             Contractor updatedContractor = contractorService.updateContractor(contractor);
             if (updatedContractor != null) {
@@ -55,9 +50,7 @@ public class ContractorResource {
             LOG.log(Level.SEVERE, "An unexpected error occurred", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
         }
-    }
-
-    /**
+    } /**
      * Updates the status of an existing contractor in the database.
      *
      * @param contractorId ID of the contractor to update.
@@ -84,11 +77,11 @@ public class ContractorResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
         }
     }
-
+    
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("findContractor")
-    public Response retrieveContractor(Contractor contractor) {
+    public Response changeContractorStatus(Contractor contractor) {
         try {
             Contractor foundContractor = contractorService.retrieveContractorByUserID(contractor);
             if (foundContractor != null) {

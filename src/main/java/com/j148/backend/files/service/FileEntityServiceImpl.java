@@ -25,9 +25,13 @@ public class FileEntityServiceImpl implements FileEntityService {
     @Override
     public FileEntity retrieveFileByUserIdAndCategory(User user, FileEntity fileEntity) throws Exception {
         if (user != null && fileEntity.getCategory() != null) {
-            validateUserID(user);
-            return fileEntityRepo.findFileByUserIdAndCategory(user, fileEntity).orElseThrow(()
-                    -> new RuntimeException("There was an error retrieving the file by userID and category"));
+            if (fileEntity.getVerified().equals("WAITING")) {
+                validateUserID(user);
+                return fileEntityRepo.findFileByUserIdAndCategory(user, fileEntity).orElseThrow(()
+                        -> new RuntimeException("There was an error retrieving the file by userID and category"));
+            } else {
+                throw new Exception("Could not find unverified files.");
+            }
         } else if (user == null) {
             throw new NullPointerException("User cannot be null when retrieving a file by userID and category");
         } else {

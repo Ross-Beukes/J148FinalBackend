@@ -44,7 +44,7 @@ public interface WarningService {
 
     List<Warning> findByContractor(Contractor contractor) throws SQLException;
 
-    List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException;
+    List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException, Exception;
 
     List<Warning> findAppealedByContractor(Contractor contractor) throws SQLException;
 
