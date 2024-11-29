@@ -64,8 +64,8 @@ public class UserResource {
     public Response register(User user) {
         try {
             user.setRole(User.Role.APPLICANT);
-
             return Response.ok(this.userService.registerUser(user)).build();
+
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to add applicant to the database.  Check for duplicates");
             System.out.println("sqlException : " + e.getMessage());
@@ -108,6 +108,7 @@ public class UserResource {
             return Response.ok(found).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to retrieve user from the database.");
+            System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (IllegalArgumentException e) {
             LOG.log(Level.SEVERE, "Email parameter is not valid.");
