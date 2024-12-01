@@ -127,10 +127,11 @@ public class FileEntityRepoImpl implements FileEntityRepo {
 
     @Override
     public Optional<FileEntity> fileVerification(FileEntity fileEntity) throws SQLException {
-        String query = "UPDATE files SET verified = ? WHERE file_id = ?";
+        String query = "UPDATE files SET verified = ? WHERE file_id = ? AND verified = ?";
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setString(1, fileEntity.getVerified().name());
             ps.setLong(2, fileEntity.getFileId());
+            ps.setString(3, "WAITING");
             if (ps.executeUpdate() > 0) {
                 return Optional.of(fileEntity);
             }
