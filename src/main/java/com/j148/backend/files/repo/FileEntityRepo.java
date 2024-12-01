@@ -24,4 +24,6 @@ public interface FileEntityRepo {
     Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException;
 
     Optional<FileEntity> fileVerification(FileEntity fileEntity) throws SQLException;
+
+    ArrayList<FileEntity> retreiveFilesWithUsers()throws SQLException;
 }

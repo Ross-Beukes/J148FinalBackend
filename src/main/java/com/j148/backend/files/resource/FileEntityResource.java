@@ -29,7 +29,8 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
  */
 
 @RequestScoped
-@Path("file-entity")
+@Path("/files_entity")
+@Produces(APPLICATION_JSON)
 public class FileEntityResource {
     @Inject
     private FileEntityService FileEntityService;
@@ -57,4 +58,16 @@ public class FileEntityResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
+
+   @GET
+    @Path("files_and_users")
+    public Response getAllFilesWithUsers() {
+        try {
+            return Response.ok(this.fileEntityService.retreiveFilesWithUsers()).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        }
+    }
+
 }
