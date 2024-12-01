@@ -1,5 +1,7 @@
 package com.j148.backend.files.repo;
 
+import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.user.model.User;
 import jakarta.servlet.http.Part;
@@ -20,6 +22,15 @@ public interface FileEntityRepo {
     Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException;
 
     Optional<FileEntity> findById(FileEntity fileEntity) throws SQLException;
+
+
+    List<FileEntity> findAllPendingVerifications() throws SQLException;
+
+    List<FileEntity> findFilesByContractPeriod(ContractPeriod contractPeriod) throws SQLException;
+
+    List<FileEntity> getApprovedTimesheetsByYear(Contractor contractor, int year) throws SQLException;
+
+    List<FileEntity> findValidFilesByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException;
 
     Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException;
 
