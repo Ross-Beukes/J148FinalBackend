@@ -8,6 +8,7 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.repo.ContractorRepo;
+import com.j148.backend.contractor_history.service.ContractorHistoryService;
 import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.contractor_history.service.ContractorHistoryService;
 import com.j148.backend.contractor_history.service.ContractorHistoryServiceImpl;
@@ -15,6 +16,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -42,13 +44,17 @@ public class ContractorHistoryResource {
     }
     
     @GET
-    @Path("disciplinary-history")
-    public Response getDisciplinaryHistory(Contractor contractor){
-       
+    @Path("disciplinary-history/{contractorId}")
+    public Response getDisciplinaryHistory(@PathParam("contractorId") long contractorId){
+    
+    Contractor contractor = Contractor.builder().contractorId(contractorId).build();
+    System.out.println("Contractor : " + contractor.toString());
+        
     if(contractor != null)   
     
     {try {
             if(this.contractorHistoryService.viewWarningAndHearingHistory(contractor) != null){
+
             return Response.ok(this.contractorHistoryService.viewWarningAndHearingHistory(contractor)).build();   
             }
             else{

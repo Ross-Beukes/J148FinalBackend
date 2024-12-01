@@ -4,16 +4,15 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.WarningNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.repo.ContractorRepo;
-import com.j148.backend.contractor.repo.ContractorRepoImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.repo.WarningRepo;
-import com.j148.backend.warning.repo.WarningRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,26 +61,16 @@ public class WarningServiceImpl implements WarningService {
     }
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
-    @Override
-    public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
+
+    public Warning appealWarning(Warning warning) throws Exception {
 
         if (warning == null) {
             throw new IllegalArgumentException("Warning is null");
         }
-        if (contractor == null) {
-            throw new IllegalArgumentException("Contractor is null");
-        }
+        
 
         if (warning.getWarningId() == null) {
             throw new IllegalArgumentException("Warning id is null");
-        }
-
-        if (contractor.getContractorId() == null) {
-            throw new IllegalArgumentException("Contractor id is null");
-        }
-
-        if (contractorRepo.findById(contractor).isEmpty()) {
-            throw new IllegalArgumentException("Could not find contractor");
         }
 
         if (warningRepo.findById(warning).isEmpty()) {
@@ -104,7 +93,11 @@ public class WarningServiceImpl implements WarningService {
     }
 
     @Override
-    public List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException {
+    public List<Warning> findAllActiveByContractor(Contractor contractor) throws SQLException, Exception {
+        if (contractor != null) {
+             System.out.println(warningRepo.findAllActiveByContractor(contractor).orElseThrow(() -> new Exception("No Warnings found.")));
+             return warningRepo.findAllActiveByContractor(contractor).orElseThrow(() -> new Exception("No Warnings found."));
+        }
         return null;
     }
 
@@ -115,7 +108,8 @@ public class WarningServiceImpl implements WarningService {
 
     @Override
     public Warning updateState(Warning warning) throws SQLException {
-        return null;
+        warning.setState(Warning.WarningState.APPEALED);
+        return warning;
     }
 
     @Override
@@ -146,6 +140,14 @@ public class WarningServiceImpl implements WarningService {
     @Override
     public Boolean existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException {
         return null;
+    }
+
+    
+    @Override
+    public ArrayList<Warning> findAllAppealedWarnings() throws SQLException{
+        
+        return warningRepo.findAllAppealedWarnings();
+    
     }
 }
 
