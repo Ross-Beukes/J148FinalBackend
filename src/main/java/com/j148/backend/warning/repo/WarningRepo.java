@@ -5,6 +5,7 @@ import com.j148.backend.warning.model.Warning;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,4 +130,12 @@ public interface WarningRepo {
     Optional<Boolean> existsByContractorAndDateIssue(Contractor contractor, LocalDateTime dateIssue) throws SQLException;
     
     Optional<Warning> createAbsentWarning(Contractor contractor) throws SQLException;
+    
+     /**
+     * Returns a list of all warnings from the database that have been Appealed
+     *
+     * @return List containing warnings that have been appealed
+     * @throws SQLException if a database access error occurs
+     */
+    ArrayList<Warning> findAllAppealedWarnings() throws SQLException;
 }
