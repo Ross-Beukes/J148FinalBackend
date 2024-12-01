@@ -26,14 +26,14 @@ import java.util.logging.Logger;
 public class AptitudeTestResource {
 
     @Inject
-   private AptitudeTestService aptitudeTestService;
+    private AptitudeTestService aptitudeTestService;
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
-    
+
     @GET
     public Response pingUserResource() {
         return Response.ok("Successfully pinged aptitude test Resource").build();
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("schedule_aptitude_test/{userId}")
@@ -54,7 +54,7 @@ public class AptitudeTestResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("reschedule_aptitude_test/{userId}")

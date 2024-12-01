@@ -4,16 +4,20 @@
  */
 package com.j148.backend.files.service;
 
+import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.files.repo.FileEntityRepo;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author yusuf
  */
-
 @ApplicationScoped
 public class FileEntityServiceImpl implements FileEntityService {
 
@@ -40,6 +44,23 @@ public class FileEntityServiceImpl implements FileEntityService {
         if (user.getUserId() == 0) {
             throw new IllegalArgumentException("UserID returning a 0 when trying to retrieve a specific file");
         }
+    }
+
+    @Override
+    public ArrayList<FileEntity> retreiveFilesWithUsers() throws SQLException, FileNotFoundException, UserNotFoundException {
+        ArrayList<FileEntity> usersAndFiles = fileEntityRepo.retreiveFilesWithUsers();
+
+        for (FileEntity file : usersAndFiles) {
+            if (file == null || file.getFileId() == 0) {
+                throw new FileNotFoundException("There was an error retreiving the file");
+            }
+            if (file.getUser() == null || file.getUser().getUserId() == 0) {
+                throw new UserNotFoundException();
+            }
+        }
+
+        return usersAndFiles;
+
     }
 
 }

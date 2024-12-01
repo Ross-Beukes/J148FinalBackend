@@ -4,10 +4,49 @@
  */
 package com.j148.backend.files.resource;
 
+import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.files.service.FileEntityService;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import jakarta.ws.rs.core.Response;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static org.openxmlformats.schemas.drawingml.x2006.chart.STTrendlineType.LOG;
+
 /**
  *
  * @author yusuf
  */
+
+@RequestScoped
+@Path("/files_entity")
+@Produces(APPLICATION_JSON)
 public class FileEntityResource {
+    
+    @Inject
+    private FileEntityService fileEntityService;
+    
+    private static final Logger LOG = Logger.getLogger(FileEntityResource.class.getName());
+
+    
+   @GET
+    @Path("files_and_users")
+    public Response getAllFilesWithUsers() {
+        try {
+            return Response.ok(this.fileEntityService.retreiveFilesWithUsers()).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+        } 
+    }
+    
+    
+    
+    
     
 }

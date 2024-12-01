@@ -6,6 +6,7 @@ import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.swing.plaf.synth.Region;
@@ -22,4 +23,6 @@ public interface FileEntityRepo {
     Optional<FileEntity> findById(FileEntity fileEntity) throws SQLException;
 
     Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException;
+    
+    ArrayList<FileEntity> retreiveFilesWithUsers()throws SQLException;
 }
