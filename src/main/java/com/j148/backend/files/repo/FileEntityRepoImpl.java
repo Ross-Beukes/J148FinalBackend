@@ -8,9 +8,7 @@ import com.j148.backend.files.model.FileEntity;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @ApplicationScoped
@@ -143,14 +141,15 @@ public class FileEntityRepoImpl implements FileEntityRepo{
 
 
     @Override
-    public ArrayList<FileEntity> retreiveFilesWithUsers() throws SQLException {
+    public ArrayList<FileEntity> retrieveFilesWithUsers() throws SQLException {
         ArrayList<FileEntity> usersAndFiles = new ArrayList<>();
 
         String query = "SELECT "
                 + "user.user_id, user.name AS user_name, user.surname, user.email, user.id_number, "
-                + "files.file_id, files.file_tpe, files.category, files.date_added, files.verified "
+                + "files.file_id, files.file_type, files.file_size, files.category, files.date_added, files.verified "
                 + "FROM user "
-                + "JOIN files ON user.user_id = files.user_id;";
+                + "JOIN files ON user.user_id = files.user_id "
+                + "WHERE files.verified = 'WAITING';";
 
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
@@ -167,10 +166,11 @@ public class FileEntityRepoImpl implements FileEntityRepo{
 
                     fileEntity.setFileId(rs.getLong("file_id"));
                     fileEntity.setFileType(rs.getString("file_type"));
+                    fileEntity.setFileSize(rs.getInt("file_size"));
                     fileEntity.setCategory(FileEntity.Category.valueOf(rs.getString("category")));
                     fileEntity.setDateAdded(rs.getTimestamp("date_added").toLocalDateTime());
                     fileEntity.setUser(user);
-                    fileEntity.setVerified(FileEntity.Verified.valueOf(rs.getString("category")));
+                    fileEntity.setVerified(FileEntity.Verified.valueOf(rs.getString("verified")));
 
                     usersAndFiles.add(fileEntity);
 
@@ -180,5 +180,6 @@ public class FileEntityRepoImpl implements FileEntityRepo{
             }
         }
     }
+
 
 }
