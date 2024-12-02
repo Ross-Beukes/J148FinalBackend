@@ -26,14 +26,14 @@ import java.util.logging.Logger;
 public class AptitudeTestResource {
 
     @Inject
-   private AptitudeTestService aptitudeTestService;
+    private AptitudeTestService aptitudeTestService;
     private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
-    
+
     @GET
     public Response pingUserResource() {
         return Response.ok("Successfully pinged aptitude test Resource").build();
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("schedule_aptitude_test")
@@ -53,7 +53,7 @@ public class AptitudeTestResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("reschedule_aptitude_test")
@@ -76,14 +76,32 @@ public class AptitudeTestResource {
 
     @GET
     @Path("find-test")
-    public Response findTest(@QueryParam("userId") long userId){
-        try{
+    public Response findTest(@QueryParam("userId") long userId) {
+        try {
             User user = User.builder()
                     .userId(userId)
                     .build();
 
             return Response.ok(this.aptitudeTestService.retrieveAptitudeTestByUserId(user)).build();
-        }catch (SQLException e) {
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to change aptitude test in the database.");
+            System.out.println("sqlException : " + e.getMessage());
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "Aptitude Test object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to find Aptitude Test", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+
+    @GET
+    @Path("written-tests")
+    public Response getWrittenTests() {
+        try {
+            return Response.ok(this.aptitudeTestService.getAllWrittenTests()).build();
+        } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to change aptitude test in the database.");
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
