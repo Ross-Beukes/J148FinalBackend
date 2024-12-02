@@ -50,4 +50,6 @@ public interface AptitudeTestService {
     AptitudeTest retrieveAptitudeTestByUserId(User user) throws Exception;
     
     List<AptitudeTest> getAllWrittenTests() throws Exception;
+    
+    AptitudeTest update(AptitudeTest aptitudeTest) throws Exception;
 }
