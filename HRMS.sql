@@ -13,6 +13,7 @@ USE `hrms`;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+CREATE DATABASE  IF NOT EXISTS `hrms` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
@@ -173,13 +174,13 @@ CREATE TABLE `files` (
   `user_id` bigint NOT NULL,
   `file_type` varchar(45) NOT NULL,
   `file_size` int NOT NULL,
-  `category` enum('TIMESHEET','MATRIC_CERTIFICATE','ID','CONTRACT','LEAVE_FORM','PROJECT','OTHER') NOT NULL,
+  `category` enum('TIMESHEET','MATRIC_CERTIFICATE','ID','CONTRACT','PROJECT','OTHER') NOT NULL,
   `date_added` timestamp NOT NULL,
   `verified` enum('NOT_APPLICABLE','WAITING','REJECTED','APPROVED') NOT NULL DEFAULT 'NOT_APPLICABLE',
   PRIMARY KEY (`file_id`),
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `userid` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,7 +189,6 @@ CREATE TABLE `files` (
 
 LOCK TABLES `files` WRITE;
 /*!40000 ALTER TABLE `files` DISABLE KEYS */;
-INSERT INTO `files` VALUES (1,1,'pdf',78,'ID','2024-11-26 12:30:00','REJECTED'),(2,1,'pdf',78,'ID','2024-11-26 12:30:00','WAITING'),(3,1,'pdf',78,'ID','2024-11-26 12:30:00','WAITING'),(4,1,'pdf',78,'ID','2024-11-26 12:30:00','WAITING'),(5,1,'pdf',78,'ID','2024-11-26 12:30:00','WAITING'),(6,1,'pdf',78,'ID','2024-11-26 12:30:00','WAITING'),(7,1,'pdf',78,'ID','2024-11-26 12:30:00','WAITING');
 /*!40000 ALTER TABLE `files` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,15 +230,12 @@ DROP TABLE IF EXISTS `leave_request`;
 CREATE TABLE `leave_request` (
   `leave_request_id` bigint NOT NULL AUTO_INCREMENT,
   `contractor_id` bigint NOT NULL,
-  `file_id` bigint NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `decision` enum('APPROVED','DENIED','PENDING') NOT NULL DEFAULT 'PENDING',
   PRIMARY KEY (`leave_request_id`),
   KEY `contid_idx` (`contractor_id`),
-  KEY `file_id_idx` (`file_id`),
-  CONSTRAINT `contid` FOREIGN KEY (`contractor_id`) REFERENCES `contractor` (`contractor_id`),
-  CONSTRAINT `file_id` FOREIGN KEY (`file_id`) REFERENCES `files` (`file_id`)
+  CONSTRAINT `contid` FOREIGN KEY (`contractor_id`) REFERENCES `contractor` (`contractor_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -273,7 +270,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email_UNIQUE` (`email`),
   UNIQUE KEY `id_number_UNIQUE` (`id_number`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -282,7 +279,6 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Ledi','Modika','ledi@gmail.com','Male','0106234525089','ADMIN','Asian','Bolobedu',23,'Ledi@140'),(7,'Hangwelani','Mohlakwane','Hangwe@gmail.com','Male','0602150524085','APPLICANT','Black','South A',18,'HaiiKhona'),(8,'Mosehla','Mahasha','Bridgy@gmail.com','Female','0106234111089','APPLICANT','Asian','Bolobedu',27,'Lebo@140'),(9,'Naledi','Modika','prudymodika@gmail.com','Female','9707140927089','CONTRACTOR','White','South A',27,'Ledi@255'),(10,'Lerato','Moyo','moyol@gmail.com','Female','0201065205089','APPLICANT','White','South A',27,'Lerato20@');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -297,7 +293,7 @@ CREATE TABLE `warning` (
   `warning_id` bigint NOT NULL AUTO_INCREMENT,
   `contractor_id` bigint NOT NULL,
   `date_issue` timestamp NOT NULL,
-  `reason` enum('LATE','ABSENT') NOT NULL,
+  `reason` enum('LATE','ABSENT','MISCONDUCT') NOT NULL,
   `state` enum('APPEALED','ACTIVE','REMOVED','FINAL') NOT NULL,
   PRIMARY KEY (`warning_id`),
   KEY `con_id_idx` (`contractor_id`),
@@ -323,4 +319,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-11-28 15:04:48
+-- Dump completed on 2024-11-07 10:20:09

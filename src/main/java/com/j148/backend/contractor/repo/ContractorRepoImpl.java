@@ -168,7 +168,6 @@ public class ContractorRepoImpl implements ContractorRepo {
         return Optional.empty();
     }
 
-
     //Just to help me test @Tshire
     public Optional<Contractor> findContractorById(long id) throws SQLException {
         String sql = "SELECT * FROM contractor WHERE contractor_id = ?";

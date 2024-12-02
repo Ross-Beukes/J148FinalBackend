@@ -9,7 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 
@@ -25,11 +24,13 @@ public class S3Service {
     private static final String BUCKET_NAME = "vzapbucket";
 
 
-    @Transactional(rollbackOn = {Exception.class
-            })
-    public void uploadFile(InputStream fileStream,FileEntity fileEntity) throws SQLException {
+    @Transactional(rollbackOn = {SQLException.class, AmazonS3Exception.class,
+            AmazonServiceException.class,
+            SdkClientException.class,})
+    public FileEntity uploadFile(InputStream fileStream,FileEntity fileEntity) throws SQLException {
         FileEntity returnedFileEntity = fileEntityRepo.saveFile(fileEntity).get();
         S3Repo.uploadFile(BUCKET_NAME, fileStream, returnedFileEntity);
+        return returnedFileEntity;
     }
 
     public InputStream downloadFile(String key) {

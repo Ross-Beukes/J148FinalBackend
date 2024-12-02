@@ -5,6 +5,7 @@
 package com.j148.backend.attendance.service;
 
 import com.j148.backend.attendance.model.Attendance;
+import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import java.sql.SQLException;
 import java.util.List;
@@ -65,8 +66,6 @@ public interface AttendanceService {
      * representing contractors who are absent. For each contractor, it creates
      * an attendance record with the registration status set to "ABSENT".
      *
-     * @param attendances A list of {@link Attendance} objects for contractors
-     * to be marked as absent.
      * @return A list of {@link Attendance} objects with updated status.
      * @throws SQLException if there is a database error during the operation.
      * @throws Exception if an attendance record cannot be created for any
@@ -95,4 +94,7 @@ public interface AttendanceService {
      */
     List<Attendance> contractorsNotCheckedIn(List<Contractor> contractors) throws SQLException, Exception;
 
+    List<Attendance>retrieveAttendanceByCurrent() throws SQLException, Exception;
+    
+    Attendance getAttendanceByContractorId(Attendance attendance) throws SQLException, Exception;
 }
