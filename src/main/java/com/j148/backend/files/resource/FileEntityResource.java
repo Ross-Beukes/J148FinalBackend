@@ -62,6 +62,4 @@ public class FileEntityResource {
             return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
         }
     }
-
-
 }
