@@ -142,8 +142,8 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
     }
 
     @Override
-    public List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException {
-        List<LeaveRequest> leaveRequests = new ArrayList<>();
+    public ArrayList<LeaveRequest> retrieveAllLeaveRequest() throws SQLException {
+        ArrayList<LeaveRequest> leaveRequests = new ArrayList<>();
         String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, " +
                 "u.name, u.email, f.path " +
                 "FROM leave_request lr " +

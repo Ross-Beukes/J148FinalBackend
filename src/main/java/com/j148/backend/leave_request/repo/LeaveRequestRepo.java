@@ -9,7 +9,7 @@ import com.j148.backend.leave_request.model.LeaveRequest;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 /**
@@ -46,5 +46,5 @@ public interface LeaveRequestRepo {
     /**
      * Retrieves all leave requests for a specified contractor of which the requests are pending
      */
-    List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException;
+    ArrayList<LeaveRequest> retrieveAllLeaveRequest() throws SQLException;
 }
