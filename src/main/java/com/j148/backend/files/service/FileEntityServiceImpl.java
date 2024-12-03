@@ -46,8 +46,7 @@ public class FileEntityServiceImpl implements FileEntityService {
     }
 
     @Override
-    @Transactional(rollbackOn = {Exception.class, RuntimeException.class, SQLException.class
-    })
+    @Transactional(rollbackOn = { SQLException.class})
     public FileEntity fileVerification(FileEntity fileEntity) throws Exception {
         if (fileEntity.getVerified() == null) {
             throw new RuntimeException("File could not be verified.");
