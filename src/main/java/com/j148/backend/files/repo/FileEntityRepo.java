@@ -4,13 +4,10 @@ import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.user.model.User;
-import jakarta.servlet.http.Part;
 
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
-import javax.swing.plaf.synth.Region;
 
 /**
  * Repository interface for managing file operations in the HRMS system.
@@ -35,4 +32,7 @@ public interface FileEntityRepo {
     Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException;
 
     Optional<FileEntity> fileVerification(FileEntity fileEntity) throws SQLException;
+
+    ArrayList<FileEntity> retrieveFilesWithUsers()throws SQLException;
+
 }

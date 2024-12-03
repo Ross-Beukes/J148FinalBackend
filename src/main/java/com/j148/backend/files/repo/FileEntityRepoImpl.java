@@ -347,4 +347,47 @@ public class FileEntityRepoImpl implements FileEntityRepo {
         return Optional.empty();
     }
 
+
+    @Override
+    public ArrayList<FileEntity> retrieveFilesWithUsers() throws SQLException {
+        ArrayList<FileEntity> usersAndFiles = new ArrayList<>();
+
+        String query = "SELECT "
+                + "user.user_id, user.name AS user_name, user.surname, user.email, user.id_number, "
+                + "files.file_id, files.file_type, files.file_size, files.category, files.date_added, files.verified "
+                + "FROM user "
+                + "JOIN files ON user.user_id = files.user_id "
+                + "WHERE files.verified = 'WAITING';";
+
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+
+                    User user = new User();
+                    FileEntity fileEntity = new FileEntity();
+
+                    user.setUserId(rs.getLong("user_id"));
+                    user.setName(rs.getString("user_name"));
+                    user.setSurname(rs.getString("surname"));
+                    user.setEmail(rs.getString("email"));
+                    user.setIdNumber(rs.getString("id_number"));
+
+                    fileEntity.setFileId(rs.getLong("file_id"));
+                    fileEntity.setFileType(rs.getString("file_type"));
+                    fileEntity.setFileSize(rs.getInt("file_size"));
+                    fileEntity.setCategory(FileEntity.Category.valueOf(rs.getString("category")));
+                    fileEntity.setDateAdded(rs.getTimestamp("date_added").toLocalDateTime());
+                    fileEntity.setUser(user);
+                    fileEntity.setVerified(FileEntity.Verified.valueOf(rs.getString("verified")));
+
+                    usersAndFiles.add(fileEntity);
+
+                }
+                return usersAndFiles;
+
+            }
+        }
+    }
+
+
 }

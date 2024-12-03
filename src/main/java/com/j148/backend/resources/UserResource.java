@@ -80,7 +80,6 @@ public class UserResource {
         }
     }
 
-
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("update-user")
@@ -100,7 +99,6 @@ public class UserResource {
     }
 
     @GET
-    @Produces(APPLICATION_JSON)
     @Path("find-user")
     public Response getUserFromEmail(@QueryParam("email") String email) {
         try {

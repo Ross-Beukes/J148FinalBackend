@@ -187,7 +187,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
         //Might need to null check in the function
         String query = "SELECT "
                 + "user.user_id, user.name AS user_name, user.surname, user.email, user.age, user.gender, user.race, user.id_number, user.location, "
-                + "contractor.contractor_id, contractor.status,"
+                + "contractor.contractor_id, contractor.status, "
                 + "contractor_period.name AS period_name, contractor_period.start_date, contractor_period.end_date, "
                 + "warning.warning_id, warning.date_issue, warning.reason AS warning_reason, warning.state AS warning_state, "
                 + "attendance.attendance_id, attendance.time_in, attendance.time_out, attendance.register AS attendance_register, "
@@ -234,7 +234,6 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
                         Contractor contractor = Contractor.builder()
                                 .contractorId(contractorId)
                                 .status(Contractor.Status.valueOf(rs.getString("status")))
-                                .user(user)
                                 .build();
                         cp.setContractor(contractor);
 
