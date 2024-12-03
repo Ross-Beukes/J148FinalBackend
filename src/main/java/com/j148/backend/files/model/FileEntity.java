@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class FileEntity {
-    @Min(value = 1, message = "Leave request ID cannot be less than 1")
+    @Min(value = 1, message = "File ID cannot be less than 1")
     private Long fileId;
     private String fileType;
     private Integer fileSize;
