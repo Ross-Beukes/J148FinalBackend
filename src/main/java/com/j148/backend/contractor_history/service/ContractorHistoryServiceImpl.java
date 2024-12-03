@@ -48,7 +48,7 @@ public class ContractorHistoryServiceImpl implements ContractorHistoryService {
             List<Hearing> hearingHistory;
                 
                 hearingHistory = hearingRepo.findContractorHearingHistory(contractor);
-                warningHistory = warningRepo.findAllActiveByContractor(contractor).get();
+                warningHistory = warningRepo.findAllWarningsByContractor(contractor).get();
                 
                 ContractorHistory contractorHistory = ContractorHistory.builder()
                         .warningHistory(warningHistory)
