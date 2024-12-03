@@ -8,6 +8,8 @@ import com.j148.backend.Exceptions.FileNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.files.repo.FileEntityRepo;
+import com.j148.backend.files.s3.S3Repo;
+import com.j148.backend.files.s3.S3Service;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -25,6 +27,10 @@ public class FileEntityServiceImpl implements FileEntityService {
 
     @Inject
     private FileEntityRepo fileEntityRepo;
+
+    @Inject
+    private S3Repo s3Repo;
+
 
     @Override
     public FileEntity retrieveFileByUserIdAndCategory(User user, FileEntity fileEntity) throws Exception {
@@ -47,8 +53,10 @@ public class FileEntityServiceImpl implements FileEntityService {
             throw new RuntimeException("File could not be verified.");
         }
 
+        s3Repo.deleteFile("vzapbucket", String.valueOf(fileEntity.getFileId()));
+
         return fileEntityRepo.fileVerification(fileEntity)
-                .orElseThrow(() -> new RuntimeException("File not found."));
+                .orElseThrow(() -> new RuntimeException("File status could not be changed."));
     }
 
     private void validateUserID(User user) {
