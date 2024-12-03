@@ -7,6 +7,7 @@ package com.j148.backend.contract.resource;
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.aptitude_test.service.AptitudeTestService;
 import com.j148.backend.aptitude_test.service.AptitudeTestServiceImpl;
+import com.j148.backend.contract.model.Contract;
 import com.j148.backend.contract.service.ContractService;
 import com.j148.backend.contract.service.ContractServiceImpl;
 import com.j148.backend.files.model.FileEntity;
@@ -30,6 +31,7 @@ import static jakarta.ws.rs.core.MediaType.*;
 
 import jakarta.ws.rs.core.Response.ResponseBuilder;
 
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,6 +50,8 @@ public class ContractResource {
     private AptitudeTestService aptitudeTestService;
     @Inject
     private FileEntityService fileEntityService;
+
+    private static final Logger LOG = Logger.getLogger(ContractResource.class.getName());
 
     @POST
     @Consumes(APPLICATION_JSON)
@@ -69,5 +73,43 @@ public class ContractResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
+    @GET
+    @Path("check-active-offer/{userId}")
+    @Produces(APPLICATION_JSON)
+    public Response checkActiveContractOffer(@PathParam("userId") long userId) {
+        try {
+            // First find the user
+            User user = userService.findUserById(User.builder().userId(userId).build());
 
+            // Check for active contract offer
+            Contract activeOffer = contractService.findActiveContractOffer(user);
+
+            if (activeOffer != null) {
+                return Response.ok(activeOffer).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("No active contract offer found for user ID: " + userId)
+                        .build();
+            }
+
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.WARNING, "Invalid request for contract offer check for user ID: " + userId, e);
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage())
+                    .build();
+
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Database error while checking contract offer for user ID: " + userId, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error checking contract offer status")
+                    .build();
+
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unexpected error while checking contract offer for user ID: " + userId, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error occurred while checking contract offer")
+                    .build();
+        }
+    }
 }
+

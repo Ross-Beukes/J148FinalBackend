@@ -3,20 +3,19 @@ package com.j148.backend.contract.service;
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.contract.model.Contract;
 import com.j148.backend.contract.repo.ContractRepo;
-import com.j148.backend.contract.repo.ContractRepoImpl;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
-import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.jms.IllegalStateRuntimeException;
 
 import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Optional;
+
 @ApplicationScoped
 public class ContractServiceImpl implements ContractService {
 
@@ -51,6 +50,20 @@ public class ContractServiceImpl implements ContractService {
         } else {
             throw new IllegalArgumentException("Aptitude test mark too low to offer user contract or a document has not been approved");
         }
+    }
+
+    @Override
+    public Contract findActiveContractOffer(User user) throws Exception {
+        if (user == null || user.getUserId() == null) {
+            throw new IllegalArgumentException("User cannot be null and must have an ID");
+        }
+
+        if (user.getRole() != User.Role.APPLICANT) {
+            throw new IllegalArgumentException("Contract offers can only be checked for applicants");
+        }
+
+        Optional<Contract> contractOpt = contractRepo.findActiveContractOffer(user);
+        return contractOpt.orElse(null); // Returns null if no active contract offer exists
     }
 
     private void validateContractOffer(Contract contract) {
