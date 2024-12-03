@@ -14,6 +14,7 @@ import com.j148.backend.contractor_history.service.ContractorHistoryServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.Response;
 import java.sql.SQLException;
@@ -35,47 +36,47 @@ public class ContractorHistoryResource {
    
     
     
-    @GET
-    @Path("ping")
-    public Response pingResource(){
-        return Response.ok("Successfully pinged User Resource").build();
-    }
-    
-    @GET
-    @Path("disciplinary-history")
-    public Response getDisciplinaryHistory(Contractor contractor){
-       
-    if(contractor != null)   
-    
-    {try {
-            if(this.contractorHistoryService.viewWarningAndHearingHistory(contractor) != null){
-            return Response.ok(this.contractorHistoryService.viewWarningAndHearingHistory(contractor)).build();   
-            }
-            else{
-            throw new RuntimeException("Unfortunately no history was returned object is null ??");
-            }
-      }   
-        catch (ContractorNotFoundException e) {
-        LOG.log(Level.SEVERE, "The contractor object is null or the contractorID is null", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
-    } catch (UserNotFoundException e) {
-        LOG.log(Level.SEVERE, "User is null or the userId is null", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
-    }
-        catch (SQLException e) {
-        LOG.log(Level.SEVERE, "There was an error getting the user from the database", e);
-        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
-        } catch (Exception ex) {
-            Logger.getLogger(ContractorHistoryResource.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }else{
-        throw new UserNotFoundException("Contractor was not found");
-    }
-        
-        return null;
-    
-        
-    }
+//    @GET
+//    @Path("ping")
+//    public Response pingResource(){
+//        return Response.ok("Successfully pinged User Resource").build();
+//    }
+//
+//    @POST
+//    @Path("disciplinary-history")
+//    public Response getDisciplinaryHistory(){
+//
+//    if(contractor != null)
+//
+//    {try {
+//            if(this.contractorHistoryService.viewWarningAndHearingHistory(contractor) != null){
+//            return Response.ok(this.contractorHistoryService.viewWarningAndHearingHistory(contractor)).build();
+//            }
+//            else{
+//            throw new RuntimeException("Unfortunately no history was returned object is null ??");
+//            }
+//      }
+//        catch (ContractorNotFoundException e) {
+//        LOG.log(Level.SEVERE, "The contractor object is null or the contractorID is null", e);
+//        return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+//    } catch (UserNotFoundException e) {
+//        LOG.log(Level.SEVERE, "User is null or the userId is null", e);
+//        return Response.status(Response.Status.BAD_REQUEST).entity(e).build();
+//    }
+//        catch (SQLException e) {
+//        LOG.log(Level.SEVERE, "There was an error getting the user from the database", e);
+//        return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+//        } catch (Exception ex) {
+//            Logger.getLogger(ContractorHistoryResource.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }else{
+//        throw new UserNotFoundException("Contractor was not found");
+//    }
+//
+//        return null;
+//
+//
+//    }
     
     
 }
