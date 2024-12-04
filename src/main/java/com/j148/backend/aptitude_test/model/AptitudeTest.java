@@ -12,14 +12,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class AptitudeTest {
-    
+    @NotNull(message = "Aptitude test ID cannot be Null !")
     @Min(value = 1, message = "Test ID cannot be less than 1")
     private Long aptitudeTestId;
     @Min(value = 0, message = "Test mark cannot be less than 0")
     @Max(value = 100 , message = "Test mark cannot exceed 100")
     private int testMark;
-    @Future(message = "Test Date must be set to a later date")
     private LocalDateTime testDate;
-    
     private User user;
 }

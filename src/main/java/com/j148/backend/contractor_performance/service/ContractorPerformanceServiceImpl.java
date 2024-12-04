@@ -1,4 +1,3 @@
-
 package com.j148.backend.contractor_performance.service;
 
 import com.j148.backend.contractor_performance.repo.ContractorPerformanceRepo;
@@ -19,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 @ApplicationScoped
 public class ContractorPerformanceServiceImpl implements ContractorPerformanceService {
 
@@ -98,16 +98,6 @@ public class ContractorPerformanceServiceImpl implements ContractorPerformanceSe
         }
         if (contractorPerformance.getContractor() == null || contractorPerformance.getContractor().getContractorId() == null || contractorPerformance.getContractor().getContractorId() == 0) {
             throw new ContractorNotFoundException("The contractor object is null or the contractor id is 0 ");
-        }
-    }
-
-    @Override
-    public boolean downloadReportFile(List<ContractorPerformance> contractorPerformanceList) throws SQLException, IOException {
-
-        if (contractorPerformanceRepo.downloadReportFile(contractorPerformanceList) == "C:/Users/arshr/OneDrive/Documents/reports.xlsx") {
-            return true;
-        } else {
-            return false;
         }
     }
 

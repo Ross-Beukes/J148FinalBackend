@@ -287,18 +287,33 @@ public class WarningRepoImpl implements WarningRepo {
         }
         return Optional.of(false);
     }
+    @Override
+    public ArrayList<Warning> findAllAppealedWarnings() throws SQLException{
+    String sql = """
+                SELECT w.*, c.*, u.*, cp.*
+                FROM warning w 
+                JOIN contractor c ON w.contractor_id = c.contractor_id 
+                JOIN user u ON c.user_id = u.user_id 
+                JOIN contractor_period cp ON c.contractor_period_id = cp.contractor_period_id
+                WHERE w.state = 'APPEALED'
+                """;
+    ArrayList<Warning> appealedWarnings = new ArrayList<>();
+    
+    try(Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)){
+        
+        try(ResultSet rs = ps.executeQuery()){
+            while(rs.next()){
+            appealedWarnings.add(mapWarningFromResultSet(rs));
+            }
+        }
+    }
+    return appealedWarnings;
+    }
 
     private Warning mapWarningFromResultSet(ResultSet rs) throws SQLException {
-        Contractor contractor = Contractor.builder()
-                .contractorId(rs.getLong("contractor_id"))
-                .status(Contractor.Status.valueOf(rs.getString("status")))
-                .user(mapUserFromResultSet(rs))
-                .contractPeriod(mapContractPeriodFromResultSet(rs))
-                .build();
-
         return Warning.builder()
                 .warningId(rs.getLong("warning_id"))
-                .contractor(contractor)
+                .contractor(mapContractorFromResultSet(rs))
                 .dateIssue(rs.getTimestamp("date_issue").toLocalDateTime())
                 .reason(Warning.WarningReason.valueOf(rs.getString("reason")))
                 .state(Warning.WarningState.valueOf(rs.getString("state")))
@@ -316,7 +331,7 @@ public class WarningRepoImpl implements WarningRepo {
 
     private User mapUserFromResultSet(ResultSet rs) throws SQLException {
         return User.builder()
-                .userId(rs.getLong("user_id"))
+                .userId(rs.getLong(1))
                 .name(rs.getString("name"))
                 .surname(rs.getString("surname"))
                 .email(rs.getString("email"))
@@ -328,6 +343,14 @@ public class WarningRepoImpl implements WarningRepo {
                 .age(rs.getInt("age"))
                 .build();
     }
+    
+    private Contractor mapContractorFromResultSet(ResultSet rs) throws SQLException {
+        return Contractor.builder()
+                .contractorId(rs.getLong("contractor_id"))
+                .status(Contractor.Status.valueOf(rs.getString("status")))
+                .user(mapUserFromResultSet(rs))
+                .contractPeriod(mapContractPeriodFromResultSet(rs))
+                .build(); }
 
     @Override
     public Optional<Warning> createAbsentWarning(Contractor contractor) throws SQLException {

@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 @ApplicationScoped  // Make it injectable
 public class DBConfig {
-
     private static final Logger logger = Logger.getLogger(DBConfig.class.getName());
     private static BasicDataSource basicDataSource;
 

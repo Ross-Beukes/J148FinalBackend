@@ -4,8 +4,13 @@
  */
 package com.j148.backend.files.service;
 
+import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.Exceptions.UserNotFoundException;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.user.model.User;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -13,5 +18,9 @@ import com.j148.backend.user.model.User;
  */
 public interface FileEntityService {
     FileEntity retrieveFileByUserIdAndCategory(User user, FileEntity fileEntity) throws Exception;
+
+    ArrayList<FileEntity> retreiveFilesWithUsers()throws SQLException, FileNotFoundException, UserNotFoundException;
+
+
     FileEntity fileVerification(FileEntity fileEntity) throws Exception;
 }

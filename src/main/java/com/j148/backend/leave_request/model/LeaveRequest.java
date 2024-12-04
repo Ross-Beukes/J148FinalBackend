@@ -2,6 +2,7 @@ package com.j148.backend.leave_request.model;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import java.time.LocalDate;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class LeaveRequest {
+    @NotNull(message = "Leave request ID cannot be Null")
     @Min(value = 1, message = "Leave request ID cannot be less than 1")
     private Long leaveRequestId;
     

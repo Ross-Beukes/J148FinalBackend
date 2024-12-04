@@ -110,27 +110,7 @@ public class UserResource {
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "User object not complete.");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unable to get user", e);
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-    }
-
-    @GET
-    @Path("get-user-by-id")
-    public Response getUserById(@QueryParam("userId") long userId) {
-        try {
-            User user = User.builder().userId(userId).build();
-            User found = userService.findUserById(user);
-            return Response.ok(found).build();
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Unable to retrieve user from the database.");
-            System.out.println("sqlException : " + e.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "User object not complete.");
+            LOG.log(Level.SEVERE, "Email parameter is not valid.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to get user", e);
