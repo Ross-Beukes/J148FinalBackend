@@ -34,13 +34,13 @@ public interface LeaveRequestRepo {
     * @throws SQLException 
     */
     AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws SQLException;
-    
+
     /**
-    * 
+    *
     *This retrieve all method maps an ID to the key and the rest of the object to the value in the key value pair making the key set the reference point for
     *any updates or other logic that may need to be implemented to a leave request object instead of returning the list of objects in an array list
     * @return
-    * @throws SQLException 
+    * @throws SQLException
     */
     AbstractMap<Long, LeaveRequest> retrieveAll() throws SQLException;
     
@@ -86,4 +86,11 @@ public interface LeaveRequestRepo {
      * @throws SQLException 
      */
     Optional<LeaveRequest> retrieveLeaveRequestByID(LeaveRequest leaveRequest) throws SQLException;
+
+    /**
+     * Retrives all leave requests.
+     * @return List of leave requests.
+     * @throws SQLException
+     */
+    List<LeaveRequest> retrieveAllLeaveRequest() throws SQLException;
 }
