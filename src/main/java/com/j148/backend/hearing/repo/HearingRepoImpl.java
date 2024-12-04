@@ -7,6 +7,7 @@ package com.j148.backend.hearing.repo;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
+import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -14,7 +15,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -27,14 +27,15 @@ import java.util.Optional;
  * @author arshr
  */
 @ApplicationScoped
-public class HearingRepoImpl   implements HearingRepo {
+public class HearingRepoImpl implements HearingRepo {
 
     @Inject
     private DBConfig DBConfig;
+
     @Override
     public Optional<Hearing> createHearing(Hearing hearing) throws SQLException {
         String query = "INSERT INTO hearings(contractor_id, schedule_date, outcome, reason) VALUES(?,?,?,?)";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, hearing.getContractor().getContractorId());
             ps.setTimestamp(2, Timestamp.valueOf(hearing.getScheduleDate()));
             ps.setString(3, hearing.getOutcome().name());
@@ -56,7 +57,7 @@ public class HearingRepoImpl   implements HearingRepo {
     public Optional<Hearing> updateHearing(Hearing hearing) throws SQLException {
         String query;
         query = "UPDATE hearings SET contractor_id = ?, schedule_date = ?, outcome = ?, reason = ? WHERE hearings_id = ?";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, hearing.getContractor().getContractorId());
             ps.setTimestamp(2, Timestamp.valueOf(hearing.getScheduleDate()));
             ps.setString(3, hearing.getOutcome().name());
@@ -73,7 +74,7 @@ public class HearingRepoImpl   implements HearingRepo {
     @Override
     public Optional<Hearing> getHearing(Hearing hearing) throws SQLException {
         String query = "SELECT * FROM hearings WHERE hearings_id = ?";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, hearing.getHearingsId());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -105,31 +106,52 @@ public class HearingRepoImpl   implements HearingRepo {
 
     @Override
     public List<Hearing> findAllHearings() throws SQLException {
-
-        String query = "SELECT * FROM hearings";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        String query = """
+                       SELECT 
+                               u.user_id,
+                               u.name,
+                               u.surname,
+                               u.email,
+                               c.contractor_id,
+                               c.status,
+                               h.hearings_id,
+                               h.schedule_date,
+                               h.outcome,
+                               h.reason
+                           FROM 
+                               user u
+                           JOIN 
+                               contractor c ON u.user_id = c.user_id
+                           JOIN 
+                               hearings h ON c.contractor_id = h.contractor_id
+                           ORDER BY 
+                               h.schedule_date DESC;
+                       """;
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 List<Hearing> listOfHearings = new ArrayList<>();
                 while (rs.next()) {
-                    long hearingId = rs.getLong("hearing_id");
-                    Contractor contractor = Contractor.builder()
-                            .contractorId(rs.getLong("contactor_id"))
+                    User user = User.builder()
+                            .userId(rs.getLong("user_id"))
+                            .name(rs.getString("name"))
+                            .surname(rs.getString("surname"))
+                            .email(rs.getString("email"))
                             .build();
-                    LocalDateTime schedule_date = rs.getTimestamp("schedule_date").toLocalDateTime();
-                    Hearing.Outcome outcome = Hearing.Outcome.valueOf(rs.getString("outcome"));
-                    String reason = rs.getString("reason");
-
+                    Contractor contractor = Contractor.builder()
+                            .contractorId(rs.getLong("contractor_id"))
+                            .user(user)
+                            .status(Contractor.Status.valueOf(rs.getString("status")))
+                            .build();
                     Hearing retrievedHearing = Hearing.builder()
-                            .hearingsId(hearingId)
+                            .hearingsId(rs.getLong("hearings_id"))
                             .contractor(contractor)
-                            .scheduleDate(schedule_date)
-                            .outcome(outcome)
-                            .reason(reason)
+                            .scheduleDate(rs.getTimestamp("schedule_date").toLocalDateTime())
+                            .outcome(Hearing.Outcome.valueOf(rs.getString("outcome")))
+                            .reason(rs.getString("reason"))
                             .build();
 
                     listOfHearings.add(retrievedHearing);
                 }
-
                 return listOfHearings;
 
             }
@@ -140,7 +162,7 @@ public class HearingRepoImpl   implements HearingRepo {
     @Override
     public List<Hearing> findAllHearingsForIndividual(Hearing hearing) throws SQLException {
         String query = "SELECT * FROM hearings WHERE contractor_id = ?";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setLong(1, hearing.getContractor().getContractorId());
             try (ResultSet rs = ps.executeQuery()) {
                 List<Hearing> listOfHearingsForPerson = new ArrayList<>();
@@ -176,7 +198,7 @@ public class HearingRepoImpl   implements HearingRepo {
     public List<Hearing> findUpcomingHearings() throws SQLException {
 
         String query = "SELECT * FROM hearings WHERE schedule_date > ?";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
             try (ResultSet rs = ps.executeQuery()) {
                 List<Hearing> listOfHearings = new ArrayList<>();
@@ -212,7 +234,7 @@ public class HearingRepoImpl   implements HearingRepo {
     public List<Hearing> findHearingsWithinDateRange(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
 
         String query = "SELECT * FROM hearings WHERE schedule_date BETWEEN ? AND ?";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             ps.setTimestamp(1, Timestamp.valueOf(startDate));
             ps.setTimestamp(2, Timestamp.valueOf(endDate));
             try (ResultSet rs = ps.executeQuery()) {
@@ -250,7 +272,7 @@ public class HearingRepoImpl   implements HearingRepo {
         String sql = "SELECT * from hearings WHERE contractor_id = ?";
         List<Hearing> hearingHistory = new ArrayList<>();
 
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, contractor.getContractorId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
