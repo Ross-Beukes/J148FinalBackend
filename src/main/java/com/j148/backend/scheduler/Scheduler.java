@@ -51,7 +51,7 @@ public class Scheduler {
         }
     }
     
-    @Schedule(dayOfWeek = "Mon-Sun", hour = "09", minute = "05", persistent = false)
+    @Schedule(dayOfWeek = "Mon-Sun", hour = "16", minute = "12", persistent = false)
     public void updateAge() throws Exception {
         List<User> allUsers;
         StringBuilder messageBody = new StringBuilder();
@@ -140,7 +140,7 @@ public class Scheduler {
      * @throws SQLException if there is an error retrieving user data from the database.
      * @throws MessagingException if an error occurs while sending email notification
      * */
-    @Schedule(hour = "9", minute = "00", dayOfMonth = "3", persistent = false)
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "3", persistent = false)
     public void ThreeDayReminder() {
         try {
             int daysToSubtract = timesheetReminder.calculateDaysTo15thOfPreviousMonth();
@@ -180,7 +180,7 @@ public class Scheduler {
      * @throws SQLException if there is an error retrieving user data from the database.
      * @throws MessagingException if an error occurs while sending email notifications
      **/
-    @Schedule(hour = "9", minute = "00", dayOfMonth = "7", persistent = false)
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "7", persistent = false)
     public void OneDayReminder() {
         try {
             int daysToSubtract = timesheetReminder.calculateDaysTo15thOfPreviousMonth();
@@ -220,7 +220,7 @@ public class Scheduler {
      * @throws SQLException if there is an error retrieving user or Admin data from the database.
      * @throws MessagingException if an error occurs while sending email notifications to Admins
      * */
-    @Schedule(hour = "9", minute = "00", dayOfMonth = "8", persistent = false)
+    @Schedule(hour = "9", minute = "0", dayOfMonth = "8", persistent = false)
     public void AdminReminder() {
         try {
             int daysToSubtract = timesheetReminder.calculateDaysTo15thOfPreviousMonth();
