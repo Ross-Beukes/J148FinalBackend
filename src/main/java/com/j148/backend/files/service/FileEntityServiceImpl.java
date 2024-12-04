@@ -16,10 +16,15 @@ import jakarta.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import jakarta.transaction.Transactional;
 
 /**
  * @author yusuf
  */
+
 @ApplicationScoped
 public class FileEntityServiceImpl implements FileEntityService {
 
@@ -61,12 +66,12 @@ public class FileEntityServiceImpl implements FileEntityService {
     }
 
     @Override
-    public ArrayList<FileEntity> retreiveFilesWithUsers() throws SQLException, FileNotFoundException, UserNotFoundException {
-        ArrayList<FileEntity> usersAndFiles = fileEntityRepo.retreiveFilesWithUsers();
+    public ArrayList<FileEntity> retrieveFilesWithUsers() throws SQLException, FileNotFoundException, UserNotFoundException {
+        ArrayList<FileEntity> usersAndFiles = fileEntityRepo.retrieveFilesWithUsers();
 
         for (FileEntity file : usersAndFiles) {
             if (file == null || file.getFileId() == 0) {
-                throw new FileNotFoundException("There was an error retreiving the file");
+                throw new FileNotFoundException("There was an error retrieving the file");
             }
             if (file.getUser() == null || file.getUser().getUserId() == 0) {
                 throw new UserNotFoundException();

@@ -6,15 +6,9 @@ package com.j148.backend.files.resource;
 
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.files.service.FileEntityService;
-import com.j148.backend.resources.UserResource;
-import com.j148.backend.user.model.User;
-import com.j148.backend.user.service.UserService;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
@@ -44,6 +38,7 @@ import static org.openxmlformats.schemas.drawingml.x2006.chart.STTrendlineType.L
 
 @RequestScoped
 @Path("file-entity")
+@Produces(APPLICATION_JSON)
 public class FileEntityResource {
     @Inject
     private FileEntityService FileEntityService;
@@ -69,6 +64,17 @@ public class FileEntityResource {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to verify file", e);
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
+
+    @GET
+    @Path("files_and_users")
+    public Response getAllFilesWithUsers() {
+        try {
+            return Response.ok(this.FileEntityService.retrieveFilesWithUsers()).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, e.getMessage(), e);
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
         }
     }
 }

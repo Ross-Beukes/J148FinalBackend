@@ -61,16 +61,26 @@ public class WarningServiceImpl implements WarningService {
     }
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
-
-    public Warning appealWarning(Warning warning) throws Exception {
+    @Override
+    public Warning appealWarning(Warning warning, Contractor contractor) throws Exception {
 
         if (warning == null) {
             throw new IllegalArgumentException("Warning is null");
         }
-        
+        if (contractor == null) {
+            throw new IllegalArgumentException("Contractor is null");
+        }
 
         if (warning.getWarningId() == null) {
             throw new IllegalArgumentException("Warning id is null");
+        }
+
+        if (contractor.getContractorId() == null) {
+            throw new IllegalArgumentException("Contractor id is null");
+        }
+
+        if (contractorRepo.findById(contractor).isEmpty()) {
+            throw new IllegalArgumentException("Could not find contractor");
         }
 
         if (warningRepo.findById(warning).isEmpty()) {
@@ -81,7 +91,6 @@ public class WarningServiceImpl implements WarningService {
                 .orElseThrow(() -> new RuntimeException("Failed to appeal warning"));
 
     }
-
     @Override
     public Warning findById(Warning warning) throws SQLException {
         return null;

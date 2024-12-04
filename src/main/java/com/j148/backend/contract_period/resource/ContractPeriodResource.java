@@ -92,39 +92,6 @@ public class ContractPeriodResource {
         }
     }
 
-    /**
-     * Finds a contract period by its name.
-     *
-     * @param name Name of the contract period to find.
-     * @return HTTP Response containing the found contract period, or an error
-     * message.
-     */
-    @GET
-    @Path("find-period-by-name")
-    public Response findContractPeriodByName(@QueryParam("name") String name) {
-        try {
-            if (name == null || name.trim().isEmpty()) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Contract period name must not be null or empty.").build();
-            }
-
-            ContractPeriod contractPeriod = contractPeriodService.findContractPeriodByName(name);
-
-            return Response.ok(contractPeriod).build();
-        } catch (NoSuchElementException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Contract period not found with name: " + name).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "An unexpected error occurred", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
-        }
-    }
-
-    /**
-     * Finds a contract period by its ID.
-     *
-     * @param contractPeriod Contract period object containing the ID.
-     * @return HTTP Response containing the found contract period, or an error
-     * message.
-     */
     @GET
     @Path("find-period-by-id")
     public Response findContractPeriodById(ContractPeriod contractPeriod) {
@@ -143,6 +110,7 @@ public class ContractPeriodResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
         }
     }
+
 
     /**
      * Endpoint to retrieve the current contract period.
