@@ -34,7 +34,7 @@ public interface LeaveRequestService {
     AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequestsByDecision(String decision) throws Exception;
 
     LeaveRequest retrieveLeaveRequestByID (LeaveRequest leaveRequest) throws Exception;
+	
     List<LeaveRequest> retrieveAllLeaveRequest() throws Exception;
-
 
 }

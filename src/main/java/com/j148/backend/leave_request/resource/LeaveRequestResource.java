@@ -41,6 +41,29 @@ public class LeaveRequestResource {
     private ContractorService contractorService = new ContractorServiceImpl();
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
 
+    @GET
+    @Path("retrieve-all-leave-request")
+    public Response retrieveAllLeaveRequest() {
+        try {
+            // Successful response
+            return Response.ok(leaveRequestService.retrieveAllLeaveRequest()).build();
+        } catch (LeaveRequestNotFoundException e) {
+            // 404 - No leave requests found
+            Logger.getLogger(LeaveRequestResource.class.getName())
+                    .log(Level.WARNING, "No leave requests found: {0}", e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("No leave requests found.")
+                    .build();
+        } catch (Exception e) {
+            // 500 - Server error
+            Logger.getLogger(LeaveRequestResource.class.getName())
+                    .log(Level.SEVERE, "Error retrieving leave requests: {0}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An unexpected error occurred while retrieving leave requests.")
+                    .build();
+        }
+	}
+	
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
@@ -90,18 +113,6 @@ public class LeaveRequestResource {
             User foundUser = userService.findUserByEmail(user);
             Contractor contractor = Contractor.builder().user(foundUser).build();
             return Response.ok(leaveRequestService.retrieveAllPendingContractorLeaveRequests(contractorService.retrieveContractorByUserID(contractor))).build();
-        } catch (Exception ex) {
-            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-        }
-    }
-
-    @GET
-    @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-decision/{decision}")
-    public Response getLeaveRequestsByDecision(@PathParam("decision") String decision) {
-        try {
-            return Response.ok(leaveRequestService.retrieveAllLeaveRequestsByDecision(decision)).build();
         } catch (Exception ex) {
             Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
