@@ -26,10 +26,10 @@ import java.util.logging.Logger;
 @RequestScoped
 @Path("contract-period")
 public class ContractPeriodResource {
-    
+
     @Inject
     private ContractPeriodService contractPeriodService;
-    
+
     private static final Logger LOG = Logger.getLogger(ContractPeriodResource.class.getName());
 
     /**
