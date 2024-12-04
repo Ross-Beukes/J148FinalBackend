@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+
 @RequestScoped
 @Path("attendance")
 public class AttendanceResource {
@@ -58,17 +59,15 @@ public class AttendanceResource {
         }
     }
 
-
     /**
      * Get list of contractors who haven't checked in today.
      *
      *
      * @return Response with list of contractors who haven't checked in today
      */
-
     @GET
     @Path("not-checked-in")
-    public Response getContractorsNotCheckedIn(List<Contractor>contractors) {
+    public Response getContractorsNotCheckedIn(List<Contractor> contractors) {
         try {
             List<Attendance> notCheckedIn = attendanceService.contractorsNotCheckedIn(contractors);
             return Response.status(Response.Status.OK).entity(notCheckedIn).build();
@@ -107,7 +106,6 @@ public class AttendanceResource {
         }
     }
 
-
     @GET
     @Path("currentAttendance")
     @Produces(APPLICATION_JSON)
@@ -125,12 +123,12 @@ public class AttendanceResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing absent contractors").build();
         }
     }
-    
+
     @POST
     @Path("get-attendance")
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
-    public Response getAttendanceByContractor(Contractor contractor){
+    public Response getAttendanceByContractor(Contractor contractor) {
         try {
             Attendance attendance = attendanceService.getAttendanceByContractorId(Attendance.builder().contractor(contractor).build());
             return Response.status(Response.Status.OK).entity(attendance).build();
@@ -144,3 +142,4 @@ public class AttendanceResource {
 
         }
     }
+}

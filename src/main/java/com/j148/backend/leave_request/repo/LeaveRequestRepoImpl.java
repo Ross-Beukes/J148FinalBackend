@@ -31,7 +31,7 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
     @Override
     public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException {
         String query = "INSERT INTO leave_request (contractor_id, start_date, end_date, decision) VALUES(?, ?, ?, ?)";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, leaveRequest.getContractor().getContractorId());
             ps.setString(2, String.valueOf(leaveRequest.getStartDate()));
             ps.setString(3, String.valueOf(leaveRequest.getEndDate()));
@@ -165,44 +165,9 @@ public class LeaveRequestRepoImpl extends DBConfig implements LeaveRequestRepo {
                                         .build())
                                 .build())
                         .file(FileEntity.builder()
-                                .path(rs.getString("path"))
                                 .build())
                         .build();
 
-                leaveRequests.add(leaveRequest);
-            }
-        }
-        return leaveRequests;
-    }
-
-    @Override
-    public ArrayList<LeaveRequest> retrieveAllLeaveRequest() throws SQLException {
-        ArrayList<LeaveRequest> leaveRequests = new ArrayList<>();
-        String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, " +
-                "u.name, u.email, f.path " +
-                "FROM leave_request lr " +
-                "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
-                "JOIN user u ON c.user_id = u.user_id " +
-                "JOIN files f ON lr.file_id = f.file_id " +
-                "WHERE lr.decision = 'PENDING'";
-
-        try (Connection con = getCon(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                LeaveRequest leaveRequest = LeaveRequest.builder()
-                        .leaveRequestId(rs.getLong("leave_request_id"))
-                        .startDate(rs.getDate("start_date").toLocalDate())
-                        .endDate(rs.getDate("end_date").toLocalDate())
-                        .decision(LeaveRequest.Decision.valueOf(rs.getString("decision").toUpperCase()))
-                        .contractor(Contractor.builder()
-                                .user(User.builder()
-                                        .name(rs.getString("name"))
-                                        .email(rs.getString("email"))
-                                        .build())
-                                .build())
-                        .file(FileEntity.builder()
-                                .path(rs.getString("path"))
-                                .build())
-                        .build();
                 leaveRequests.add(leaveRequest);
             }
         }
