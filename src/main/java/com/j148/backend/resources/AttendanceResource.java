@@ -66,23 +66,23 @@ public class AttendanceResource {
      * @return Response with list of contractors who haven't checked in today
      */
 
-    @GET
-    @Path("not-checked-in")
-    public Response getContractorsNotCheckedIn(List<Contractor>contractors) {
-        try {
-            List<Attendance> notCheckedIn = attendanceService.contractorsNotCheckedIn(contractors);
-            return Response.status(Response.Status.OK).entity(notCheckedIn).build();
-
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
-
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
-
-        }
-    }
+//    @GET
+//    @Path("not-checked-in")
+//    public Response getContractorsNotCheckedIn(List<Contractor>contractors) {
+//        try {
+//            List<Attendance> notCheckedIn = attendanceService.contractorsNotCheckedIn(contractors);
+//            return Response.status(Response.Status.OK).entity(notCheckedIn).build();
+//
+//        } catch (SQLException e) {
+//            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+//
+//        } catch (Exception e) {
+//            LOG.log(Level.SEVERE, "Error while retrieving contractors not checked in");
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Error while processing contractor not checked in").build();
+//
+//        }
+//    }
 
     /**
      * Mark absent contractors for today

@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * @author glenl
  */
-public class ContractorServiceImpl extends DBConfig implements ContractorService {
+public class ContractorServiceImpl implements ContractorService {
 
     private ContractorRepo contractorRepo = new ContractorRepoImpl();
     private final ContractPeriodService contractPeriodService = new ContractPeriodServiceImpl();
