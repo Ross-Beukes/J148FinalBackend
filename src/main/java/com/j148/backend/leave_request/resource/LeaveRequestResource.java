@@ -4,6 +4,7 @@
  */
 package com.j148.backend.leave_request.resource;
 
+import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
@@ -13,8 +14,6 @@ import com.j148.backend.leave_request.service.LeaveRequestServiceImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -33,39 +32,32 @@ import java.util.logging.Logger;
  *
  * @author yusuf
  */
-@RequestScoped
+
 @Path("leave-request")
 public class LeaveRequestResource {
-    
-    @Inject
-    private LeaveRequestService leaveRequestService;
-    @Inject
-    private UserService userService;
-    @Inject
-    private ContractorService contractorService;
+
+    private LeaveRequestService leaveRequestService = new LeaveRequestServiceImpl();
+    private UserService userService = new UserServiceImpl();
+    private ContractorService contractorService = new ContractorServiceImpl();
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
-    
+	
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("submit-leave-request")
-    public Response submitLeaveRequest(LeaveRequest leaveRequest){
+    public Response submitLeaveRequest(LeaveRequest leaveRequest) {
         try {
-            User user = userService.findUserByEmail(User.builder().email(leaveRequest.getContractor().getUser().getEmail()).build());
-            Contractor contractor = contractorService.retrieveContractorByUserID(Contractor.builder().user(user).build());
-            LeaveRequest submission = LeaveRequest.builder().contractor(contractor).startDate(leaveRequest.getStartDate())
-                    .endDate(leaveRequest.getEndDate()).file(leaveRequest.getFile()).build();
-            return Response.ok(this.leaveRequestService.createLeaveRequest(submission)).build();
+            return Response.ok(this.leaveRequestService.createLeaveRequest(leaveRequest)).build();
         } catch (Exception ex) {
             LOG.log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests-by-date-range/{start-date}/{end-date}")
-    public Response getLeaveRequestsInDateRange(@PathParam("start-date") String startDate, @PathParam("end-date") String endDate){
+    public Response getLeaveRequestsInDateRange(@PathParam("start-date") String startDate, @PathParam("end-date") String endDate) {
         try {
             return Response.ok(this.leaveRequestService.retrieveAllLeaveRequestsBetweenDates(LocalDate.parse(startDate), LocalDate.parse(endDate))).build();
         } catch (Exception ex) {
@@ -73,11 +65,11 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests-by-contractor/{email}")
-    public Response getLeaveRequestsByContractor(@PathParam("email") String email){
+    public Response getLeaveRequestsByContractor(@PathParam("email") String email) {
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);
@@ -88,11 +80,11 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-pending-contractor-leave-requests/{email}")
-    public Response getPendingLeaveRequestsByContractor(@PathParam("email") String email){
+    public Response getPendingLeaveRequestsByContractor(@PathParam("email") String email) {
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);
@@ -103,30 +95,42 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-    
-    @GET
-    @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-decision/{decision}")
-    public Response getLeaveRequestsByDecision(@PathParam("decision") String decision){
-        try {
-            return Response.ok(leaveRequestService.retrieveAllLeaveRequestsByDecision(decision)).build();
-        } catch (Exception ex) {
-            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-        }
-    }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("update-leave-request-decision")
-    public Response updateLeaveRequestDecision(LeaveRequest leaveRequest){
+    public Response updateLeaveRequestDecision(LeaveRequest leaveRequest) {
         try {
             return Response.ok(leaveRequestService.updateLeaveRequestDecision(leaveRequest)).build();
         } catch (Exception ex) {
             Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-            
+
+        }
+    }
+
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("retrieve-all-leave-request")
+    public Response retrieveAllLeaveRequest() {
+        try {
+            // Successful response
+            return Response.ok(leaveRequestService.retrieveAllLeaveRequest()).build();
+        } catch (LeaveRequestNotFoundException e) {
+            // 404 - No leave requests found
+            Logger.getLogger(LeaveRequestResource.class.getName())
+                    .log(Level.WARNING, "No leave requests found: {0}", e.getMessage());
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("No leave requests found.")
+                    .build();
+        } catch (Exception e) {
+            // 500 - Server error
+            Logger.getLogger(LeaveRequestResource.class.getName())
+                    .log(Level.SEVERE, "Error retrieving leave requests: {0}", e.getMessage());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("An unexpected error occurred while retrieving leave requests.")
+                    .build();
         }
     }
 }

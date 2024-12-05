@@ -11,13 +11,20 @@ import com.j148.backend.files.repo.FileEntityRepo;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import jakarta.transaction.Transactional;
 
 /**
  * @author yusuf
  */
+
 @ApplicationScoped
 public class FileEntityServiceImpl implements FileEntityService {
 
@@ -37,6 +44,18 @@ public class FileEntityServiceImpl implements FileEntityService {
         }
     }
 
+    @Override
+    @Transactional(rollbackOn = {Exception.class, RuntimeException.class, SQLException.class
+    })
+    public FileEntity fileVerification(FileEntity fileEntity) throws Exception {
+        if (fileEntity.getVerified() == null) {
+            throw new RuntimeException("File could not be verified.");
+        }
+
+        return fileEntityRepo.fileVerification(fileEntity)
+                .orElseThrow(() -> new RuntimeException("File not found."));
+    }
+
     private void validateUserID(User user) {
         if (user.getUserId() == null) {
             throw new NullPointerException("UserID cannot be null when retrieving file using userID");
@@ -47,12 +66,12 @@ public class FileEntityServiceImpl implements FileEntityService {
     }
 
     @Override
-    public ArrayList<FileEntity> retreiveFilesWithUsers() throws SQLException, FileNotFoundException, UserNotFoundException {
-        ArrayList<FileEntity> usersAndFiles = fileEntityRepo.retreiveFilesWithUsers();
+    public ArrayList<FileEntity> retrieveFilesWithUsers() throws SQLException, FileNotFoundException, UserNotFoundException {
+        ArrayList<FileEntity> usersAndFiles = fileEntityRepo.retrieveFilesWithUsers();
 
         for (FileEntity file : usersAndFiles) {
             if (file == null || file.getFileId() == 0) {
-                throw new FileNotFoundException("There was an error retreiving the file");
+                throw new FileNotFoundException("There was an error retrieving the file");
             }
             if (file.getUser() == null || file.getUser().getUserId() == 0) {
                 throw new UserNotFoundException();

@@ -84,4 +84,6 @@ public interface UserService {
     User findUserById(User user) throws Exception;
     
     User PromoteStaff(User user) throws Exception;
+    
+    
 }

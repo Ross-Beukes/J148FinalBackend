@@ -27,9 +27,10 @@ public class S3Service {
     @Transactional(rollbackOn = {SQLException.class, AmazonS3Exception.class,
             AmazonServiceException.class,
             SdkClientException.class,})
-    public void uploadFile(InputStream fileStream,FileEntity fileEntity) throws SQLException {
+    public FileEntity uploadFile(InputStream fileStream,FileEntity fileEntity) throws SQLException {
         FileEntity returnedFileEntity = fileEntityRepo.saveFile(fileEntity).get();
         S3Repo.uploadFile(BUCKET_NAME, fileStream, returnedFileEntity);
+        return returnedFileEntity;
     }
 
     public InputStream downloadFile(String key) {
