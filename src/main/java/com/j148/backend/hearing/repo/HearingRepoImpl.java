@@ -7,6 +7,7 @@ package com.j148.backend.hearing.repo;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
+import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -14,7 +15,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -106,25 +106,49 @@ public class HearingRepoImpl   implements HearingRepo {
     @Override
     public List<Hearing> findAllHearings() throws SQLException {
 
-        String query = "SELECT * FROM hearings";
-        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+         String query = """
+                       SELECT 
+                               u.user_id,
+                               u.name,
+                               u.surname,
+                               u.email,
+                               c.contractor_id,
+                               c.status,
+                               h.hearings_id,
+                               h.schedule_date,
+                               h.outcome,
+                               h.reason
+                           FROM 
+                               user u
+                           JOIN 
+                               contractor c ON u.user_id = c.user_id
+                           JOIN 
+                               hearings h ON c.contractor_id = h.contractor_id
+                           ORDER BY 
+                               h.schedule_date DESC;
+                       """;
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 List<Hearing> listOfHearings = new ArrayList<>();
                 while (rs.next()) {
-                    long hearingId = rs.getLong("hearing_id");
-                    Contractor contractor = Contractor.builder()
-                            .contractorId(rs.getLong("contactor_id"))
+                    User user = User.builder()
+                            .userId(rs.getLong("user_id"))
+                            .name(rs.getString("name"))
+                            .surname(rs.getString("surname"))
+                            .email(rs.getString("email"))
                             .build();
-                    LocalDateTime schedule_date = rs.getTimestamp("schedule_date").toLocalDateTime();
-                    Hearing.Outcome outcome = Hearing.Outcome.valueOf(rs.getString("outcome"));
-                    String reason = rs.getString("reason");
-
+                    Contractor contractor = Contractor.builder()
+                            .contractorId(rs.getLong("contractor_id"))
+                            .user(user)
+                            .status(Contractor.Status.valueOf(rs.getString("status")))
+                            .build();
+                    
                     Hearing retrievedHearing = Hearing.builder()
-                            .hearingsId(hearingId)
+                            .hearingsId(rs.getLong("hearings_id"))
                             .contractor(contractor)
-                            .scheduleDate(schedule_date)
-                            .outcome(outcome)
-                            .reason(reason)
+                            .scheduleDate(rs.getTimestamp("schedule_date").toLocalDateTime())
+                            .outcome(Hearing.Outcome.valueOf(rs.getString("outcome")))
+                            .reason(rs.getString("reason"))
                             .build();
 
                     listOfHearings.add(retrievedHearing);
