@@ -61,7 +61,7 @@ public class ContractorResource {
      * @param contractor   Contractor object containing the updated status.
      * @return HTTP Response indicating the result of the status update operation.
      */
-    @PUT
+    @POST
     @Path("changeStatus")
     @Consumes(APPLICATION_JSON)
     public Response changeContractorStatus(Contractor contractor) {

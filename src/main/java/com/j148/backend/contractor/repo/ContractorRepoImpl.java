@@ -53,11 +53,12 @@ public class ContractorRepoImpl implements ContractorRepo {
                 if (rs.next()) {
                     User user = new User();
                     user.setUserId(rs.getLong("user_id"));
-
+                    ContractPeriod contractPeriod = ContractPeriod.builder().contractPeriodId(rs.getLong("contractor_period_id")).build();
                     Contractor returnedContractor = Contractor.builder()
                             .contractorId(rs.getLong("contractor_id"))
                             .status(Contractor.Status.valueOf(rs.getString("status")))
                             .user(user)
+                            .contractPeriod(contractPeriod)
                             .build();
 
                     return Optional.of(returnedContractor);
