@@ -2,20 +2,14 @@ package com.j148.backend.attendance.service;
 
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.attendance.repo.AttendanceRepo;
-import com.j148.backend.attendance.repo.AttendanceRepoImpl;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
-import com.j148.backend.contractor.service.ContractorServiceImpl;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.service.HearingService;
-import com.j148.backend.hearing.service.HearingServiceImpl;
 import com.j148.backend.warning.model.Warning;
 import com.j148.backend.warning.service.WarningService;
-import com.j148.backend.warning.service.WarningServiceImpl;
-import jakarta.ejb.Schedule;
-import jakarta.ejb.Singleton;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -53,6 +47,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
             if (foundAttendance == null) {
                 attendance.setTimeIn(LocalDateTime.now());
+                attendance.setTimeOut(attendance.getTimeIn());
                 LocalTime targetTime = LocalTime.of(8, 30);
                 LocalTime currentTime = LocalTime.now();
                 if (currentTime.isAfter(targetTime)) {
@@ -92,7 +87,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             Attendance.Register register = foundAttendance.getRegister();
             Contractor contractor = foundAttendance.getContractor();
             Long contractorID = contractor.getContractorId();
-            if (timeOut != null) {
+            if (!(timeOut.equals(timeIn))) {
                 throw new RuntimeException("Contractor already checked out");
             }
             if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L) {

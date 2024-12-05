@@ -130,7 +130,7 @@ public class UserResource {
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "User object not complete.");
+            LOG.log(Level.SEVERE, "Email parameter is not valid.");
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to get user", e);
@@ -143,7 +143,6 @@ public class UserResource {
     @Path("promote-user")
     public Response promoteUser(User user) {
         try {
-//            User user = User.builder().idNumber(idNumber).build();
             return Response.ok(this.userService.promoteApplicant(user)).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to update applicant's role in the database.");

@@ -3,6 +3,7 @@ package com.j148.backend.hearing.service;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface HearingService {
 
@@ -28,4 +29,8 @@ public interface HearingService {
     public LocalDateTime scheduleHearing() throws Exception ;
 
     Hearing rescheduleHearing(Hearing hearing, Contractor contractor) throws Exception;
+    
+    List<Hearing> getAllHearings() throws Exception;
+    
+    Hearing updateHearing(Hearing hearing) throws Exception;
 }

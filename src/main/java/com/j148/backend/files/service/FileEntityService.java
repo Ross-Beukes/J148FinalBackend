@@ -21,6 +21,4 @@ public interface FileEntityService {
     FileEntity fileVerification(FileEntity fileEntity) throws Exception;
 
     ArrayList<FileEntity> retrieveFilesWithUsers() throws SQLException, FileNotFoundException, UserNotFoundException;
-
-
 }

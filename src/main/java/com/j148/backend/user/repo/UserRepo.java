@@ -14,7 +14,7 @@ import java.util.Optional;
  * @author glenl
  */
 public interface UserRepo {
-
+   
     /**
      * Registers a new user in the database.
      *

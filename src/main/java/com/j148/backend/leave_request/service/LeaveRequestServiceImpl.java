@@ -7,6 +7,7 @@ package com.j148.backend.leave_request.service;
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.DateNotFoundException;
 import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
@@ -19,7 +20,9 @@ import jakarta.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author yusuf
@@ -80,6 +83,20 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
             }
         }
         return copyMap;
+    }
+    @Override
+    public List<LeaveRequest> retrieveAllLeaveRequest() {
+        try {
+            List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
+
+            if (leaveRequests == null || leaveRequests.isEmpty()) {
+                throw new LeaveRequestNotFoundException("No leave requests found in the system.");
+            }
+
+            return leaveRequests;
+        } catch (SQLException e) {
+            throw new FileNotFoundException("No file related to leave request found.");
+        }
     }
 
     @Override

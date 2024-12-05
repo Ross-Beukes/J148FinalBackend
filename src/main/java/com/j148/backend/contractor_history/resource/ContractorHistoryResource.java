@@ -46,12 +46,12 @@ public class ContractorHistoryResource {
     @GET
     @Path("disciplinary-history/{contractorId}")
     public Response getDisciplinaryHistory(@PathParam("contractorId") long contractorId){
-    
+
     Contractor contractor = Contractor.builder().contractorId(contractorId).build();
     System.out.println("Contractor : " + contractor.toString());
-        
-    if(contractor != null)   
-    
+
+    if(contractor != null)
+
     {try {
             if(this.contractorHistoryService.viewWarningAndHearingHistory(contractor) != null){
 

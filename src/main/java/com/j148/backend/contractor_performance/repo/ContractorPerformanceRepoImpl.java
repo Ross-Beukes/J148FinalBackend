@@ -21,20 +21,9 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFChart;
-import org.apache.poi.xssf.usermodel.XSSFDrawing;
-import org.apache.poi.xddf.usermodel.chart.*;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeMap;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.apache.poi.ss.util.CellRangeAddress;
 
 @ApplicationScoped
 public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo {

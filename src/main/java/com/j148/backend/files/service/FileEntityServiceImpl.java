@@ -13,6 +13,11 @@ import com.j148.backend.files.s3.S3Service;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.SQLException;
 import java.util.ArrayList;
 

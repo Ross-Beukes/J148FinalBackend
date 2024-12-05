@@ -17,12 +17,27 @@ import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import com.j148.backend.Exceptions.FileNotFoundException;
+import com.j148.backend.files.service.FileEntityService;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
+import jakarta.ws.rs.core.Response;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import static org.openxmlformats.schemas.drawingml.x2006.chart.STTrendlineType.LOG;
+
 /**
- * @author ledi
+ *
+ * @author yusuf
  */
 
 @RequestScoped
-@Path("files_entity")
+@Path("file-entity")
 @Produces(APPLICATION_JSON)
 public class FileEntityResource {
     @Inject
