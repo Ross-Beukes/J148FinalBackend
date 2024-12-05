@@ -48,7 +48,7 @@ public class ContractServiceImpl implements ContractService {
                         .expirationDate(LocalDate.now().plusDays(14)).user(user).build();
             }
             validateContractOffer(contract);
-            emailSender.sendEmailWithAttachment(user.getEmail(), "Contract : " + contract.toString(),
+            emailSender.sendEmailWithAttachment(user.getEmail(), "Contract : " + "\nThis email is to inform " + user.getName() + " " + user.getSurname() + " that they have been offered a contract for contract period : " + contract.getContractPeriod().getName() + ", for the following dates: \nStart date : " + contract.getContractPeriod().getStartDate() + "\nEnd date : " + contract.getContractPeriod().getEndDate() + "\n\n Please respond within 14 days or before the aforementioned start date. \n(NB) DO NOT SHARE",
                     "Contract offer : " + user.getName() + " " + user.getSurname(),
                     s3Service.downloadFile("hrms_contract.pdf"),"VZAP_contract"
             );

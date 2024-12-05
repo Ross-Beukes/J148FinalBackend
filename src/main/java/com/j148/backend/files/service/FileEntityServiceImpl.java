@@ -10,7 +10,9 @@ import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.files.repo.FileEntityRepo;
 import com.j148.backend.files.s3.S3Repo;
 import com.j148.backend.files.s3.S3Service;
+import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
+import com.j148.backend.user.repo.UserRepo;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.sql.SQLException;
@@ -31,6 +33,11 @@ public class FileEntityServiceImpl implements FileEntityService {
     @Inject
     private S3Repo s3Repo;
 
+    @Inject
+    private EmailSender emailSender;
+
+    @Inject
+    private UserRepo userRepo;
 
     @Override
     public FileEntity retrieveFileByUserIdAndCategory(User user, FileEntity fileEntity) throws Exception {
@@ -51,9 +58,11 @@ public class FileEntityServiceImpl implements FileEntityService {
         if (fileEntity.getVerified() == null) {
             throw new RuntimeException("File could not be verified.");
         }
-
+    if(fileEntity.getVerified() == FileEntity.Verified.REJECTED) {
         s3Repo.deleteFile("vzapbucket", String.valueOf(fileEntity.getFileId()));
-
+    }
+        User user = userRepo.retrieveUserFromUserID(fileEntity.getUser()).get();
+        emailSender.sendNotification(user.getEmail(), "The file : " + fileEntity.getCategory() + " for user " + user.getName() + " " + user.getSurname() + " has been set to " + fileEntity.getVerified(), "Document verification update");
         return fileEntityRepo.fileVerification(fileEntity)
                 .orElseThrow(() -> new RuntimeException("File status could not be changed."));
     }
