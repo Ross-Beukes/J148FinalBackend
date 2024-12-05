@@ -9,6 +9,7 @@ package com.j148.backend.notification;
  * @author Tshireletso
  */
 
+import jakarta.activation.DataHandler;
 import jakarta.ejb.Singleton;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -21,6 +22,8 @@ import jakarta.mail.Authenticator;
 import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -69,7 +72,7 @@ public class EmailSender {
 
     public void sendEmailWithAttachment(String sendTo, String body, String subject,
                                         InputStream attachmentStream, String fileName) throws MessagingException {
-        String email = "xavierdovah124";
+        String email = "xavierdovah124@gmail.com"; // Ensure full email address
         String password = "evba attv nsgw ymlz";
 
         Properties properties = new Properties();
@@ -86,27 +89,49 @@ public class EmailSender {
             }
         });
 
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(email));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(sendTo));
-        message.setSubject(subject);
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(email));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(sendTo));
+            message.setSubject(subject);
 
-        MimeBodyPart bodyPart = new MimeBodyPart();
-        bodyPart.setText(body);
+            // Create the message body part
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(body);
 
-        MimeBodyPart attachmentPart = new MimeBodyPart();
-        attachmentPart.setFileName(fileName);
-        attachmentPart.setContent(attachmentStream, "application/octet-stream");
+            // Create the attachment part
+            MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+            // Use DataSource instead of direct InputStream
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentStream, "application/pdf");
+            attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
+            attachmentBodyPart.setFileName(fileName);
 
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(bodyPart);
-        multipart.addBodyPart(attachmentPart);
+            // Create the multipart message
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(messageBodyPart);
+            multipart.addBodyPart(attachmentBodyPart);
 
-        message.setContent(multipart);
-        Transport.send(message);
+            // Set the content
+            message.setContent(multipart);
 
-        Logger.getLogger(EmailSender.class.getName()).info(
-                "Email notification successfully sent to " + sendTo);
+            // Send the message
+            Transport.send(message);
+
+            Logger.getLogger(EmailSender.class.getName()).info(
+                    "Email notification successfully sent to " + sendTo);
+
+        } catch (IOException ex) {
+            Logger.getLogger(EmailSender.class.getName()).log(Level.SEVERE,
+                    "Error while handling attachment", ex);
+            throw new MessagingException("Failed to process attachment", ex);
+        } finally {
+            try {
+                attachmentStream.close();
+            } catch (IOException e) {
+                Logger.getLogger(EmailSender.class.getName()).log(Level.WARNING,
+                        "Error closing attachment stream", e);
+            }
+        }
     }
     
         
