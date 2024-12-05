@@ -31,17 +31,17 @@ import java.util.logging.Logger;
  */
 @Singleton
 public class Scheduler {
-    
+
     @Inject
     private AttendanceService attendanceService;
     @Inject
     private UserRepo userRepo;
     @Inject
-    private TimesheetReminder timesheetReminder ;
+    private TimesheetReminder timesheetReminder;
 
     @Inject
     private EmailSender emailSender;
-    
+
     @Schedule(dayOfWeek = "Mon-Fri", hour = "15", minute = "45", persistent = false)
     public void checkContractorsAttendance() {
         try {
@@ -50,7 +50,7 @@ public class Scheduler {
 
         }
     }
-    
+
     @Schedule(dayOfWeek = "Mon-Sun", hour = "16", minute = "12", persistent = false)
     public void updateAge() throws Exception {
         List<User> allUsers;
@@ -91,15 +91,20 @@ public class Scheduler {
     }
 
     /**
-     * Sends reminder email to users who have not updated their timesheets 7 days before the due date.
+     * Sends reminder email to users who have not updated their timesheets 7
+     * days before the due date.
      *
-     * This method is scheduled to run automatically on the first day of each month at 9:00 AM.
-     * It retrieves a list of users who have not submitted their by a certain date and sends them
-     * a reminder email to upload their timesheet before the 7th day of the month.
+     * This method is scheduled to run automatically on the first day of each
+     * month at 9:00 AM. It retrieves a list of users who have not submitted
+     * their by a certain date and sends them a reminder email to upload their
+     * timesheet before the 7th day of the month.
      *
-     * @throws SQLException if there is an error retrieving user information from the database.
-     * @throws MessagingException if there is an issue sending the email notification.
-     * */
+     * @throws SQLException if there is an error retrieving user information
+     * from the database.
+     * @throws MessagingException if there is an issue sending the email
+     * notification.
+     *
+     */
     @Schedule(hour = "9", minute = "00", dayOfMonth = "1", persistent = false)
     public void SevenDayReminder() {
         try {
@@ -118,7 +123,7 @@ public class Scheduler {
                 StringBuilder msg = new StringBuilder();
                 msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
-                System.out.println("Hello world");
+                //System.out.println("Hello world");
 
                 emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
@@ -131,16 +136,20 @@ public class Scheduler {
     }
 
     /**
-     * Sends a reminder email to users who have not uploaded their timesheets  7 days before the due date.
+     * Sends a reminder email to users who have not uploaded their timesheets 7
+     * days before the due date.
      *
      * This method is scheduled to run on the 3rd day of the month at 9:00 AM.
-     * It checks for users who have  not uploaded their timesheets within a specified period,
-     * reminding them to submit before the end of the 7th.
+     * It checks for users who have not uploaded their timesheets within a
+     * specified period, reminding them to submit before the end of the 7th.
      *
-     * @throws SQLException if there is an error retrieving user data from the database.
-     * @throws MessagingException if an error occurs while sending email notification
-     * */
-    @Schedule(hour = "9", minute = "0", dayOfMonth = "3", persistent = false)
+     * @throws SQLException if there is an error retrieving user data from the
+     * database.
+     * @throws MessagingException if an error occurs while sending email
+     * notification
+     *
+     */
+    @Schedule(hour = "09", minute = "00", dayOfMonth = "3", persistent = false)
     public void ThreeDayReminder() {
         try {
             int daysToSubtract = timesheetReminder.calculateDaysTo15thOfPreviousMonth();
@@ -156,9 +165,9 @@ public class Scheduler {
 
             for (User user : remindUsers) {
                 StringBuilder msg = new StringBuilder();
+                //System.out.println(user.getEmail());
                 msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
-                System.out.println("Hello world");
 
                 emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
@@ -171,15 +180,19 @@ public class Scheduler {
     }
 
     /**
-     * Sends a reminder email to users who have not uploaded their timesheets 3 days before the due date.
+     * Sends a reminder email to users who have not uploaded their timesheets 3
+     * days before the due date.
      *
      * This method is scheduled to run on the 7th day of the month at 9:00 AM.
-     * It retrieves users who have not submitted their timesheets within a specified period,
-     * reminding them to upload by the end of the 7th.
+     * It retrieves users who have not submitted their timesheets within a
+     * specified period, reminding them to upload by the end of the 7th.
      *
-     * @throws SQLException if there is an error retrieving user data from the database.
-     * @throws MessagingException if an error occurs while sending email notifications
-     **/
+     * @throws SQLException if there is an error retrieving user data from the
+     * database.
+     * @throws MessagingException if an error occurs while sending email
+     * notifications
+     *
+     */
     @Schedule(hour = "9", minute = "0", dayOfMonth = "7", persistent = false)
     public void OneDayReminder() {
         try {
@@ -198,7 +211,7 @@ public class Scheduler {
                 StringBuilder msg = new StringBuilder();
                 msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
-                System.out.println("Hello world");
+                //System.out.println("Hello world");
 
                 emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
@@ -211,16 +224,20 @@ public class Scheduler {
     }
 
     /**
-     * Sends an email notification to admin listing contractors who have not uploaded their timesheet by the due date.
+     * Sends an email notification to admin listing contractors who have not
+     * uploaded their timesheet by the due date.
      *
      * This method is scheduled to run on the 8th day of the month at 9:00 AM.
-     * It retrieves a list users who have not uploaded their timesheet and compiles
-     * a summary email sent to admins
+     * It retrieves a list users who have not uploaded their timesheet and
+     * compiles a summary email sent to admins
      *
-     * @throws SQLException if there is an error retrieving user or Admin data from the database.
-     * @throws MessagingException if an error occurs while sending email notifications to Admins
-     * */
-    @Schedule(hour = "9", minute = "0", dayOfMonth = "8", persistent = false)
+     * @throws SQLException if there is an error retrieving user or Admin data
+     * from the database.
+     * @throws MessagingException if an error occurs while sending email
+     * notifications to Admins
+     *
+     */
+    @Schedule(hour = "09", minute = "00", dayOfMonth = "8", persistent = false)
     public void AdminReminder() {
         try {
             int daysToSubtract = timesheetReminder.calculateDaysTo15thOfPreviousMonth();
@@ -241,16 +258,19 @@ public class Scheduler {
                         .append("Email: ")
                         .append(user.getEmail()).append("\n\n");
 
-
             }
 
-            for (User admin : emailAdmins) {
-                StringBuilder email = new StringBuilder();
-                email.append("Dear ").append(admin.getName()).append(" ").append(admin.getSurname()).append("\n")
-                        .append("Please see the list of contractors who have not uploaded timesheets.").append("\n\n")
-                        .append(sb).append("\n")
-                        .append("System generated response");
-                emailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
+            if (!remindUsers.isEmpty()) {
+
+                for (User admin : emailAdmins) {
+                    //System.out.println("Admin: " + admin.getEmail());
+                    StringBuilder email = new StringBuilder();
+                    email.append("Dear ").append(admin.getName()).append(" ").append(admin.getSurname()).append("\n")
+                            .append("Please see the list of contractors who have not uploaded timesheets.").append("\n\n")
+                            .append(sb).append("\n")
+                            .append("System generated response");
+                    emailSender.sendNotification(admin.getEmail(), email.toString(), "Timesheet not Uploaded");
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
