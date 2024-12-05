@@ -62,11 +62,10 @@ public class ContractorResource {
      * @return HTTP Response indicating the result of the status update operation.
      */
     @PUT
-    @Path("changeStatus/{contractorId}")
+    @Path("changeStatus")
     @Consumes(APPLICATION_JSON)
-    public Response changeContractorStatus(@PathParam("contractorId") long contractorId, Contractor contractor) {
+    public Response changeContractorStatus(Contractor contractor) {
         try {
-            contractor.setContractorId(contractorId);
             Contractor updatedContractor = contractorService.changeContractorStatus(contractor);
             if (updatedContractor != null) {
                 return Response.ok(updatedContractor).build();
