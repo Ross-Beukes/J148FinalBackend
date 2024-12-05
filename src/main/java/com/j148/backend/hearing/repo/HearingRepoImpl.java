@@ -27,7 +27,7 @@ import java.util.Optional;
  * @author arshr
  */
 @ApplicationScoped
-public class HearingRepoImpl   implements HearingRepo {
+public class HearingRepoImpl implements HearingRepo {
 
     @Inject
     private DBConfig DBConfig;

@@ -86,6 +86,12 @@ public class WarningServiceImpl implements WarningService {
         if (warningRepo.findById(warning).isEmpty()) {
             throw new IllegalArgumentException("Could not find warning");
         }
+        
+        if(warning.getState().equals(Warning.WarningState.FINAL)){
+            return warningRepo.updateState(warning)
+                .orElseThrow(() -> new RuntimeException("Failed to appeal warning"));
+        }
+        
         warning.setState(Warning.WarningState.APPEALED);
         return warningRepo.updateState(warning)
                 .orElseThrow(() -> new RuntimeException("Failed to appeal warning"));
