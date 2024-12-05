@@ -6,6 +6,7 @@ import com.j148.backend.contract.repo.ContractRepo;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.files.model.FileEntity;
+import com.j148.backend.files.s3.S3Service;
 import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,6 +27,9 @@ public class ContractServiceImpl implements ContractService {
     @Inject
     EmailSender emailSender;
 
+    @Inject
+    S3Service s3Service;
+
 
     @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
@@ -44,7 +48,10 @@ public class ContractServiceImpl implements ContractService {
                         .expirationDate(LocalDate.now().plusDays(14)).user(user).build();
             }
             validateContractOffer(contract);
-            emailSender.sendNotification(user.getEmail(), "Contract : " + contract.toString(), "Contract offer : " + user.getName() + " " + user.getSurname());
+            emailSender.sendEmailWithAttachment(user.getEmail(), "Contract : " + contract.toString(),
+                    "Contract offer : " + user.getName() + " " + user.getSurname(),
+                    s3Service.downloadFile("hrms_contract.pdf"),"VZAP_contract"
+            );
             return contractRepo.createContract(contract).orElseThrow(()
                     -> new RuntimeException("Could not offer contract (create new contract) due to an error"));
         } else {
