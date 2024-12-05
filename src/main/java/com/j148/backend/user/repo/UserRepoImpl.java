@@ -24,10 +24,11 @@ import java.util.Optional;
  * @author glenl
  */
 @ApplicationScoped
-public class UserRepoImpl implements UserRepo {
 
-    @Inject
-    private DBConfig DBConfig;
+public class UserRepoImpl  implements UserRepo {
+@Inject
+private DBConfig DBConfig;
+    
 
     @Override
     public Optional<User> register(User user) throws SQLException {
@@ -194,7 +195,7 @@ public class UserRepoImpl implements UserRepo {
     @Override
     public Optional<User> updateAge(User user) throws SQLException {
         String query = "UPDATE user SET age = ? WHERE id_number = ?";
-        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareCall(query)) {
+        try (Connection con =DBConfig.getCon(); PreparedStatement ps = con.prepareCall(query)) {
             ps.setInt(1, user.getAge());
             ps.setString(2, user.getIdNumber());
 

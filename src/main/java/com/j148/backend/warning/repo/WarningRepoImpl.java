@@ -15,10 +15,10 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class WarningRepoImpl implements WarningRepo {
+public class WarningRepoImpl  implements WarningRepo {
 
-    @Inject
-    private DBConfig DBConfig;
+@Inject
+private DBConfig DBConfig;
 
     @Override
     public Optional<Warning> save(Warning warning) throws SQLException {
@@ -104,7 +104,7 @@ public class WarningRepoImpl implements WarningRepo {
 
         List<Warning> warnings = new ArrayList<>();
 
-        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con =DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, contractor.getContractorId());
 
             try (ResultSet rs = ps.executeQuery()) {
@@ -145,7 +145,7 @@ public class WarningRepoImpl implements WarningRepo {
     public Optional<Warning> updateState(Warning warning) throws SQLException {
         String sql = "UPDATE warning SET state = ? WHERE warning_id = ?";
 
-        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con =DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, warning.getState().toString());
             ps.setLong(2, warning.getWarningId());

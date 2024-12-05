@@ -48,11 +48,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.ss.util.CellRangeAddress;
 @ApplicationScoped
+
 public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo {
-
-    @Inject
-    private DBConfig DBConfig;
-
+@Inject
+private DBConfig DBConfig;
+   
     @Override
     public Optional<ContractorPerformance> getContractorPerformance(User user) throws SQLException {
         ContractorPerformance cp = ContractorPerformance.builder()

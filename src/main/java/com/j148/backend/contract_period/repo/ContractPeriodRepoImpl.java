@@ -10,9 +10,8 @@ import java.util.Optional;
 /**Martinez*/
 @ApplicationScoped
 public class ContractPeriodRepoImpl implements ContractPeriodRepo {
-
-    @Inject
-    private DBConfig DBConfig;
+@Inject
+private DBConfig DBConfig;
     @Override
     public Optional<ContractPeriod> saveContractPeriod(ContractPeriod contractPeriod) throws SQLException {
         String query = "INSERT INTO contractor_period (name, start_date, end_date) VALUES (?, ?, ?)";

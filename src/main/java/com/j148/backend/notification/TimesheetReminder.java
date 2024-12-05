@@ -11,6 +11,7 @@ package com.j148.backend.notification;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
 import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -31,11 +32,10 @@ import java.util.logging.Logger;
  * the day after the deadline
  * */
 @Singleton
+@ApplicationScoped
 public class TimesheetReminder {
-
-
-    @Inject
-    private DBConfig DBConfig;
+@Inject
+private DBConfig DBConfig;
 
 
     /**

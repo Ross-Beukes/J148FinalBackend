@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 @ApplicationScoped
-public class FileEntityRepoImpl implements FileEntityRepo {
+public class FileEntityRepoImpl  implements FileEntityRepo {
     private static final Logger LOGGER = Logger.getLogger(FileEntityRepoImpl.class.getName());
     private static final Path UPLOAD_DIR;
-
-    @Inject
-    private DBConfig DBConfig;
+@Inject
+private DBConfig DBConfig;
 
     static {
         try {
@@ -49,7 +49,7 @@ public class FileEntityRepoImpl implements FileEntityRepo {
     public Optional<FileEntity> saveFile(FileEntity fileEntity) throws SQLException {
         String query = "INSERT INTO files(fileType, category, dateAdded, path, user, verified) Values(?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DBConfig.getCon();
+        try (Connection con =  DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, fileEntity.getFileType());
             ps.setString(2, String.valueOf(fileEntity.getCategory()));

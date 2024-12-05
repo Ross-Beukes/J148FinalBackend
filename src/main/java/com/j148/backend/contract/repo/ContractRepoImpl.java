@@ -16,12 +16,12 @@ import java.util.logging.Logger;
 
 //Author : Tshireletso
 @ApplicationScoped
-public class ContractRepoImpl implements ContractRepo {
+public class ContractRepoImpl  implements ContractRepo {
 
     private static final Logger LOG = Logger.getLogger(ContractRepoImpl.class.getName());
 
-    @Inject
-    private DBConfig DBConfig;
+@Inject
+private DBConfig DBConfig;
 
 
     @Override

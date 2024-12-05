@@ -13,8 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
-public class ContractorRepoImpl implements ContractorRepo {
-
+public class ContractorRepoImpl  implements ContractorRepo {
     @Inject
     private DBConfig DBConfig;
 

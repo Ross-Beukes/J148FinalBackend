@@ -12,6 +12,8 @@ com\j148\backend\contractor_performance\service\ContractorPerformanceService.cla
 com\j148\backend\notification\EmailSender$2.class
 com\j148\backend\files\model\FileEntity$Category.class
 com\j148\backend\contract\service\ContractServiceImpl.class
+com\j148\backend\contractor_performance\resource\ContractorPerformanceResource.class
+com\j148\backend\scheduler\Scheduler.class
 com\j148\backend\attendance\model\Attendance.class
 com\j148\backend\aptitude_test\repo\AptitudeTestRepoImpl.class
 com\j148\backend\contract\repo\ContractRepo.class
@@ -24,10 +26,9 @@ com\j148\backend\contract_period\resource\ContractPeriodResource.class
 com\j148\backend\aptitude_test\service\AptitudeTestService.class
 com\j148\backend\contract\repo\ContractRepoImpl.class
 com\j148\backend\files\service\FileEntityService.class
-com\j148\backend\resources\WarningResource.class
 com\j148\backend\warning\model\Warning.class
 com\j148\backend\user\repo\UserRepoImpl.class
-com\j148\backend\user\EmailService.class
+com\j148\backend\contractor_performance\service\ContractorPerformanceServiceImpl.class
 com\j148\backend\contractor_performance\repo\ContractorPerformanceRepo.class
 com\j148\backend\contractor\resource\ContractorResource.class
 com\j148\backend\resources\UserResource.class
@@ -44,7 +45,6 @@ com\j148\backend\Exceptions\FileUploadException.class
 com\j148\backend\leave_request\service\LeaveRequestService.class
 com\j148\backend\warning\model\Warning$WarningState.class
 com\j148\backend\Exceptions\ContractorNotFoundException.class
-com\j148\backend\leave_request\service\LeaveRequestServices.class
 com\j148\backend\attendance\service\AttendanceServiceImpl.class
 com\j148\backend\contractor_history\service\ContractorHistoryService.class
 com\j148\backend\warning\repo\WarningRepoImpl.class
@@ -84,7 +84,6 @@ com\j148\backend\contract_period\repo\ContractPeriodRepoImpl.class
 com\j148\backend\contract_period\repo\ContractPeriodRepo.class
 com\j148\backend\contractor\model\Contractor$ContractorBuilder.class
 com\j148\backend\warning\repo\WarningRepo.class
-com\j148\backend\user\EmailService$1.class
 com\j148\backend\user\model\User.class
 com\j148\backend\aptitude_test\model\AptitudeTest.class
 com\j148\backend\contractor\service\ContractorService.class
@@ -100,7 +99,6 @@ com\j148\backend\contract\model\Contract$Decision.class
 com\j148\backend\leave_request\resource\LeaveRequestResource.class
 com\j148\backend\aptitude_test\service\AptitudeTestServiceImpl.class
 com\j148\backend\contract_period\model\ContractPeriod.class
-com\j148\backend\user\EmailService$2.class
 com\j148\backend\Exceptions\ValidationExceptionMapper.class
 com\j148\backend\notification\EmailSender$1.class
 com\j148\backend\contract_period\service\ContractPeriodService.class

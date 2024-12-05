@@ -24,6 +24,8 @@ import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
 import jakarta.ws.rs.core.Response.ResponseBuilder;
+
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;

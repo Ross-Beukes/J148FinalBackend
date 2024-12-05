@@ -3,6 +3,7 @@ package com.j148.backend.attendance.service;
 import com.j148.backend.attendance.model.Attendance;
 import com.j148.backend.attendance.repo.AttendanceRepo;
 import com.j148.backend.attendance.repo.AttendanceRepoImpl;
+import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
@@ -28,7 +29,7 @@ import java.util.Objects;
 /**
  * @author glenl
  */
-@ApplicationScoped
+
 public class AttendanceServiceImpl implements AttendanceService {
 
     @Inject

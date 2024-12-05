@@ -26,8 +26,8 @@ import java.util.logging.Logger;
 @ApplicationScoped
 public class AptitudeTestRepoImpl implements AptitudeRepo {
 
-    @Inject
-    private DBConfig DBConfig;
+  @Inject
+  private DBConfig DBConfig;
 
     @Override
     public Optional<AptitudeTest> create(AptitudeTest aptitudeTest) throws SQLException {

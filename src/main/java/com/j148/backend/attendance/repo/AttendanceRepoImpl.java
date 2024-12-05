@@ -23,10 +23,8 @@ public class AttendanceRepoImpl implements AttendanceRepo {
      * @return Optional of attendance if Insertion is successful, or return an
      * Empty Optional if the Insertion was not successful
      */
-
     @Inject
-    private DBConfig DBConfig;
-
+private DBConfig DBConfig;
     @Override
     public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
         String query = "INSERT into attendance (time_in, register, contractor_id) VALUES (?,?,?)";

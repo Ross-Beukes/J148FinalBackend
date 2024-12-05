@@ -8,6 +8,7 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.DateNotFoundException;
 import com.j148.backend.Exceptions.FileNotFoundException;
 import com.j148.backend.Exceptions.LeaveRequestNotFoundException;
+import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
@@ -23,15 +24,16 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author yusuf
  */
 @ApplicationScoped
 public class LeaveRequestServiceImpl implements LeaveRequestService {
+    private LeaveRequestRepo leaveRequestRepo =new LeaveRequestRepoImpl();
 
-    @Inject
-    private LeaveRequestRepo leaveRequestRepo;
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
@@ -87,9 +89,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         return copyMap;
     }
     @Override
-    public List<LeaveRequest> retrieveAllLeaveRequest() {
+    public ArrayList<LeaveRequest> retrieveAllLeaveRequest() {
         try {
-            List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
+            ArrayList<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
 
             if (leaveRequests == null || leaveRequests.isEmpty()) {
                 throw new LeaveRequestNotFoundException("No leave requests found in the system.");
@@ -97,7 +99,10 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
             return leaveRequests;
         } catch (SQLException e) {
-            throw new FileNotFoundException("No file related to leave request found.");
+
+            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "SQL Error retrieving leave requests", e);
+
+            throw new LeaveRequestNotFoundException("Database error occurred while retrieving leave requests: " + e.getMessage());
         }
     }
 
