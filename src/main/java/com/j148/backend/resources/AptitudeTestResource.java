@@ -46,7 +46,8 @@ public class AptitudeTestResource {
             System.out.println("sqlException : " + e.getMessage());
             return Response.status(Response.Status.CONFLICT).build();
         } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "Aptitude Test object not complete.");
+
+            LOG.log(Level.SEVERE, e.getMessage());
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to add Aptitude Test", e);

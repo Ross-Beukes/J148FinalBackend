@@ -4,6 +4,7 @@ import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.GET;
@@ -24,7 +25,8 @@ import java.util.logging.Logger;
 @Path("contract-period")
 public class ContractPeriodResource {
 
-    private final ContractPeriodService contractPeriodService = new ContractPeriodServiceImpl();
+    @Inject
+    private ContractPeriodService contractPeriodService;
     private static final Logger LOG = Logger.getLogger(ContractPeriodResource.class.getName());
 
     /**
