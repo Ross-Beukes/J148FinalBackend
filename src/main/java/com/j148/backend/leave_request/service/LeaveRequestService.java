@@ -9,6 +9,7 @@ import com.j148.backend.leave_request.model.LeaveRequest;
 import com.sun.jdi.AbsentInformationException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public interface LeaveRequestService {
 
     LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) throws Exception;
 
-    AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequests() throws Exception;
+    ArrayList<LeaveRequest> retrieveAllLeaveRequest() throws Exception;
 
     AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception;
 

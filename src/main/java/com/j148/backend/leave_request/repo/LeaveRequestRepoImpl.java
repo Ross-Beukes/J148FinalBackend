@@ -8,6 +8,7 @@ import com.j148.backend.config.DBConfig;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.files.model.FileEntity;
 import com.j148.backend.leave_request.model.LeaveRequest;
+import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -15,17 +16,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Savepoint;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -71,7 +67,6 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
                     requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                             .build());
 
                 }
@@ -93,7 +88,6 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
                     requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                             .build());
 
                 }
@@ -129,13 +123,44 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
 //                requestMap.keySet().add(rs.getLong("leave_request_id"));
                 requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                         .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
-                        .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                        .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
-                        .build());
+                        .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build()).build());
 
             }
         }
         return requestMap;
+    }
+
+    @Override
+    public ArrayList<LeaveRequest> retrieveAllLeaveRequest() throws SQLException {
+        ArrayList<LeaveRequest> leaveRequests = new ArrayList<>();
+        Logger logger = Logger.getLogger(this.getClass().getName());
+        String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, " +
+                "u.name, u.email " +
+                "FROM leave_request lr " +
+                "JOIN contractor c ON lr.contractor_id = c.contractor_id " +
+                "JOIN user u ON c.user_id = u.user_id " +
+                "WHERE lr.decision = PENDING";
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                LeaveRequest leaveRequest = LeaveRequest.builder()
+                        .leaveRequestId(rs.getLong("leave_request_id"))
+                        .startDate(rs.getDate("start_date").toLocalDate())
+                        .endDate(rs.getDate("end_date").toLocalDate())
+                        .decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
+                        .contractor(Contractor.builder()
+                                .user(User.builder()
+                                        .name(rs.getString("name"))
+                                        .email(rs.getString("email"))
+                                        .build())
+                                .build())
+                        .build();
+                leaveRequests.add(leaveRequest);
+                System.out.println(leaveRequest);
+            }
+            logger.info("Total leave requests retrieved: " + leaveRequests.size());
+        }
+
+        return leaveRequests;
     }
 
     @Override
@@ -149,7 +174,6 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
                     requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                             .build());
 
                 }
@@ -170,7 +194,6 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
                     requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                             .build());
 
                 }
@@ -190,7 +213,6 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
                     LeaveRequest foundRequest = LeaveRequest.builder().leaveRequestId(rs.getLong("leave_request_id")).startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                             .build();
                     return Optional.of(foundRequest);
                 }

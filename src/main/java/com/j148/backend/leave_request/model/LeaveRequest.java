@@ -19,7 +19,6 @@ public class LeaveRequest {
     private LocalDate endDate;
     private Decision decision;
     private Contractor contractor;
-    private FileEntity file;
 
 
     public enum Decision {
