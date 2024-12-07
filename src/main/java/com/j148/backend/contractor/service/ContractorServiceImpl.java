@@ -2,7 +2,6 @@ package com.j148.backend.contractor.service;
 
 import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.UserNotFoundException;
-import com.j148.backend.config.DBConfig;
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contract_period.service.ContractPeriodServiceImpl;
@@ -26,7 +25,6 @@ import java.util.Optional;
  */
 @ApplicationScoped
 public class ContractorServiceImpl implements ContractorService {
-
 
     @Inject
     private ContractorRepo contractorRepo;
@@ -91,7 +89,6 @@ public class ContractorServiceImpl implements ContractorService {
         return contractorRepo.updateStatus(contractor).orElseThrow(() -> new RuntimeException("Failed to change contractor status"));
 
     }
-	
     @Override
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     public Contractor updateContractor(Contractor contractor) throws Exception {

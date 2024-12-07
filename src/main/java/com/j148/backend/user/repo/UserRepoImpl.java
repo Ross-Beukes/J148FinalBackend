@@ -243,20 +243,4 @@ public class UserRepoImpl implements UserRepo {
         }
         return Optional.empty();
     }
-
-    @Override
-    public boolean isUserExists(User user) throws SQLException {
-        String query = "SELECT COUNT(*) FROM user WHERE email = ? OR id_number = ?";
-        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setString(1, user.getEmail());
-            ps.setString(2, user.getIdNumber());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt(1) > 0;
-                }
-            }
-        }
-        return false;
-    }
 }

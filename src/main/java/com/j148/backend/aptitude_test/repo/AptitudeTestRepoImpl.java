@@ -8,10 +8,10 @@ package com.j148.backend.aptitude_test.repo;
 /**
  * @author MIANTSUMI
  */
+
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.user.model.User;
-import com.j148.backend.user.model.User.Role;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -32,7 +32,8 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
     @Override
     public Optional<AptitudeTest> create(AptitudeTest aptitudeTest) throws SQLException {
         String sql = "INSERT INTO aptitude_test (test_mark, test_date, user_id) VALUES (?, ?, ?)";
-        try (Connection conn = DBConfig.getCon(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection conn = DBConfig.getCon();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, aptitudeTest.getTestMark());
             stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
@@ -55,7 +56,8 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
     @Override
     public Optional<AptitudeTest> findById(Long id) throws SQLException {
         String sql = "SELECT * FROM aptitude_test WHERE aptitude_test_id = ?";
-        try (Connection conn = DBConfig.getCon(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DBConfig.getCon();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -71,7 +73,9 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
     public List<AptitudeTest> findAll() throws SQLException {
         String sql = "SELECT * FROM aptitude_tests";
         List<AptitudeTest> aptitudeTests = new ArrayList<>();
-        try (Connection conn = DBConfig.getCon(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+        try (Connection conn = DBConfig.getCon();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
                 aptitudeTests.add(mapRowToAptitudeTest(rs));
@@ -82,11 +86,12 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
 
     @Override
     public Optional<AptitudeTest> update(AptitudeTest aptitudeTest) throws SQLException {
-        String query = "UPDATE aptitude_test SET test_mark = ?, test_date = ? WHERE user_id = ?";
-        try (Connection conn = DBConfig.getCon(); PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, aptitudeTest.getTestMark());
-            stmt.setTimestamp(2, Timestamp.valueOf(aptitudeTest.getTestDate()));
-            stmt.setLong(3, aptitudeTest.getUser().getUserId());
+        String query = "UPDATE aptitude_test SET test_date = ? WHERE user_id = ?";
+        System.out.println(query);
+        try (Connection conn = DBConfig.getCon();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setTimestamp(1, Timestamp.valueOf(aptitudeTest.getTestDate()));
+            stmt.setLong(2, aptitudeTest.getUser().getUserId());
 
             if (stmt.executeUpdate() > 0) {
                 return Optional.of(aptitudeTest);
@@ -95,6 +100,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
 
         }
     }
+
 
     // Helper method to map a ResultSet row to an AptitudeTest object
     private AptitudeTest mapRowToAptitudeTest(ResultSet rs) throws SQLException {
@@ -131,45 +137,6 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
         }
         return Optional.empty();
     }
-
-    @Override
-    public Optional<List<AptitudeTest>> retrieveAllWrittenTests() throws SQLException {
-        List<AptitudeTest> writtenTests = new ArrayList<>();
-        String query = "SELECT \n"
-                + "    u.user_id,\n"
-                + "    u.name,\n"
-                + "    u.surname,\n"
-                + "    u.email,\n"
-                + "    u.role,\n"
-                + "    a.aptitude_test_id,\n"
-                + "    a.test_mark,\n"
-                + "    a.test_date\n"
-                + "FROM \n"
-                + "    user u\n"
-                + "INNER JOIN \n"
-                + "    aptitude_test a\n"
-                + "ON \n"
-                + "    u.user_id = a.user_id\n"
-                + "WHERE \n"
-                + "    a.test_date < NOW()\n"
-                + "    AND a.test_mark = 101";
-        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    User user = User.builder()
-                            .userId(rs.getLong("user_id"))
-                            .name(rs.getString("name"))
-                            .surname(rs.getString("surname"))
-                            .email(rs.getString("email"))
-                            .role(Role.valueOf(rs.getString("role")))
-                            .build();
-                    AptitudeTest aptitudeTest = AptitudeTest.builder().aptitudeTestId(rs.getLong("aptitude_test_id"))
-                            .testDate(rs.getTimestamp("test_date").toLocalDateTime()).testMark(rs.getInt("test_mark"))
-                            .user(user).build();
-                    writtenTests.add(aptitudeTest);
-                }
-                return Optional.of(writtenTests);
-            }
-        }
-    }
 }
+
+

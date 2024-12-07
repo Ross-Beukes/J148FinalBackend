@@ -15,7 +15,6 @@ import com.j148.backend.contractor_history.service.ContractorHistoryServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.Response;
@@ -47,12 +46,12 @@ public class ContractorHistoryResource {
     @GET
     @Path("disciplinary-history/{contractorId}")
     public Response getDisciplinaryHistory(@PathParam("contractorId") long contractorId){
-
+    
     Contractor contractor = Contractor.builder().contractorId(contractorId).build();
     System.out.println("Contractor : " + contractor.toString());
-
-    if(contractor != null)
-
+        
+    if(contractor != null)   
+    
     {try {
             if(this.contractorHistoryService.viewWarningAndHearingHistory(contractor) != null){
 

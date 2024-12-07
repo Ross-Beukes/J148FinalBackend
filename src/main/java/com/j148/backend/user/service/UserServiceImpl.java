@@ -1,17 +1,27 @@
 package com.j148.backend.user.service;
 
-import com.j148.backend.contract_period.model.ContractPeriod;
-import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.notification.EmailSender;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
+import com.j148.backend.user.repo.UserRepoImpl;
+import jakarta.ejb.Schedule;
+import jakarta.ejb.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.MonthDay;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Random;
 
 @ApplicationScoped
 public class UserServiceImpl implements UserService {
@@ -24,9 +34,6 @@ public class UserServiceImpl implements UserService {
 
     @Inject
     private EmailSender emailSender;
-    
-    @Inject
-    private ContractPeriodService contractPeriodService;
 
     /**
      * This map is used to temporarily store the generated admin keys.
@@ -72,10 +79,6 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Invalid email format.");
         }
 
-        if(userRepo.isUserExists(user)){
-            throw new SQLException("User already exists.");
-        }
-
         return this.userRepo.register(user).orElseThrow(() -> new RuntimeException("Unable to insert user into the database."));
     }
 
@@ -105,13 +108,6 @@ public class UserServiceImpl implements UserService {
         if (user != null){
             User promotedUser = findUserByEmail(user);
             Contractor contractor = contractorService.promoteToContractor(promotedUser);
-            EmailSender emailSender = new EmailSender();
-            ContractPeriod contractPeriod = contractPeriodService.getNextContractPeriod();
-            String notification = "Dear " + promotedUser.getName()+ " " + promotedUser.getSurname()
-                    + ".\n \n Your contract and files have been accepted and you will be starting with us in the next contract period " 
-                    + contractPeriod.getStartDate()
-                    + ".\n \n Kind wishes \n Admin";
-            emailSender.sendNotification(promotedUser.getEmail(), notification, "Congradulations!!!");
             return user;
         } else {
             throw new IllegalArgumentException("User cannot be null.");

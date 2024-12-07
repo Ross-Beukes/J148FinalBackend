@@ -4,8 +4,6 @@ import com.j148.backend.Exceptions.ContractorNotFoundException;
 import com.j148.backend.Exceptions.WarningNotFoundException;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.warning.model.Warning;
-import jakarta.transaction.Transactional;
-
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,10 +39,7 @@ public interface WarningService {
 
     Warning save(Warning warning) throws SQLException, WarningNotFoundException, ContractorNotFoundException;
 
-
-
-    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
-    Warning appealWarning(Warning warning, Contractor contractor) throws Exception;
+    Warning appealWarning(Warning warning) throws Exception;
 
     Warning findById(Warning warning) throws SQLException;
 

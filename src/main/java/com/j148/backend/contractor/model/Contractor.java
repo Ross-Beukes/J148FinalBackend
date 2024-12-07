@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+//<<<<<<< HEAD
+
+
+//>>>>>>> Martinez
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

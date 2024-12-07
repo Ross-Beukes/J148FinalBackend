@@ -2,12 +2,12 @@ package com.j148.backend.contract_period.service;
 
 import com.j148.backend.contract_period.model.ContractPeriod;
 import com.j148.backend.contract_period.repo.ContractPeriodRepo;
+import com.j148.backend.contract_period.repo.ContractPeriodRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import javax.transaction.Transactional;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -90,11 +90,6 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
     @Override
     public double enrollmentAverageForPeriodOfYears(int startYear, int endYear) throws SQLException {
         return contractPeriodRepo.enrollmentAverageForPeriodOfYears(startYear, endYear);
-    }
-
-    @Override
-    public List<ContractPeriod> getAllFutureContractPeriods() throws SQLException, Exception {
-        return contractPeriodRepo.getAllFutureContractPeriods().orElseThrow(() -> new RuntimeException("No Future Contract Periods found"));
     }
 
 

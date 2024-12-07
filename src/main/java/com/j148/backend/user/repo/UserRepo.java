@@ -126,6 +126,4 @@ public interface UserRepo {
     Optional<User> getAdmin() throws SQLException;
     
     Optional<User> promoteStaff(User user) throws SQLException;
-
-    public boolean isUserExists(User user) throws SQLException;
 }
