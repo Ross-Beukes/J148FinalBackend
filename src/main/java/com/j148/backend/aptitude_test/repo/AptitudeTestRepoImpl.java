@@ -92,6 +92,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
             stmt.setLong(3, aptitudeTest.getUser().getUserId());
 
             if (stmt.executeUpdate() > 0) {
+                System.out.println("The update worked!");
                 return Optional.of(aptitudeTest);
             }
             return Optional.empty();

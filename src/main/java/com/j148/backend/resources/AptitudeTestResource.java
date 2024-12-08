@@ -116,4 +116,23 @@ public class AptitudeTestResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Path("update")
+    public Response update(AptitudeTest aptitudeTest) {
+        try {
+            LOG.info("Starting update flow ");
+            return Response.ok(this.aptitudeTestService.update(aptitudeTest)).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to add aptitude test to the database.  Check for duplicates");
+            System.out.println("sqlException : " + e.getMessage());
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "Aptitude Test object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to add Aptitude Test", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
 }

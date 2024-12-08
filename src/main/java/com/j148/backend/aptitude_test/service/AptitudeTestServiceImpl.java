@@ -91,4 +91,17 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
     public List<AptitudeTest> getAllWrittenTests() throws Exception {
         return aptitudeRepo.retrieveAllWrittenTests().orElseThrow(() -> new RuntimeException("Could not retreive written Aptitdue Tests"));
     }
+
+    @Override
+    public AptitudeTest update(AptitudeTest aptitudeTest) throws Exception {
+        if (aptitudeTest != null) {
+            if (aptitudeTest.getUser() != null) {
+                return aptitudeRepo.update(aptitudeTest).orElseThrow(() -> new RuntimeException("Cannot update aptitude test."));
+            } else {
+                throw new NullPointerException("AptitudeTest cannot be null");
+            }
+        } else {
+            throw new NullPointerException("AptitudeTest cannot be null");
+        }
+    }
 }
