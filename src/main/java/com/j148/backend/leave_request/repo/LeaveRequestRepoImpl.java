@@ -143,7 +143,7 @@ public class LeaveRequestRepoImpl implements LeaveRequestRepo {
         ArrayList<LeaveRequest> leaveRequests = new ArrayList<>();
         Logger logger = Logger.getLogger(this.getClass().getName());
         String query = "SELECT lr.leave_request_id, lr.start_date, lr.end_date, lr.decision, "
-                + "u.name, u.email "
+                + "u.name, u.surname, u.email "
                 + "FROM leave_request lr "
                 + "JOIN contractor c ON lr.contractor_id = c.contractor_id "
                 + "JOIN user u ON c.user_id = u.user_id "
@@ -158,6 +158,7 @@ public class LeaveRequestRepoImpl implements LeaveRequestRepo {
                         .contractor(Contractor.builder()
                                 .user(User.builder()
                                         .name(rs.getString("name"))
+                                        .surname(rs.getString("surname"))
                                         .email(rs.getString("email"))
                                         .build())
                                 .build())
