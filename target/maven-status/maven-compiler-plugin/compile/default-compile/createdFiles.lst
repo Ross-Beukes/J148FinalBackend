@@ -1,3 +1,4 @@
+com\j148\backend\applicant_overview\model\ApplicantOverview$ApplicantOverviewBuilder.class
 com\j148\backend\contract_period\model\ContractPeriod$ContractPeriodBuilder.class
 com\j148\backend\hearing\model\Hearing$HearingBuilder.class
 com\j148\backend\notification\EmailSender.class
@@ -9,8 +10,13 @@ com\j148\backend\contractor_performance\repo\ContractorPerformanceRepoImpl.class
 com\j148\backend\resources\AuthenticationResource.class
 com\j148\backend\leave_request\service\LeaveRequestServiceImpl.class
 com\j148\backend\contractor_performance\service\ContractorPerformanceService.class
+com\j148\backend\applicant_overview\resource\ApplicantOverviewResource.class
+com\j148\backend\applicant_overview\model\ApplicantDocuments$ApplicantDocumentsBuilder.class
 com\j148\backend\notification\EmailSender$2.class
+com\j148\backend\Exceptions\ApplicantNotFoundException.class
+com\j148\backend\files\model\SearchRequest.class
 com\j148\backend\files\model\FileEntity$Category.class
+com\j148\backend\applicant_overview\model\ApplicantOverview.class
 com\j148\backend\contract\service\ContractServiceImpl.class
 com\j148\backend\contractor_performance\resource\ContractorPerformanceResource.class
 com\j148\backend\scheduler\Scheduler.class
@@ -22,14 +28,18 @@ com\j148\backend\contract\resource\ContractResource.class
 com\j148\backend\contractor_history\model\ContractorHistory.class
 com\j148\backend\user\model\User$Role.class
 com\j148\backend\attendance\model\Attendance$Register.class
+com\j148\backend\files\model\SearchRequest$SearchRequestBuilder.class
 com\j148\backend\Exceptions\DateNotFoundException.class
 com\j148\backend\contract_period\resource\ContractPeriodResource.class
+com\j148\backend\applicant_overview\repo\ApplicantOverviewRepoImpl.class
 com\j148\backend\aptitude_test\service\AptitudeTestService.class
 com\j148\backend\contract\repo\ContractRepoImpl.class
 com\j148\backend\files\service\FileEntityService.class
+com\j148\backend\resources\WarningResource.class
 com\j148\backend\warning\model\Warning.class
 com\j148\backend\user\repo\UserRepoImpl.class
 com\j148\backend\files\s3\S3Resource.class
+com\j148\backend\applicant_overview\service\ApplicantOverviewService.class
 com\j148\backend\contractor_performance\service\ContractorPerformanceServiceImpl.class
 com\j148\backend\contractor_performance\repo\ContractorPerformanceRepo.class
 com\j148\backend\contractor\resource\ContractorResource.class
@@ -42,9 +52,11 @@ com\j148\backend\attendance\model\Attendance$AttendanceBuilder.class
 com\j148\backend\hearing\model\Hearing.class
 com\j148\backend\files\repo\FileEntityRepoImpl.class
 com\j148\backend\hearing\service\HearingService.class
+com\j148\backend\applicant_overview\model\ApplicantDocuments.class
 com\j148\backend\warning\resource\WarningResource.class
 com\j148\backend\Exceptions\FileUploadException.class
 com\j148\backend\leave_request\service\LeaveRequestService.class
+com\j148\backend\applicant_overview\repo\ApplicantOverviewRepo.class
 com\j148\backend\warning\model\Warning$WarningState.class
 com\j148\backend\Exceptions\ContractorNotFoundException.class
 com\j148\backend\attendance\service\AttendanceServiceImpl.class
@@ -77,6 +89,7 @@ com\j148\backend\user\repo\UserRepo.class
 com\j148\backend\contractor\model\Contractor$Status.class
 com\j148\backend\leave_request\repo\LeaveRequestRepo.class
 com\j148\backend\resources\JakartaEE91Resource.class
+com\j148\backend\applicant_overview\service\ApplicantOverviewServiceImpl.class
 com\j148\backend\files\model\FileEntity$FileEntityBuilder.class
 com\j148\backend\contract\service\ContractService.class
 com\j148\backend\user\service\UserService.class
@@ -87,6 +100,7 @@ com\j148\backend\contract_period\repo\ContractPeriodRepoImpl.class
 com\j148\backend\contract_period\repo\ContractPeriodRepo.class
 com\j148\backend\contractor\model\Contractor$ContractorBuilder.class
 com\j148\backend\warning\repo\WarningRepo.class
+com\j148\backend\Exceptions\ApplicantOverviewNotFoundException.class
 com\j148\backend\user\model\User.class
 com\j148\backend\aptitude_test\model\AptitudeTest.class
 com\j148\backend\contractor\service\ContractorService.class
