@@ -2,18 +2,16 @@ package com.j148.backend.aptitude_test.service;
 
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.aptitude_test.repo.AptitudeRepo;
-import com.j148.backend.aptitude_test.repo.AptitudeTestRepoImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
-import com.j148.backend.user.repo.UserRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
 
 import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class AptitudeTestServiceImpl implements AptitudeTestService {
@@ -49,6 +47,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         aptitudeTest.setUser(user);
 
         return aptitudeRepo.create(aptitudeTest).orElseThrow(() -> new RuntimeException("failed to schedule aptitude test"));
+
     }
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})

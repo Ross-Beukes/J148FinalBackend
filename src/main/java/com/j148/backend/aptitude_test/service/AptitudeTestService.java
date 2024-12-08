@@ -3,6 +3,7 @@ package com.j148.backend.aptitude_test.service;
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.user.model.User;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Service interface for managing aptitude test operations in the HRMS system.
@@ -43,9 +44,10 @@ public interface AptitudeTestService {
     
     /**
      * Retrieves a specific users aptitude test by their user ID.
+     *
      * @param user
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     AptitudeTest retrieveAptitudeTestByUserId(User user) throws Exception;
     

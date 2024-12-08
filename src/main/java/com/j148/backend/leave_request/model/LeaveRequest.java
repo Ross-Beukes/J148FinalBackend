@@ -14,12 +14,10 @@ public class LeaveRequest {
     @NotNull(message = "Leave request ID cannot be Null")
     @Min(value = 1, message = "Leave request ID cannot be less than 1")
     private Long leaveRequestId;
-    
     private LocalDate startDate;
     private LocalDate endDate;
     private Decision decision;
     private Contractor contractor;
-    private FileEntity file;
 
 
     public enum Decision {

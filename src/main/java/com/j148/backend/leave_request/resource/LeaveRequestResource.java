@@ -14,6 +14,8 @@ import com.j148.backend.leave_request.service.LeaveRequestServiceImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -32,13 +34,18 @@ import java.util.logging.Logger;
  *
  * @author yusuf
  */
-
+@RequestScoped
 @Path("leave-request")
 public class LeaveRequestResource {
 
-    private LeaveRequestService leaveRequestService = new LeaveRequestServiceImpl();
-    private UserService userService = new UserServiceImpl();
-    private ContractorService contractorService = new ContractorServiceImpl();
+    @Inject
+    private LeaveRequestService leaveRequestService;
+    
+    @Inject
+    private UserService userService;
+    
+    @Inject
+    private ContractorService contractorService;
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
 	
     @POST
@@ -56,8 +63,8 @@ public class LeaveRequestResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-date-range/{start-date}/{end-date}")
-    public Response getLeaveRequestsInDateRange(@PathParam("start-date") String startDate, @PathParam("end-date") String endDate) {
+    @Path("get-leave-requests-by-date-range")
+    public Response getLeaveRequestsInDateRange(@QueryParam("start-date") String startDate, @QueryParam("end-date") String endDate) {
         try {
             return Response.ok(this.leaveRequestService.retrieveAllLeaveRequestsBetweenDates(LocalDate.parse(startDate), LocalDate.parse(endDate))).build();
         } catch (Exception ex) {
@@ -68,8 +75,8 @@ public class LeaveRequestResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-contractor/{email}")
-    public Response getLeaveRequestsByContractor(@PathParam("email") String email) {
+    @Path("get-leave-requests-by-contractor")
+    public Response getLeaveRequestsByContractor(@QueryParam("email") String email) {
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);
@@ -83,8 +90,8 @@ public class LeaveRequestResource {
 
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-pending-contractor-leave-requests/{email}")
-    public Response getPendingLeaveRequestsByContractor(@PathParam("email") String email) {
+    @Path("get-pending-contractor-leave-requests")
+    public Response getPendingLeaveRequestsByContractor(@QueryParam("email") String email) {
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);

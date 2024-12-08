@@ -37,7 +37,7 @@ import static org.openxmlformats.schemas.drawingml.x2006.chart.STTrendlineType.L
  */
 
 @RequestScoped
-@Path("file-entity")
+@Path("files_entity")
 @Produces(APPLICATION_JSON)
 public class FileEntityResource {
     @Inject
