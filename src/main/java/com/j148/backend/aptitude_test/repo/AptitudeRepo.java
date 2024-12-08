@@ -59,4 +59,6 @@ public interface AptitudeRepo {
      * @throws SQLException 
      */
     Optional<AptitudeTest> retrieveAptitudeTestByUserId (User user) throws SQLException;
+
+    Optional<List<AptitudeTest>> retrieveAllWrittenTests() throws SQLException;
 }

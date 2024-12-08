@@ -96,4 +96,22 @@ public class AptitudeTestResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
+
+    @GET
+    @Path("written-tests")
+    public Response getWrittenTests() {
+        try {
+            return Response.ok(this.aptitudeTestService.getAllWrittenTests()).build();
+        } catch (SQLException e) {
+            LOG.log(Level.SEVERE, "Unable to change aptitude test in the database.");
+            System.out.println("sqlException : " + e.getMessage());
+            return Response.status(Response.Status.CONFLICT).build();
+        } catch (IllegalArgumentException e) {
+            LOG.log(Level.SEVERE, "Aptitude Test object not complete.");
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } catch (Exception e) {
+            LOG.log(Level.SEVERE, "Unable to find Aptitude Test", e);
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
+        }
+    }
 }
