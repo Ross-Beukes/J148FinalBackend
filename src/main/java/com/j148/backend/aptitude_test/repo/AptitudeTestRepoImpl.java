@@ -171,6 +171,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
                             .user(user).build();
                     writtenTests.add(aptitudeTest);
                 }
+                System.out.println("Here are the written tests : " + writtenTests);
                 return Optional.of(writtenTests);
             }
         }

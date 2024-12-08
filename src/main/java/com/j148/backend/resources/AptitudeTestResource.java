@@ -101,6 +101,7 @@ public class AptitudeTestResource {
     @Path("written-tests")
     public Response getWrittenTests() {
         try {
+            LOG.info("Initiating process for receiving all written tests");
             return Response.ok(this.aptitudeTestService.getAllWrittenTests()).build();
         } catch (SQLException e) {
             LOG.log(Level.SEVERE, "Unable to change aptitude test in the database.");
@@ -111,6 +112,7 @@ public class AptitudeTestResource {
             return Response.status(Response.Status.BAD_REQUEST).build();
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Unable to find Aptitude Test", e);
+            e.getMessage();
             return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
         }
     }
