@@ -148,6 +148,7 @@ public class LeaveRequestRepoImpl   implements LeaveRequestRepo {
                         .endDate(rs.getDate("end_date").toLocalDate())
                         .decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                         .contractor(Contractor.builder()
+                                .contractorId(rs.getLong("contractor_id"))
                                 .user(User.builder()
                                         .name(rs.getString("name"))
                                         .email(rs.getString("email"))
