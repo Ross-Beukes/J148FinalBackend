@@ -85,9 +85,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
         return copyMap;
     }
     @Override
-    public List<LeaveRequest> retrieveAllLeaveRequest() {
+    public ArrayList<LeaveRequest> retrieveAllLeaveRequest() {
         try {
-            List<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
+            ArrayList<LeaveRequest> leaveRequests = leaveRequestRepo.retrieveAllLeaveRequest();
 
             if (leaveRequests == null || leaveRequests.isEmpty()) {
                 throw new LeaveRequestNotFoundException("No leave requests found in the system.");
@@ -126,6 +126,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public LeaveRequest updateLeaveRequestDecision(LeaveRequest leaveRequest) throws Exception {
+        System.out.println(leaveRequest);
         if (leaveRequest != null) {
             LeaveRequest foundRequest = retrieveLeaveRequestByID(leaveRequest);
             if (foundRequest.getDecision() == Decision.APPROVED || foundRequest.getDecision() == Decision.DENIED) {

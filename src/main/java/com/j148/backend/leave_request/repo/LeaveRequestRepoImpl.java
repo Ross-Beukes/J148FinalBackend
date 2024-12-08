@@ -166,6 +166,7 @@ public class LeaveRequestRepoImpl implements LeaveRequestRepo {
                     contractor.setUser(user);
 
                     // Set leave request details
+                    leaveRequest.setLeaveRequestId(rs.getLong("leave_request_id"));
                     leaveRequest.setStartDate(rs.getDate("start_date").toLocalDate());
                     leaveRequest.setEndDate(rs.getDate("end_date").toLocalDate());
                     leaveRequest.setDecision(LeaveRequest.Decision.valueOf(rs.getString("decision").toUpperCase()));

@@ -11,6 +11,7 @@ import com.sun.jdi.AbsentInformationException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +36,6 @@ public interface LeaveRequestService {
 
     LeaveRequest retrieveLeaveRequestByID (LeaveRequest leaveRequest) throws Exception;
 	
-    List<LeaveRequest> retrieveAllLeaveRequest() throws Exception;
+    ArrayList<LeaveRequest> retrieveAllLeaveRequest() throws Exception;
 
 }
