@@ -12,7 +12,6 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
-import com.j148.backend.leave_request.repo.LeaveRequestRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -20,7 +19,6 @@ import jakarta.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 

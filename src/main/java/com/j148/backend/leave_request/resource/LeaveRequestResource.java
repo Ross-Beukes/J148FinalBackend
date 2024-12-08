@@ -10,21 +10,22 @@ import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.contractor.service.ContractorServiceImpl;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.service.LeaveRequestService;
-import com.j148.backend.leave_request.service.LeaveRequestServiceImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.service.UserService;
 import com.j148.backend.user.service.UserServiceImpl;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.*;
-import jakarta.ws.rs.core.Response.ResponseBuilder;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,15 +33,23 @@ import java.util.logging.Logger;
  *
  * @author yusuf
  */
-
+@RequestScoped
 @Path("leave-request")
 public class LeaveRequestResource {
 
-    private LeaveRequestService leaveRequestService = new LeaveRequestServiceImpl();
+    @Inject
+    private LeaveRequestService leaveRequestService;
+    
     private UserService userService = new UserServiceImpl();
     private ContractorService contractorService = new ContractorServiceImpl();
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
-	
+
+    
+    @GET
+    public Response pingUserResource() {
+        return Response.ok("Successfully pinged User Resource").build();
+    }
+    
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
@@ -115,22 +124,31 @@ public class LeaveRequestResource {
     @Path("retrieve-all-leave-request")
     public Response retrieveAllLeaveRequest() {
         try {
+            List<LeaveRequest> leaveRequests = leaveRequestService.retrieveAllLeaveRequest();
+
+            if (leaveRequests == null || leaveRequests.isEmpty()) {
+                Logger.getLogger(LeaveRequestResource.class.getName())
+                        .log(Level.WARNING, "No leave requests found");
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(Collections.singletonMap("error", "No leave requests found."))
+                        .build();
+            }
+
             // Successful response
-            return Response.ok(leaveRequestService.retrieveAllLeaveRequest()).build();
+            return Response.ok(leaveRequests).build();
         } catch (LeaveRequestNotFoundException e) {
-            // 404 - No leave requests found
             Logger.getLogger(LeaveRequestResource.class.getName())
                     .log(Level.WARNING, "No leave requests found: {0}", e.getMessage());
             return Response.status(Response.Status.NOT_FOUND)
-                    .entity("No leave requests found.")
+                    .entity(Collections.singletonMap("error", "No leave requests found."))
                     .build();
         } catch (Exception e) {
-            // 500 - Server error
             Logger.getLogger(LeaveRequestResource.class.getName())
-                    .log(Level.SEVERE, "Error retrieving leave requests: {0}", e.getMessage());
+                    .log(Level.SEVERE, "Error retrieving leave requests", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("An unexpected error occurred while retrieving leave requests.")
+                    .entity(Collections.singletonMap("error", "An unexpected error occurred while retrieving leave requests."))
                     .build();
         }
     }
+
 }

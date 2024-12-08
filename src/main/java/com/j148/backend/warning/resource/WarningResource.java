@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * WarningResource handles HTTP requests related to warning operations.
  */
 @RequestScoped
-@Path("warning")
+@Path("warnings")
 public class WarningResource {
 
     @Inject
