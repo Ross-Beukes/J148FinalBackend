@@ -27,7 +27,7 @@ public class AptitudeTestResource {
 
     @Inject
     private AptitudeTestService aptitudeTestService;
-    private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
+    private static final Logger LOG = Logger.getLogger(AptitudeTestResource.class.getName());
 
     @GET
     public Response pingUserResource() {
