@@ -1,4 +1,3 @@
-
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -157,13 +156,43 @@ public class ContractorPerformanceResource {
     public Response downloadFile() {
         try {
             byte[] fileContent = generateExcelFile.downloadReportFile();
+
+            // Check if file content is null or empty, indicating generation failure
+            if (fileContent == null || fileContent.length == 0) {
+                String errorMessage = "File could not be generated. Please try again.";
+                Logger.getLogger(ContractorPerformanceResource.class.getName())
+                        .log(Level.SEVERE, errorMessage);
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                        .entity(errorMessage)
+                        .type("text/plain")
+                        .build();
+            }
+
+            // Return the generated file as response
             return Response.ok(fileContent)
                     .type("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     .header("Content-Disposition", "attachment; filename=\"report.xlsx\"")
                     .build();
-        } catch (Exception ex) {
-            Logger.getLogger(ContractorPerformanceResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid").build();
+
+        } catch (RuntimeException e) {
+            // Handle specific error related to invalid arguments (e.g., Excel generation issues)
+            String errorMessage = "Error generating the report: Invalid data or configuration.";
+            Logger.getLogger(ContractorPerformanceResource.class.getName())
+                    .log(Level.SEVERE, errorMessage, e);
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(errorMessage)
+                    .type("text/plain")
+                    .build();
+
+        } catch (Exception e) {
+            // Catch unexpected errors and log them
+            String errorMessage = "An unexpected error occurred while generating the report.";
+            Logger.getLogger(ContractorPerformanceResource.class.getName())
+                    .log(Level.SEVERE, errorMessage, e);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(errorMessage)
+                    .type("text/plain")
+                    .build();
         }
     }
 
