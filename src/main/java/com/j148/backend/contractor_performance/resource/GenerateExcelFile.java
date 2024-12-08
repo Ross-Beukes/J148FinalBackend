@@ -439,8 +439,9 @@ public class GenerateExcelFile {
             categoryAxis.setTitle("Age Range");
 
             // Set the data for the category axis (age ranges)
+            System.out.println(warningsByAgeRange.size());
             XDDFDataSource<String> ageCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(2, 2 + warningsByAgeRange.size() - 1, 0, 0));
+                    new CellRangeAddress(2, warningsByAgeRange.size() + 1, 0, 0));
 
             // Create the value axis (Y-axis)
             XDDFValueAxis valueAxis = (XDDFValueAxis) ageChart.createValueAxis(AxisPosition.BOTTOM);
@@ -448,7 +449,7 @@ public class GenerateExcelFile {
 
             // Set the data for the value axis (contractor counts)
             XDDFNumericalDataSource<Double> ageValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(2, 2 + warningsByAgeRange.size() - 1, 1, 1));
+                    new CellRangeAddress(2, warningsByAgeRange.size() + 1, 1, 1));
 
             // Create chart data for the bar chart
             XDDFBarChartData ageData = (XDDFBarChartData) ageChart.createData(ChartTypes.BAR, categoryAxis, valueAxis);
@@ -471,9 +472,9 @@ public class GenerateExcelFile {
             femaleChart.setTitleOverlay(false);
             femaleChart.getOrAddLegend();
             XDDFDataSource<String> femaleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(6, 6 + femaleWarnings.size() - 1, 0, 0));
+                    new CellRangeAddress(2 + warningsByAgeRange.size() + 1, 2 + warningsByAgeRange.size() + 2, 0, 0));
             XDDFNumericalDataSource<Double> femaleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(6, 6 + femaleWarnings.size() - 1, 1, 1)); // Fix range alignment
+                    new CellRangeAddress(2 + warningsByAgeRange.size() + 1, 2 + warningsByAgeRange.size() + 2, 1, 1)); // Fix range alignment
             XDDFChartData femaleData = femaleChart.createData(ChartTypes.PIE, null, null);
             XDDFChartData.Series femaleSeries = femaleData.addSeries(femaleCategories, femaleValues);
             femaleChart.plot(femaleData);
@@ -485,9 +486,9 @@ public class GenerateExcelFile {
             maleChart.setTitleOverlay(false);
             maleChart.getOrAddLegend();
             XDDFDataSource<String> maleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(9, 9 + maleWarnings.size() - 1, 0, 0));
+                    new CellRangeAddress(2 + warningsByAgeRange.size() + 1 + femaleWarnings.size() + 1, 2 + warningsByAgeRange.size() + 1 + femaleWarnings.size() + maleWarnings.size(), 0, 0));
             XDDFNumericalDataSource<Double> maleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(9, 9 + maleWarnings.size() - 1, 1, 1)); // Ensure correct range for male data
+                    new CellRangeAddress(2 + warningsByAgeRange.size() + 1 + femaleWarnings.size() + 1, 2 + warningsByAgeRange.size() + 1 + femaleWarnings.size() + maleWarnings.size(), 1, 1)); // Ensure correct range for male data
             XDDFChartData maleData = maleChart.createData(ChartTypes.PIE, null, null);
             XDDFChartData.Series maleSeries = maleData.addSeries(maleCategories, maleValues);
             maleChart.plot(maleData);
@@ -588,7 +589,7 @@ public class GenerateExcelFile {
 
             // Set the data for the category axis (age ranges)
             ageCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(2, 2 + hearingsByAgeRange.size() - 1, 0, 0));
+                    new CellRangeAddress(2, hearingsByAgeRange.size() + 1, 0, 0));
 
             // Create the value axis (Y-axis)
             valueAxis = (XDDFValueAxis) ageChart.createValueAxis(AxisPosition.BOTTOM);
@@ -596,7 +597,7 @@ public class GenerateExcelFile {
 
             // Set the data for the value axis (contractor counts)
             ageValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(2, 2 + hearingsByAgeRange.size() - 1, 1, 1));
+                    new CellRangeAddress(2, hearingsByAgeRange.size() + 1, 1,1));
 
             // Create chart data for the bar chart
             ageData = (XDDFBarChartData) ageChart.createData(ChartTypes.BAR, categoryAxis, valueAxis);
@@ -619,9 +620,9 @@ public class GenerateExcelFile {
             femaleChart.setTitleOverlay(false);
             femaleChart.getOrAddLegend();
             femaleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(6, 6 + femaleHearings.size() - 1, 0, 0));
+                    new CellRangeAddress(2 + hearingsByAgeRange.size() + 1, 2 + hearingsByAgeRange.size() + femaleHearings.size() , 0, 0));
             femaleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(6, 6 + femaleHearings.size() - 1, 1, 1)); // Fix range alignment
+                    new CellRangeAddress(2 + hearingsByAgeRange.size() + 1, 2 + hearingsByAgeRange.size() + femaleHearings.size(), 1, 1)); // Fix range alignment
             femaleData = femaleChart.createData(ChartTypes.PIE, null, null);
             femaleSeries = femaleData.addSeries(femaleCategories, femaleValues);
             femaleChart.plot(femaleData);
@@ -633,9 +634,9 @@ public class GenerateExcelFile {
             maleChart.setTitleOverlay(false);
             maleChart.getOrAddLegend();
             maleCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(9, 9 + maleHearings.size() - 1, 0, 0));
+                    new CellRangeAddress(2 + hearingsByAgeRange.size() + 1 + femaleHearings.size() + 1, 2 + hearingsByAgeRange.size() + femaleHearings.size() + maleHearings.size() + 1, 0, 0));
             maleValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(9, 9 + maleHearings.size() - 1, 1, 1)); // Ensure correct range for male data
+                    new CellRangeAddress(2 + hearingsByAgeRange.size() + 1 + femaleHearings.size() + 1, 2 + hearingsByAgeRange.size() + femaleHearings.size() + maleHearings.size() + 1, 1, 1)); // Ensure correct range for male data
             maleData = maleChart.createData(ChartTypes.PIE, null, null);
             maleSeries = maleData.addSeries(maleCategories, maleValues);
             maleChart.plot(maleData);
@@ -819,9 +820,9 @@ public class GenerateExcelFile {
             genderChart.setTitleOverlay(false);
             genderChart.getOrAddLegend();
             XDDFDataSource<String> genderCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(2, 2 + contractorsByGender.size() - 1, 0, 0));
+                    new CellRangeAddress(2, contractorsByGender.size() + 1, 0, 0));
             XDDFNumericalDataSource<Double> genderValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(2, 2 + contractorsByGender.size() - 1, 1, 1));
+                    new CellRangeAddress(2, contractorsByGender.size() + 1, 1, 1));
             XDDFChartData genderData = genderChart.createData(ChartTypes.PIE, null, null);
             XDDFChartData.Series genderSeries = genderData.addSeries(genderCategories, genderValues);
             genderChart.plot(genderData);
@@ -833,9 +834,9 @@ public class GenerateExcelFile {
             raceChart.setTitleOverlay(false);
             raceChart.getOrAddLegend();
             XDDFDataSource<String> raceCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(3 + contractorsByGender.size(), 3 + contractorsByGender.size() + contractorsByRace.size() - 1, 0, 0));
+                    new CellRangeAddress(2 + contractorsByGender.size() + 1, 2 + contractorsByGender.size() + contractorsByRace.size(), 0, 0));
             XDDFNumericalDataSource<Double> raceValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(3 + contractorsByGender.size(), 3 + contractorsByGender.size() + contractorsByRace.size() - 1, 1, 1));
+                    new CellRangeAddress(2 + contractorsByGender.size() + 1, 2 + contractorsByGender.size() + contractorsByRace.size(), 1, 1));
             XDDFChartData raceData = raceChart.createData(ChartTypes.PIE, null, null);
             XDDFChartData.Series raceSeries = raceData.addSeries(raceCategories, raceValues);
             raceChart.plot(raceData);
@@ -856,11 +857,11 @@ public class GenerateExcelFile {
 // Create data sources from the summary sheet
             XDDFDataSource<String> statusCategories = XDDFDataSourcesFactory.fromStringCellRange(
                     (XSSFSheet) summarySheet,
-                    new CellRangeAddress(10, 10 + contractorsByStatus.size() - 1, 0, 0) // Adjust row range for status
+                    new CellRangeAddress(2 + contractorsByGender.size() + 1 + contractorsByRace.size() + 1, 2 + contractorsByGender.size() + 1 + contractorsByRace.size() + contractorsByStatus.size(), 0, 0) // Adjust row range for status
             );
             XDDFNumericalDataSource<Double> statusValues = XDDFDataSourcesFactory.fromNumericCellRange(
                     (XSSFSheet) summarySheet,
-                    new CellRangeAddress(10, 10 + contractorsByStatus.size() - 1, 1, 1) // Adjust column range for values
+                    new CellRangeAddress(2 + contractorsByGender.size() + 1 + contractorsByRace.size() + 1, 2 + contractorsByGender.size() + 1 + contractorsByRace.size() + contractorsByStatus.size(), 1, 1) // Adjust column range for values
             );
 
 // Create the bar chart data
@@ -889,7 +890,7 @@ public class GenerateExcelFile {
 
             // Set the data for the category axis (age ranges)
             ageCategories = XDDFDataSourcesFactory.fromStringCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(15, 15 + contractorsByAgeRange.size() - 1, 0, 0));
+                    new CellRangeAddress(2 + contractorsByGender.size() + 1 + contractorsByRace.size() + 1 + contractorsByStatus.size() + 1, 2 + contractorsByGender.size()  + contractorsByRace.size() + 1 + contractorsByStatus.size() + contractorsByAgeRange.size() + 1, 0, 0));
 
             // Create the value axis (Y-axis)
             valueAxis = (XDDFValueAxis) ageChart.createValueAxis(AxisPosition.BOTTOM);
@@ -897,7 +898,7 @@ public class GenerateExcelFile {
 
             // Set the data for the value axis (contractor counts)
             ageValues = XDDFDataSourcesFactory.fromNumericCellRange((XSSFSheet) summarySheet,
-                    new CellRangeAddress(15, 15 + contractorsByAgeRange.size() - 1, 1, 1));
+                    new CellRangeAddress(2 + contractorsByGender.size() + 1 + contractorsByRace.size() + 1 + contractorsByStatus.size() + 1, 2 + contractorsByGender.size()  + contractorsByRace.size() + 1 + contractorsByStatus.size() + contractorsByAgeRange.size() + 1, 1, 1));
 
             // Create chart data for the bar chart
             ageData = (XDDFBarChartData) ageChart.createData(ChartTypes.BAR, categoryAxis, valueAxis);
