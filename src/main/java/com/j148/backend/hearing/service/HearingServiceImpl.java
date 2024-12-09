@@ -27,7 +27,6 @@ public class HearingServiceImpl implements HearingService {
     @Inject
     private WarningRepo warningRepo;
 
-
     @Override
     public LocalDateTime scheduleHearing() throws Exception {
         // get one week to the current date and time
@@ -115,8 +114,8 @@ public class HearingServiceImpl implements HearingService {
         return hearingRepo.updateHearing(hearing)
                 .orElseThrow(() -> new RuntimeException("Failed to reschedule hearing"));
     }
-    
-    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
+
+
     @Override
     public List<Hearing> getAllHearings() throws Exception {
         return hearingRepo.findAllHearings();
@@ -135,7 +134,7 @@ public class HearingServiceImpl implements HearingService {
         if (hearingRepo.getHearing(hearing).isEmpty()) {
             throw new IllegalArgumentException("Could not find hearing");
         }
-        
+
         if (hearing.getOutcome().equals(Hearing.Outcome.SUSPENDED)) {
             Contractor contractor = hearing.getContractor();
             contractor.setStatus(Contractor.Status.SUSPENDED);

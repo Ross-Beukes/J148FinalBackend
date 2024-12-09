@@ -106,7 +106,7 @@ public class HearingRepoImpl   implements HearingRepo {
     @Override
     public List<Hearing> findAllHearings() throws SQLException {
 
-         String query = """
+        String query = """
                        SELECT 
                                u.user_id,
                                u.name,
@@ -142,7 +142,7 @@ public class HearingRepoImpl   implements HearingRepo {
                             .user(user)
                             .status(Contractor.Status.valueOf(rs.getString("status")))
                             .build();
-                    
+
                     Hearing retrievedHearing = Hearing.builder()
                             .hearingsId(rs.getLong("hearings_id"))
                             .contractor(contractor)

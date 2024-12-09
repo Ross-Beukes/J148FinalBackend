@@ -11,7 +11,6 @@ import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class AptitudeTestServiceImpl implements AptitudeTestService {
@@ -19,9 +18,9 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
     @Inject
     private AptitudeRepo aptitudeRepo;
     @Inject
-    private UserRepo userRepo;
+    private UserRepo userRepo ;
 
-    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public AptitudeTest scheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {
 
@@ -36,7 +35,8 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
-        if (userRepo.retrieveUserFromUserID(user).isEmpty()) {
+
+        if (userRepo.retrieveUserFromUserID(user).isEmpty()){
             throw new IllegalArgumentException("User not found");
         }
 
@@ -47,10 +47,9 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
         aptitudeTest.setUser(user);
 
         return aptitudeRepo.create(aptitudeTest).orElseThrow(() -> new RuntimeException("failed to schedule aptitude test"));
-
     }
 
-    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
+    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
     @Override
     public AptitudeTest rescheduleTest(AptitudeTest aptitudeTest, User user) throws Exception {
 
@@ -61,7 +60,7 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
             throw new IllegalArgumentException("Aptitude test date or id is null");
         }
 
-        if (userRepo.retrieveUserFromUserID(user).isEmpty()) {
+        if (userRepo.retrieveUserFromUserID(user).isEmpty()){
 
             throw new IllegalArgumentException("User not found");
         }
@@ -88,7 +87,6 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
             throw new NullPointerException("User cannot be null when retrieving aptitude test by user ID");
         }
     }
-
     @Override
     public List<AptitudeTest> getAllWrittenTests() throws Exception {
         return aptitudeRepo.retrieveAllWrittenTests().orElseThrow(() -> new RuntimeException("Could not retreive written Aptitdue Tests"));

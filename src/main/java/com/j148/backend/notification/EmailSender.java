@@ -9,6 +9,7 @@ package com.j148.backend.notification;
  * @author Tshireletso
  */
 
+import jakarta.activation.DataHandler;
 import jakarta.ejb.Singleton;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -21,10 +22,13 @@ import jakarta.mail.Authenticator;
 import jakarta.mail.Multipart;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.util.ByteArrayDataSource;
+
 import java.io.File;
 import java.io.IOException;
- 
 
+
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -65,20 +69,19 @@ public class EmailSender {
         System.out.println("Notification successfully sent");
         
     }
-    
-     public void sendEmailWithAttachment(String sendTo,String body ,String subject,File attachment) throws MessagingException {
-        String email = "xavierdovah124";
+
+    public void sendEmailWithAttachment(String sendTo, String body, String subject,
+                                        InputStream attachmentStream, String fileName) throws MessagingException {
+        String email = "xavierdovah124@gmail.com"; // Ensure full email address
         String password = "evba attv nsgw ymlz";
-        
-        //Configuring properties
+
         Properties properties = new Properties();
         properties.put("mail.smtp.host", "smtp.gmail.com");
-        properties.put("mail.smtp.port","587" );
+        properties.put("mail.smtp.port", "587");
         properties.put("mail.smtp.auth", "true");
         properties.put("mail.smtp.starttls.enable", "true");
         properties.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 
-     
         Session session = Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -86,37 +89,49 @@ public class EmailSender {
             }
         });
 
-       
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(email));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(sendTo));
-        message.setSubject(subject);
-        
-        // Create the MimeBodyPart for the email body
-            MimeBodyPart bodyPart = new MimeBodyPart();
-            bodyPart.setText(body);
-
-            // Create BodyPart for the attachment
-            MimeBodyPart attachmentPart = new MimeBodyPart();
         try {
-            attachmentPart.attachFile(attachment);
-        } catch (IOException ex) {
-            Logger.getLogger(EmailSender.class.getName()).log(Level.SEVERE, "Error while attacing this file", ex);
-        }
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(email));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(sendTo));
+            message.setSubject(subject);
 
-            // message body and attachment
+            // Create the message body part
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(body);
+
+            // Create the attachment part
+            MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+            // Use DataSource instead of direct InputStream
+            ByteArrayDataSource dataSource = new ByteArrayDataSource(attachmentStream, "application/pdf");
+            attachmentBodyPart.setDataHandler(new DataHandler(dataSource));
+            attachmentBodyPart.setFileName(fileName);
+
+            // Create the multipart message
             Multipart multipart = new MimeMultipart();
-            multipart.addBodyPart(bodyPart);
-            multipart.addBodyPart(attachmentPart);
+            multipart.addBodyPart(messageBodyPart);
+            multipart.addBodyPart(attachmentBodyPart);
 
-            
-           
+            // Set the content
             message.setContent(multipart);
-    
-      
-        Transport.send(message);
-        System.out.println("Notification successfully sent");
-        
+
+            // Send the message
+            Transport.send(message);
+
+            Logger.getLogger(EmailSender.class.getName()).info(
+                    "Email notification successfully sent to " + sendTo);
+
+        } catch (IOException ex) {
+            Logger.getLogger(EmailSender.class.getName()).log(Level.SEVERE,
+                    "Error while handling attachment", ex);
+            throw new MessagingException("Failed to process attachment", ex);
+        } finally {
+            try {
+                attachmentStream.close();
+            } catch (IOException e) {
+                Logger.getLogger(EmailSender.class.getName()).log(Level.WARNING,
+                        "Error closing attachment stream", e);
+            }
+        }
     }
     
         

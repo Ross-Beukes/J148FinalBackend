@@ -3,17 +3,19 @@ package com.j148.backend.resources;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
 import com.j148.backend.hearing.service.HearingService;
+import com.j148.backend.hearing.service.HearingServiceImpl;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Application;
 import jakarta.ws.rs.core.Response;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import java.util.List;
 @RequestScoped
 @Path("hearing")
 public class RescheduleHearingResource {
@@ -45,7 +47,7 @@ public class RescheduleHearingResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
-    
+
     @GET
     @Produces(APPLICATION_JSON)
     @Path("all-hearings")
@@ -59,7 +61,7 @@ public class RescheduleHearingResource {
                     .entity("Error retrieving all hearings").build();
         }
     }
-    
+
     @POST
     @Consumes(APPLICATION_JSON)
     @Path("update-hearing")

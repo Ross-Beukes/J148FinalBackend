@@ -22,7 +22,7 @@ public interface LeaveRequestService {
 
     LeaveRequest createLeaveRequest(LeaveRequest leaveRequest) throws Exception;
 
-    AbstractMap<Long, LeaveRequest> retrieveAllLeaveRequests() throws Exception;
+    ArrayList<LeaveRequest> retrieveAllLeaveRequest() throws Exception;
 
     AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws Exception;
 
