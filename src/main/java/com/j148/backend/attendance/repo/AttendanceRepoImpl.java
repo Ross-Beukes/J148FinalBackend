@@ -31,11 +31,12 @@ public class AttendanceRepoImpl implements AttendanceRepo {
     
     @Override
     public Optional<Attendance> createAttendanceRecord(Attendance attendance) throws SQLException {
-        String query = "INSERT into attendance (time_in, register, contractor_id) VALUES (?,?,?)";
+        String query = "INSERT into attendance (time_in, register, contractor_id,time_out) VALUES (?,?,?,?)";
         try (Connection con = DBConfig.getCon(); PreparedStatement statement = con.prepareStatement(query)) {
             statement.setTimestamp(1, Timestamp.valueOf(attendance.getTimeIn()));
             statement.setString(2, attendance.getRegister().name());
             statement.setLong(3, attendance.getContractor().getContractorId());
+            statement.setTimestamp(4, Timestamp.valueOf(attendance.getTimeOut()));
             int affectedRows = statement.executeUpdate();
             
             if (affectedRows > 0) {
