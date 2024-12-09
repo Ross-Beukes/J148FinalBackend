@@ -25,7 +25,7 @@ public class WarningResource {
 
     @Inject
     private WarningService warningService;
-    private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
+    //private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
 
     @GET
     public Response pingUserResource() {
