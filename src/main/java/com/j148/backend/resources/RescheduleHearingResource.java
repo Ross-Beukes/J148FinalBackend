@@ -56,7 +56,7 @@ public class RescheduleHearingResource {
             List<Hearing> hearings = (List<Hearing>) hearingService.getAllHearings();
             return Response.ok(hearings).build();
         } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Error retrieving contract periods", e);
+            LOG.log(Level.SEVERE, "Error retrieving hearings", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving all hearings").build();
         }
