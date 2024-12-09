@@ -116,7 +116,9 @@ public class WarningServiceImpl implements WarningService {
     }
 
     @Override
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     public Warning updateState(Warning warning) throws SQLException {
+        if (warning.getWarningId() != null)
         warning.setState(Warning.WarningState.APPEALED);
         return warning;
     }
