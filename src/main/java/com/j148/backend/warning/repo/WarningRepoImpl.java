@@ -334,29 +334,6 @@ public class WarningRepoImpl implements WarningRepo {
         return Optional.of(warnings);
     }
 
-    public Optional<List<Warning>> findAllWarningsByContractor(Contractor contractor) throws SQLException {
-        String sql = """
-                SELECT w.*, c.*, u.*, cp.*
-                FROM warning w 
-                JOIN contractor c ON w.contractor_id = c.contractor_id 
-                JOIN user u ON c.user_id = u.user_id 
-                JOIN contractor_period cp ON c.contractor_period_id = cp.contractor_period_id
-                WHERE w.contractor_id = ?
-                """;
-
-        List<Warning> warnings = new ArrayList<>();
-
-        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, contractor.getContractorId());
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    warnings.add(mapWarningFromResultSet(rs));
-                }
-            }
-        }
-        return Optional.of(warnings);
-    }
 
     private Warning mapWarningFromResultSet(ResultSet rs) throws SQLException {
         return Warning.builder()

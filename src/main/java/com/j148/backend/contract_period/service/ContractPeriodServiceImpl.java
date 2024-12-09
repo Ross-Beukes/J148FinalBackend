@@ -50,7 +50,7 @@ public class ContractPeriodServiceImpl implements ContractPeriodService {
         Optional<ContractPeriod> foundContractPeriod = contractPeriodRepo.findById(contractPeriod);
 
         return foundContractPeriod.get();
-        
+
     }
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
