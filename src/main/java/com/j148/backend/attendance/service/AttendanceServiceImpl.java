@@ -53,6 +53,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
             if (foundAttendance == null) {
                 attendance.setTimeIn(LocalDateTime.now());
+                attendance.setTimeOut(attendance.getTimeIn());
                 LocalTime targetTime = LocalTime.of(8, 30);
                 LocalTime currentTime = LocalTime.now();
                 if (currentTime.isAfter(targetTime)) {
