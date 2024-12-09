@@ -278,7 +278,9 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
                                 .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
                                 .build();
                         cp.getAttendanceList().add(attendance);
-                        attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        if(rs.getTimestamp("time_in") != null || rs.getTimestamp("time_out") != null) {
+                            attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        }
                     }
 
                     // Populate Hearing
