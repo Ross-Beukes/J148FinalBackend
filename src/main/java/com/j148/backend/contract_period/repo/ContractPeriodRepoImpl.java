@@ -6,6 +6,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 /**Martinez*/
 @ApplicationScoped
@@ -54,7 +56,7 @@ public class ContractPeriodRepoImpl implements ContractPeriodRepo {
                                     .name(rs.getString("name"))
                                     .startDate(rs.getDate("start_date").toLocalDate())
                                     .endDate(rs.getDate("end_date").toLocalDate())
-                            .build()
+                                    .build()
                     );
                 }
             }
@@ -129,7 +131,6 @@ public class ContractPeriodRepoImpl implements ContractPeriodRepo {
 
     }
 
-
     @Override
     public Optional<ContractPeriod> updateContractPeriod(ContractPeriod contractPeriod) throws SQLException {
         String query = "UPDATE contractor_period SET name = ?, start_date = ?, end_date = ? WHERE contractor_period_id = ?";
@@ -189,6 +190,34 @@ public class ContractPeriodRepoImpl implements ContractPeriodRepo {
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<List<ContractPeriod>> getAllFutureContractPeriods() throws SQLException {
+        List<ContractPeriod> contractPeriods = new ArrayList<>();
+        String query = "SELECT * FROM contractor_period WHERE end_date > CURDATE()";
+
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    ContractPeriod contractPeriod = ContractPeriod.builder()
+                            .contractPeriodId(rs.getLong("contractor_period_id"))
+                            .name(rs.getString("name"))
+                            .startDate(rs.getDate("start_date").toLocalDate())
+                            .endDate(rs.getDate("end_date").toLocalDate())
+                            .build();
+
+                    contractPeriods.add(contractPeriod);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw e;  // Rethrow to propagate error
+        }
+
+        // If the list is empty, return an empty Optional
+        return contractPeriods.isEmpty() ? Optional.empty() : Optional.of(contractPeriods);
+    }
+
 
 
 }

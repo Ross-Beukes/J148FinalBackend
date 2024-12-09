@@ -3,6 +3,7 @@ package com.j148.backend.contract_period.service;
 import com.j148.backend.contract_period.model.ContractPeriod;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 public interface ContractPeriodService {
@@ -105,4 +106,6 @@ public interface ContractPeriodService {
      * @throws SQLException if a database access error occurs.
      */
     double enrollmentAveragesForYear(int year) throws SQLException;
+
+    List<ContractPeriod> getAllFutureContractPeriods() throws SQLException, Exception;
 }
