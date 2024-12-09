@@ -558,7 +558,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
         }
     }
 
-// Comparison utility method
+    // Comparison utility method
     private <T extends Comparable<T>> boolean compare(T actual, T target, char operator) {
         switch (operator) {
             case '=':
