@@ -5,12 +5,14 @@
 package com.j148.backend.scheduler;
 
 import com.j148.backend.attendance.service.AttendanceService;
-import com.j148.backend.attendance.service.AttendanceServiceImpl;
+import com.j148.backend.contractor.model.Contractor;
+import com.j148.backend.contractor.service.ContractorService;
+import com.j148.backend.leave_request.model.LeaveRequest;
+import com.j148.backend.leave_request.service.LeaveRequestService;
 import com.j148.backend.notification.EmailSender;
 import com.j148.backend.notification.TimesheetReminder;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
-import com.j148.backend.user.repo.UserRepoImpl;
 import jakarta.ejb.Schedule;
 import jakarta.ejb.Singleton;
 import jakarta.inject.Inject;
@@ -21,6 +23,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.MonthDay;
 import java.time.format.DateTimeFormatter;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,15 +38,23 @@ public class Scheduler {
     
     @Inject
     private AttendanceService attendanceService;
+    
     @Inject
     private UserRepo userRepo;
+    
     @Inject
     private TimesheetReminder timesheetReminder ;
 
     @Inject
     private EmailSender emailSender;
     
-    @Schedule(dayOfWeek = "Mon-Fri", hour = "15", minute = "45", persistent = false)
+    @Inject
+    private LeaveRequestService leaveRequestService;
+    
+    @Inject
+    private ContractorService contractorService;
+    
+    @Schedule(dayOfWeek = "Mon-Fri", hour = "13", minute = "28", persistent = false)
     public void checkContractorsAttendance() {
         try {
             attendanceService.createAbsentContractors();
@@ -118,7 +130,6 @@ public class Scheduler {
                 StringBuilder msg = new StringBuilder();
                 msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
-                System.out.println("Hello world");
 
                 emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
@@ -198,7 +209,6 @@ public class Scheduler {
                 StringBuilder msg = new StringBuilder();
                 msg.append(greetings).append(user.getName()).append(" ").append(user.getSurname()).append("\n");
                 msg.append(sb);
-                System.out.println("Hello world");
 
                 emailSender.sendNotification(user.getEmail(), msg.toString(), "Timesheet not Uploaded");
 
@@ -258,4 +268,43 @@ public class Scheduler {
             Logger.getLogger(TimesheetReminder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    @Schedule(hour = "9", minute = "10", persistent = false)
+    public void SetContractorToOnLeave() {
+        try {
+        AbstractMap<Long, LeaveRequest> leaveRequests = leaveRequestService.retrieveAllLeaveRequestsByDecision("APPROVED");
+        List<LeaveRequest> leaveRequestList = new ArrayList<>(leaveRequests.values());
+        LocalDate today = LocalDate.now();
+            for (int i = 0; i < leaveRequestList.size(); i++) {
+                if (leaveRequestList.get(i).getStartDate() == today) {
+                    Contractor contractor = leaveRequestList.get(i).getContractor();
+                    contractor.setStatus(Contractor.Status.ON_LEAVE);
+                    contractor = contractorService.changeContractorStatus(contractor);
+                }
+            }
+
+        } catch (Exception e) {
+            Logger.getLogger(LeaveRequest.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+    
+    @Schedule(hour = "9", minute = "20", persistent = false)
+    public void SetContractorToActive() {
+        try {
+        AbstractMap<Long, LeaveRequest> leaveRequests = leaveRequestService.retrieveAllLeaveRequestsByDecision("APPROVED");
+        List<LeaveRequest> leaveRequestList = new ArrayList<>(leaveRequests.values());
+        LocalDate today = LocalDate.now();
+            for (int i = 0; i < leaveRequestList.size(); i++) {
+                if (leaveRequestList.get(i).getEndDate() == today) {
+                    Contractor contractor = leaveRequestList.get(i).getContractor();
+                    contractor.setStatus(Contractor.Status.ACTIVE);
+                    contractor = contractorService.changeContractorStatus(contractor);
+                }
+            }
+
+        } catch (Exception e) {
+            Logger.getLogger(LeaveRequest.class.getName()).log(Level.SEVERE, null, e);
+        }
+    }
+    
 }
