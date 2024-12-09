@@ -19,7 +19,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 @Path("attendance")
 public class AttendanceResource {
 
-    private static final Logger LOG = Logger.getLogger(UserResource.class.getName());
+    private static final Logger LOG = Logger.getLogger(AttendanceResource.class.getName());
     @Inject
     private AttendanceService attendanceService;
 

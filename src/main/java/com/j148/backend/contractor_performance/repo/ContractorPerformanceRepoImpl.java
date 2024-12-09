@@ -278,7 +278,9 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
                                 .register(Attendance.Register.valueOf(rs.getString("attendance_register")))
                                 .build();
                         cp.getAttendanceList().add(attendance);
-                        attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        if(rs.getTimestamp("time_in") != null || rs.getTimestamp("time_out") != null) {
+                            attendanceIdsMap.get(contractorId).add(attendanceId); // Track processed attendance ID
+                        }
                     }
 
                     // Populate Hearing
@@ -309,6 +311,9 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
 
         // Collect all ContractorPerformance objects
         contractorPerformances.addAll(contractorMap.values());
+        for(ContractorPerformance cp : contractorPerformances){
+            System.out.println(cp.toString());
+        }
         return contractorPerformances;
     }
 
@@ -558,7 +563,7 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
         }
     }
 
-// Comparison utility method
+    // Comparison utility method
     private <T extends Comparable<T>> boolean compare(T actual, T target, char operator) {
         switch (operator) {
             case '=':

@@ -35,7 +35,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Contract offerContract(User user, AptitudeTest aptitudeTest, FileEntity idFile, FileEntity matricCertificateFile) throws Exception {
         validateAllOfferAttributes(user, aptitudeTest, idFile, matricCertificateFile);
-        if (aptitudeTest.getTestMark() >= 65
+        if (aptitudeTest.getTestMark() >= 65 && aptitudeTest.getTestMark() <= 100
                 && idFile.getVerified() == FileEntity.Verified.APPROVED
                 && matricCertificateFile.getVerified() == FileEntity.Verified.APPROVED) {
             Contract contract;
@@ -104,8 +104,9 @@ public class ContractServiceImpl implements ContractService {
         if (matricCertificateFile.getVerified() == FileEntity.Verified.REJECTED) {
             throw new IllegalStateException("Matric cerificate file was rejected");
         }
-        if (aptitudeTest.getTestMark() < 65) {
-            throw new IllegalArgumentException("Aptitude mark below 65%, does not qualify for contract offer");
+        if (aptitudeTest.getTestMark() < 65 && aptitudeTest.getTestMark() > 100) {
+            throw new IllegalArgumentException("Aptitude mark below 65%, does not qualify for contract offer and " +
+                    "Aptitude mark above 100% does not qualify for contract offer");
         }
     }
 

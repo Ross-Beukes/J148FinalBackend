@@ -2,17 +2,16 @@ package com.j148.backend.aptitude_test.service;
 
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.aptitude_test.repo.AptitudeRepo;
-import com.j148.backend.aptitude_test.repo.AptitudeTestRepoImpl;
 import com.j148.backend.user.model.User;
 import com.j148.backend.user.repo.UserRepo;
-import com.j148.backend.user.repo.UserRepoImpl;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import lombok.extern.jbosslog.JBossLog;
 
 import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
+
 @ApplicationScoped
 public class AptitudeTestServiceImpl implements AptitudeTestService {
 
@@ -86,6 +85,23 @@ public class AptitudeTestServiceImpl implements AptitudeTestService {
                     -> new RuntimeException("Could not retrieve aptitude test by user ID"));
         } else {
             throw new NullPointerException("User cannot be null when retrieving aptitude test by user ID");
+        }
+    }
+    @Override
+    public List<AptitudeTest> getAllWrittenTests() throws Exception {
+        return aptitudeRepo.retrieveAllWrittenTests().orElseThrow(() -> new RuntimeException("Could not retreive written Aptitdue Tests"));
+    }
+
+    @Override
+    public AptitudeTest update(AptitudeTest aptitudeTest) throws Exception {
+        if (aptitudeTest != null) {
+            if (aptitudeTest.getUser() != null) {
+                return aptitudeRepo.update(aptitudeTest).orElseThrow(() -> new RuntimeException("Cannot update aptitude test."));
+            } else {
+                throw new NullPointerException("AptitudeTest cannot be null");
+            }
+        } else {
+            throw new NullPointerException("AptitudeTest cannot be null");
         }
     }
 }

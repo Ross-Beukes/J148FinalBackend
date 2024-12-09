@@ -3,6 +3,8 @@ package com.j148.backend.aptitude_test.service;
 import com.j148.backend.aptitude_test.model.AptitudeTest;
 import com.j148.backend.user.model.User;
 
+import java.util.List;
+
 /**
  * Service interface for managing aptitude test operations in the HRMS system.
  */
@@ -47,4 +49,8 @@ public interface AptitudeTestService {
      * @throws Exception 
      */
     AptitudeTest retrieveAptitudeTestByUserId(User user) throws Exception;
+
+    List<AptitudeTest> getAllWrittenTests() throws Exception;
+
+    AptitudeTest update(AptitudeTest aptitudeTest) throws Exception;
 }

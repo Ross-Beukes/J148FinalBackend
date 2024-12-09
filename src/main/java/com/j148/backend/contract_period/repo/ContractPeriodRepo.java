@@ -3,6 +3,7 @@ package com.j148.backend.contract_period.repo;
 import com.j148.backend.contract_period.model.ContractPeriod;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -100,4 +101,6 @@ public interface ContractPeriodRepo {
      * @throws SQLException if a database access error occurs
      */
     Optional<ContractPeriod> findById(ContractPeriod contractPeriod) throws SQLException;
+
+    Optional<List<ContractPeriod>> getAllFutureContractPeriods() throws SQLException;
 }

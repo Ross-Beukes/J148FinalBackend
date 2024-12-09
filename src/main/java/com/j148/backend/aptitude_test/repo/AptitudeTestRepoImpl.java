@@ -20,8 +20,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 @ApplicationScoped
 public class AptitudeTestRepoImpl implements AptitudeRepo {
@@ -94,6 +92,7 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
             stmt.setLong(3, aptitudeTest.getUser().getUserId());
 
             if (stmt.executeUpdate() > 0) {
+                System.out.println("The update worked!");
                 return Optional.of(aptitudeTest);
             }
             return Optional.empty();
@@ -136,6 +135,47 @@ public class AptitudeTestRepoImpl implements AptitudeRepo {
             }
         }
         return Optional.empty();
+    }
+    @Override
+    public Optional<List<AptitudeTest>> retrieveAllWrittenTests() throws SQLException {
+        List<AptitudeTest> writtenTests = new ArrayList<>();
+        String query = "SELECT \n"
+                + "    u.user_id,\n"
+                + "    u.name,\n"
+                + "    u.surname,\n"
+                + "    u.email,\n"
+                + "    u.role,\n"
+                + "    a.aptitude_test_id,\n"
+                + "    a.test_mark,\n"
+                + "    a.test_date\n"
+                + "FROM \n"
+                + "    user u\n"
+                + "INNER JOIN \n"
+                + "    aptitude_test a\n"
+                + "ON \n"
+                + "    u.user_id = a.user_id\n"
+                + "WHERE \n"
+                + "    a.test_date < NOW()\n"
+                + "    AND a.test_mark = 101";
+        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    User user = User.builder()
+                            .userId(rs.getLong("user_id"))
+                            .name(rs.getString("name"))
+                            .surname(rs.getString("surname"))
+                            .email(rs.getString("email"))
+                            .role(User.Role.valueOf(rs.getString("role")))
+                            .build();
+                    AptitudeTest aptitudeTest = AptitudeTest.builder().aptitudeTestId(rs.getLong("aptitude_test_id"))
+                            .testDate(rs.getTimestamp("test_date").toLocalDateTime()).testMark(rs.getInt("test_mark"))
+                            .user(user).build();
+                    writtenTests.add(aptitudeTest);
+                }
+                System.out.println("Here are the written tests : " + writtenTests);
+                return Optional.of(writtenTests);
+            }
+        }
     }
 }
 

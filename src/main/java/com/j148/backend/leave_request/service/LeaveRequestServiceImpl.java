@@ -12,6 +12,7 @@ import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.leave_request.model.LeaveRequest;
 import com.j148.backend.leave_request.model.LeaveRequest.Decision;
 import com.j148.backend.leave_request.repo.LeaveRequestRepo;
+import com.j148.backend.notification.EmailSender;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,9 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
 
     @Inject
     private LeaveRequestRepo leaveRequestRepo;
+
+    @Inject
+    private EmailSender emailSender;
 
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
@@ -130,6 +134,7 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
                 throw new IllegalStateException("Leave request has already been approved or denied, cannot change value");
             }
             validateUpdateLeaveRequestDecision(leaveRequest);
+            emailSender.sendNotification(leaveRequest.getContractor().getUser().getEmail(), "The leave request you sent has been : " + leaveRequest.getDecision(), "Leave request decision update");
             return leaveRequestRepo.updateLeaveRequestToApprovedOrDenied(leaveRequest).orElseThrow(()
                     -> new RuntimeException("There was an error updating the leave request decision"));
         } else {

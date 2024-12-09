@@ -2,7 +2,11 @@ package com.j148.backend.hearing.service;
 
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.hearing.model.Hearing;
+import jakarta.transaction.Transactional;
+
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface HearingService {
 
@@ -28,4 +32,9 @@ public interface HearingService {
     public LocalDateTime scheduleHearing() throws Exception ;
 
     Hearing rescheduleHearing(Hearing hearing, Contractor contractor) throws Exception;
+
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
+    List<Hearing> getAllHearings() throws Exception;
+
+    Hearing updateHearing(Hearing hearing) throws Exception;
 }

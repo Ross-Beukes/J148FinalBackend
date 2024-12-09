@@ -53,6 +53,7 @@ public class AttendanceServiceImpl implements AttendanceService {
 
             if (foundAttendance == null) {
                 attendance.setTimeIn(LocalDateTime.now());
+                attendance.setTimeOut(attendance.getTimeIn());
                 LocalTime targetTime = LocalTime.of(8, 30);
                 LocalTime currentTime = LocalTime.now();
                 if (currentTime.isAfter(targetTime)) {
@@ -110,8 +111,11 @@ public class AttendanceServiceImpl implements AttendanceService {
         List<Contractor> contractors = contractorService.findCurrentContractors();
         List<Attendance> attendances = contractorsNotCheckedIn(contractors);
         if (!attendances.isEmpty() && !contractors.isEmpty()) {
+            System.out.println("We are here now!!! ");
             for (Attendance value : attendances) {
                 value.setRegister(Attendance.Register.ABSENT);
+                value.setTimeIn(LocalDateTime.now());
+                value.setTimeOut(value.getTimeIn().plusMinutes(1));
                 Attendance attendance = this.attendanceRepo.createAttendanceRecord(value).
                         orElseThrow(() -> new RuntimeException("unable to add attendance record"));
                 Contractor contractor = attendance.getContractor();
@@ -121,6 +125,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         }
         return attendances;
     }
+
 
     @Override
     public List<Attendance> contractorsNotCheckedIn(List<Contractor> contractors) throws SQLException, Exception {

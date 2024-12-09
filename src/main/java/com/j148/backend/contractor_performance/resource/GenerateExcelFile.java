@@ -255,9 +255,9 @@ public class GenerateExcelFile {
 
                 String ageRange = age < 20 ? "Under 20"
                         : age < 25 ? "20-24"
-                                : age < 30 ? "25-29"
-                                        : age < 35 ? "30-34"
-                                                : age < 40 ? "35-39" : "40+";
+                        : age < 30 ? "25-29"
+                        : age < 35 ? "30-34"
+                        : age < 40 ? "35-39" : "40+";
 
                 //Contractors by age range
                 contractorsByAgeRange.put(ageRange, contractorsByAgeRange.getOrDefault(ageRange, 0) + 1);
@@ -1086,7 +1086,7 @@ public class GenerateExcelFile {
 
 //            try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
 //        workbook.write(byteArrayOutputStream);
-//        
+//
 //        // Convert ByteArrayOutputStream to InputStream
 //        InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 //        return inputStream;

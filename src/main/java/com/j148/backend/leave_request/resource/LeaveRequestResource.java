@@ -37,22 +37,20 @@ import java.util.logging.Logger;
 @RequestScoped
 @Path("leave-request")
 public class LeaveRequestResource {
-
+    
     @Inject
     private LeaveRequestService leaveRequestService;
-
     @Inject
     private UserService userService;
-
     @Inject
     private ContractorService contractorService;
     private static final Logger LOG = Logger.getLogger(LeaveRequestResource.class.getName());
-
+    
     @POST
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     @Path("submit-leave-request")
-    public Response submitLeaveRequest(LeaveRequest leaveRequest) {
+    public Response submitLeaveRequest(LeaveRequest leaveRequest){
         try {
             return Response.ok(this.leaveRequestService.createLeaveRequest(leaveRequest)).build();
         } catch (Exception ex) {
@@ -60,11 +58,11 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
         }
     }
-
+    
     @GET
     @Produces(APPLICATION_JSON)
     @Path("get-leave-requests-by-date-range")
-    public Response getLeaveRequestsInDateRange(@QueryParam("start-date") String startDate, @QueryParam("end-date") String endDate) {
+    public Response getLeaveRequestsInDateRange(@QueryParam("start-date") String startDate, @QueryParam("end-date") String endDate){
         try {
             return Response.ok(this.leaveRequestService.retrieveAllLeaveRequestsBetweenDates(LocalDate.parse(startDate), LocalDate.parse(endDate))).build();
         } catch (Exception ex) {
@@ -74,51 +72,6 @@ public class LeaveRequestResource {
     }
 
     @GET
-    @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-contractor")
-    public Response getLeaveRequestsByContractor(@QueryParam("email") String email) {
-        try {
-            User user = User.builder().email(email).build();
-            User foundUser = userService.findUserByEmail(user);
-            Contractor contractor = Contractor.builder().user(foundUser).build();
-            return Response.ok(leaveRequestService.retrieveAllContractorLeaveRequests(contractorService.retrieveContractorByUserID(contractor))).build();
-        } catch (Exception ex) {
-            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-        }
-    }
-
-    @GET
-    @Produces(APPLICATION_JSON)
-    @Path("get-pending-contractor-leave-requests")
-    public Response getPendingLeaveRequestsByContractor(@QueryParam("email") String email) {
-        try {
-            User user = User.builder().email(email).build();
-            User foundUser = userService.findUserByEmail(user);
-            Contractor contractor = Contractor.builder().user(foundUser).build();
-            return Response.ok(leaveRequestService.retrieveAllPendingContractorLeaveRequests(contractorService.retrieveContractorByUserID(contractor))).build();
-        } catch (Exception ex) {
-            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-        }
-    }
-
-    @POST
-    @Consumes(APPLICATION_JSON)
-    @Produces(APPLICATION_JSON)
-    @Path("update-leave-request-decision")
-    public Response updateLeaveRequestDecision(LeaveRequest leaveRequest) {
-        try {
-            return Response.ok(leaveRequestService.updateLeaveRequestDecision(leaveRequest)).build();
-        } catch (Exception ex) {
-            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
-
-        }
-    }
-
-    @GET
-    @Produces(APPLICATION_JSON)
     @Path("retrieve-all-leave-request")
     public Response retrieveAllLeaveRequest() {
         try {
@@ -138,6 +91,62 @@ public class LeaveRequestResource {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("An unexpected error occurred while retrieving leave requests.")
                     .build();
+        }
+    }
+    
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("get-leave-requests-by-contractor")
+    public Response getLeaveRequestsByContractor(@QueryParam("email") String email){
+        try {
+            User user = User.builder().email(email).build();
+            User foundUser = userService.findUserByEmail(user);
+            Contractor contractor = Contractor.builder().user(foundUser).build();
+            return Response.ok(leaveRequestService.retrieveAllContractorLeaveRequests(contractorService.retrieveContractorByUserID(contractor))).build();
+        } catch (Exception ex) {
+            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
+        }
+    }
+    
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("get-pending-contractor-leave-requests")
+    public Response getPendingLeaveRequestsByContractor(@QueryParam("email") String email){
+        try {
+            User user = User.builder().email(email).build();
+            User foundUser = userService.findUserByEmail(user);
+            Contractor contractor = Contractor.builder().user(foundUser).build();
+            return Response.ok(leaveRequestService.retrieveAllPendingContractorLeaveRequests(contractorService.retrieveContractorByUserID(contractor))).build();
+        } catch (Exception ex) {
+            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
+        }
+    }
+    
+    @GET
+    @Produces(APPLICATION_JSON)
+    @Path("get-leave-requests-by-decision")
+    public Response getLeaveRequestsByDecision(@QueryParam("decision") String decision){
+        try {
+            return Response.ok(leaveRequestService.retrieveAllLeaveRequestsByDecision(decision)).build();
+        } catch (Exception ex) {
+            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
+        }
+    }
+    
+    @POST
+    @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
+    @Path("update-leave-request-decision")
+    public Response updateLeaveRequestDecision(LeaveRequest leaveRequest){
+        try {
+            return Response.ok(leaveRequestService.updateLeaveRequestDecision(leaveRequest)).build();
+        } catch (Exception ex) {
+            Logger.getLogger(LeaveRequestResource.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
+            return Response.status(Response.Status.BAD_REQUEST).entity(ex).build();
+            
         }
     }
 }
