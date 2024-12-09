@@ -170,5 +170,13 @@ public class UserResource {
             return Response.status(Response.Status.EXPECTATION_FAILED).build();
         }
     }
+//    @POST
+//    @Consumes(APPLICATION_JSON)
+//    @Path("forgot-password")
+//    public Response forgotPassword(User user) {
+//        try{
+//
+//        }
+//    }
 
 }

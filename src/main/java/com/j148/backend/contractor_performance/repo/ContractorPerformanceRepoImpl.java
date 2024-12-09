@@ -298,6 +298,9 @@ public class ContractorPerformanceRepoImpl implements ContractorPerformanceRepo 
 
         // Collect all ContractorPerformance objects
         contractorPerformances.addAll(contractorMap.values());
+        for(ContractorPerformance cp : contractorPerformances){
+            System.out.println(cp.toString());
+        }
         return contractorPerformances;
     }
 

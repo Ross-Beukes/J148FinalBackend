@@ -86,7 +86,8 @@ public class WarningServiceImpl implements WarningService {
         if (warningRepo.findById(warning).isEmpty()) {
             throw new IllegalArgumentException("Could not find warning");
         }
-
+        if (warning.getWarningId() != null)
+            warning.setState(Warning.WarningState.APPEALED);
         return warningRepo.updateState(warning)
                 .orElseThrow(() -> new RuntimeException("Failed to appeal warning"));
 
@@ -118,8 +119,9 @@ public class WarningServiceImpl implements WarningService {
     @Override
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     public Warning updateState(Warning warning) throws SQLException {
-        if (warning.getWarningId() != null)
-        warning.setState(Warning.WarningState.APPEALED);
+        if(warning != null){
+            warningRepo.updateState(warning);
+        }
         return warning;
     }
 
