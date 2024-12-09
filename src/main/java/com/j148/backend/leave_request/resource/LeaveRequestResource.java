@@ -61,8 +61,8 @@ public class LeaveRequestResource {
     
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-date-range/{start-date}/{end-date}")
-    public Response getLeaveRequestsInDateRange(@PathParam("start-date") String startDate, @PathParam("end-date") String endDate){
+    @Path("get-leave-requests-by-date-range")
+    public Response getLeaveRequestsInDateRange(@QueryParam("start-date") String startDate, @QueryParam("end-date") String endDate){
         try {
             return Response.ok(this.leaveRequestService.retrieveAllLeaveRequestsBetweenDates(LocalDate.parse(startDate), LocalDate.parse(endDate))).build();
         } catch (Exception ex) {
@@ -96,8 +96,8 @@ public class LeaveRequestResource {
     
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-contractor/{email}")
-    public Response getLeaveRequestsByContractor(@PathParam("email") String email){
+    @Path("get-leave-requests-by-contractor")
+    public Response getLeaveRequestsByContractor(@QueryParam("email") String email){
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);
@@ -111,8 +111,8 @@ public class LeaveRequestResource {
     
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-pending-contractor-leave-requests/{email}")
-    public Response getPendingLeaveRequestsByContractor(@PathParam("email") String email){
+    @Path("get-pending-contractor-leave-requests")
+    public Response getPendingLeaveRequestsByContractor(@QueryParam("email") String email){
         try {
             User user = User.builder().email(email).build();
             User foundUser = userService.findUserByEmail(user);
@@ -126,8 +126,8 @@ public class LeaveRequestResource {
     
     @GET
     @Produces(APPLICATION_JSON)
-    @Path("get-leave-requests-by-decision/{decision}")
-    public Response getLeaveRequestsByDecision(@PathParam("decision") String decision){
+    @Path("get-leave-requests-by-decision")
+    public Response getLeaveRequestsByDecision(@QueryParam("decision") String decision){
         try {
             return Response.ok(leaveRequestService.retrieveAllLeaveRequestsByDecision(decision)).build();
         } catch (Exception ex) {
