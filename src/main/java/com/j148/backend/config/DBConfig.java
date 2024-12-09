@@ -14,8 +14,8 @@ public class DBConfig {
     static {
         basicDataSource = new BasicDataSource();
         basicDataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        basicDataSource.setUsername("root");
-        basicDataSource.setPassword("root");
+        basicDataSource.setUsername("admin");
+        basicDataSource.setPassword("Hangwelani");
         basicDataSource.setUrl("jdbc:mysql://Localhost:3306/hrms?autoReconnect=true&useSSL=false");
         basicDataSource.setMinIdle(10);
         basicDataSource.setMaxIdle(10);
