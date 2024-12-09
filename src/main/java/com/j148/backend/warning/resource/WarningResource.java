@@ -61,25 +61,6 @@ public class WarningResource {
     }
 
     @POST
-    @Produces(APPLICATION_JSON)
-    @Consumes(APPLICATION_JSON)
-    @Path("GetContractorWarnings")
-    public Response retrieveContractorWarning(Contractor contractor) {
-        try {
-            return Response.ok(this.warningService.findAllActiveByContractor(contractor)).build();
-        } catch (SQLException e) {
-            LOG.log(Level.SEVERE, "Unable to get warnings from the database.");
-            return Response.status(Response.Status.CONFLICT).build();
-        } catch (IllegalArgumentException e) {
-            LOG.log(Level.SEVERE, "Contractor object not complete.");
-            return Response.status(Response.Status.BAD_REQUEST).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "Unable to get Warning", e);
-            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e).build();
-        }
-    }
-
-    @POST
     @Consumes(APPLICATION_JSON)
     @Path("/appeal-warning")
     public Response appealWarning(Warning warning) {
