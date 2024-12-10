@@ -174,7 +174,7 @@ public class ContractPeriodRepoImpl implements ContractPeriodRepo {
 
     @Override
     public Optional<ContractPeriod> getNextContractPeriod() throws SQLException {
-        String query = "SELECT * FROM contractor_period WHERE start_date > CURDATE()";
+        String query = "SELECT * FROM contractor_period WHERE start_date <= CURDATE()";
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
