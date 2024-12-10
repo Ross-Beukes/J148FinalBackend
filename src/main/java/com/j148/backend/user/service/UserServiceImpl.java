@@ -1,5 +1,7 @@
 package com.j148.backend.user.service;
 
+import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.contract_period.service.ContractPeriodService;
 import com.j148.backend.contractor.model.Contractor;
 import com.j148.backend.contractor.service.ContractorService;
 import com.j148.backend.notification.EmailSender;
@@ -31,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @Inject
     private ContractorService contractorService;
+
+    @Inject
+    private ContractPeriodService contractPeriodService;
 
     @Inject
     private EmailSender emailSender;
@@ -112,6 +117,13 @@ public class UserServiceImpl implements UserService {
         if (user != null){
             User promotedUser = findUserByEmail(user);
             Contractor contractor = contractorService.promoteToContractor(promotedUser);
+            EmailSender emailSender = new EmailSender();
+            ContractPeriod contractPeriod = contractPeriodService.getNextContractPeriod();
+            String notification = "Dear " + promotedUser.getName()+ " " + promotedUser.getSurname()
+                    + ".\n \n Your contract and files have been accepted and you will be starting with us in the next contract period "
+                    + contractPeriod.getStartDate()
+                    + ".\n \n Kind wishes \n Admin";
+            emailSender.sendNotification(promotedUser.getEmail(), notification, "Congradulations!!!");
             return user;
         } else {
             throw new IllegalArgumentException("User cannot be null.");
