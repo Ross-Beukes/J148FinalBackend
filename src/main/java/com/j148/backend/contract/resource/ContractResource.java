@@ -78,6 +78,7 @@ public class ContractResource {
     @Produces(APPLICATION_JSON)
     public Response checkActiveContractOffer(@PathParam("userId") long userId) {
         try {
+            System.out.println("Starting check for contract");
             // First find the user
             User user = userService.findUserById(User.builder().userId(userId).build());
 

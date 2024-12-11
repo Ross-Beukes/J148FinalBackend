@@ -31,7 +31,7 @@ public class ContractServiceImpl implements ContractService {
     S3Service s3Service;
 
 
-    @Transactional(dontRollbackOn = { IllegalArgumentException.class, IllegalStateException.class},rollbackOn = {SQLException.class})
+    @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Contract offerContract(User user, AptitudeTest aptitudeTest, FileEntity idFile, FileEntity matricCertificateFile) throws Exception {
         validateAllOfferAttributes(user, aptitudeTest, idFile, matricCertificateFile);
@@ -40,17 +40,18 @@ public class ContractServiceImpl implements ContractService {
                 && matricCertificateFile.getVerified() == FileEntity.Verified.APPROVED) {
             Contract contract;
             ContractPeriod contractPeriod = contractPeriodService.getNextContractPeriod();
-            if (LocalDate.now().getDayOfYear() - contractPeriod.getStartDate().getDayOfYear() <= 14) {
-                contract = Contract.builder().contractPeriod(contractPeriod).offerDate(LocalDate.now())
-                        .expirationDate(contractPeriod.getStartDate().minusDays(1)).user(user).build();
-            } else {
-                contract = Contract.builder().contractPeriod(contractPeriod).offerDate(LocalDate.now())
-                        .expirationDate(LocalDate.now().plusDays(14)).user(user).build();
-            }
+//            if (LocalDate.now().getDayOfYear() - contractPeriod.getStartDate().getDayOfYear() <= 14) {
+//                contract = Contract.builder().contractPeriod(contractPeriod).offerDate(LocalDate.now())
+//                        .expirationDate(contractPeriod.getStartDate().minusDays(1)).user(user).build();
+//            } else
+
+            contract = Contract.builder().contractPeriod(contractPeriod).offerDate(LocalDate.now())
+                    .expirationDate(LocalDate.now().plusDays(14)).user(user).build();
+
             validateContractOffer(contract);
             emailSender.sendEmailWithAttachment(user.getEmail(), "Contract : " + "\nThis email is to inform " + user.getName() + " " + user.getSurname() + " that they have been offered a contract for contract period : " + contract.getContractPeriod().getName() + ", for the following dates: \nStart date : " + contract.getContractPeriod().getStartDate() + "\nEnd date : " + contract.getContractPeriod().getEndDate() + "\n\n Please respond within 14 days or before the aforementioned start date. \n(NB) DO NOT SHARE",
                     "Contract offer : " + user.getName() + " " + user.getSurname(),
-                    s3Service.downloadFile("hrms_contract.pdf"),"VZAP_contract"
+                    s3Service.downloadFile("hrms_contract.pdf"), "VZAP_contract"
             );
             return contractRepo.createContract(contract).orElseThrow(()
                     -> new RuntimeException("Could not offer contract (create new contract) due to an error"));
@@ -78,8 +79,8 @@ public class ContractServiceImpl implements ContractService {
             throw new IllegalArgumentException("Contract cannot be null when offered");
         }
     }
-    
-    private void validateAllOfferAttributes(User user, AptitudeTest aptitudeTest, FileEntity idFile, FileEntity matricCertificateFile){
+
+    private void validateAllOfferAttributes(User user, AptitudeTest aptitudeTest, FileEntity idFile, FileEntity matricCertificateFile) {
         if (user == null) {
             throw new NullPointerException("User cannot be null when creating contract offer");
         }
