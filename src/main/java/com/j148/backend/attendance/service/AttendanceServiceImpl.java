@@ -156,6 +156,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public List<Attendance> retrieveAttendanceByCurrent() throws SQLException, Exception {
         ContractPeriod contractPeriod = contractPeriodService.getCurrentContractPeriod();
+
         return attendanceRepo.retrieveAttendanceByCurrent(contractPeriod);
     }
 

@@ -159,6 +159,7 @@ public class AttendanceRepoImpl implements AttendanceRepo {
     
     @Override
     public List<Attendance> retrieveAttendanceByCurrent(ContractPeriod contractPeriod) throws SQLException {
+        System.out.println("The contract period is " + contractPeriod);
         String query = """
                         SELECT
                             a.attendance_id,
@@ -222,10 +223,12 @@ public class AttendanceRepoImpl implements AttendanceRepo {
                                     : null)
                             .register(Register.valueOf(rs.getString("register")))
                             .build();
+                    System.out.println(attendance);
                     currentAttendance.add(attendance);
                 }
             }
         }
+        System.out.println("The returned attendance list is : ");
         return currentAttendance;
     }
     

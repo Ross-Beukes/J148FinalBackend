@@ -147,10 +147,10 @@ public class WarningServiceImpl implements WarningService {
 
             try {
                 emailSender.sendNotification(warning.getContractor().getUser().getEmail()
-                        , "Dear " + warning.getContractor().getUser().getName()
+                        , "Dear " + "contractor"
                                 + "\n\nThis message serves to inform you that your appealed warning for the day : "
                                 + warning.getDateIssue().toString()
-                                + "has been reviewed and it has been made "
+                                + " has been reviewed and it has been made "
                                 + warning.getState().toString()
                                 + "\nKind regards," + "\nAdmin"
                         , "Decision on your appealed warning");

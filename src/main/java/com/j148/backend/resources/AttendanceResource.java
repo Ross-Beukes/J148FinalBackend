@@ -113,7 +113,9 @@ public class AttendanceResource {
     @Produces(APPLICATION_JSON)
     public Response retrieveAttendanceByCurrentContractors() {
         try {
+            LOG.info("Starting process for retrieving attendance");
             List<Attendance> currentContractors = attendanceService.retrieveAttendanceByCurrent();
+            LOG.info("The returned contractor list in resource is : " + currentContractors);
             return Response.status(Response.Status.OK).entity(currentContractors).build();
 
         } catch (SQLException e) {

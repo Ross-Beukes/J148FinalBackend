@@ -164,7 +164,7 @@ public class ContractPeriodRepoImpl implements ContractPeriodRepo {
                     contractPeriod.setName(rs.getString("name"));
                     contractPeriod.setStartDate(rs.getDate("start_date").toLocalDate());
                     contractPeriod.setEndDate(rs.getDate("end_date").toLocalDate());
-
+                    System.out.println(contractPeriod);
                     return Optional.of(contractPeriod);
                 }
             }
