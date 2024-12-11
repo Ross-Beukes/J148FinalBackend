@@ -54,7 +54,7 @@ public interface WarningService {
 
     List<Warning> findAppealedByContractor(Contractor contractor) throws SQLException;
 
-    Warning updateState(Warning warning) throws SQLException;
+    Warning updateState(Warning warning) throws SQLException, Exception;
 
     Warning createLateWarning(Contractor contractor) throws SQLException;
 
