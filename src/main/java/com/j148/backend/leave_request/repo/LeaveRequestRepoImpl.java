@@ -35,15 +35,12 @@ public class LeaveRequestRepoImpl implements LeaveRequestRepo {
     @Override
     public Optional<LeaveRequest> createLeaveRequest(LeaveRequest leaveRequest) throws SQLException {
         String query = "INSERT INTO leave_request (contractor_id, start_date, end_date, decision) VALUES(?, ?, ?, ?)";
-        try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection con =  DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             ps.setLong(1, leaveRequest.getContractor().getContractorId());
             ps.setString(2, String.valueOf(leaveRequest.getStartDate()));
             ps.setString(3, String.valueOf(leaveRequest.getEndDate()));
             ps.setString(4, "PENDING");
-
-            Savepoint beforeReservationInput = con.setSavepoint();
             if (ps.executeUpdate() > 0) {
-                con.commit();
                 try (ResultSet keys = ps.getGeneratedKeys()) {
                     if (keys.next()) {
                         leaveRequest.setLeaveRequestId(keys.getLong(1));
@@ -51,12 +48,11 @@ public class LeaveRequestRepoImpl implements LeaveRequestRepo {
                 }
 
                 return Optional.of(leaveRequest);
-            } else {
-                con.rollback(beforeReservationInput);
             }
         }
         return Optional.empty();
     }
+
 
     @Override
     public AbstractMap<Long, LeaveRequest> retrieveAllContractorLeaveRequests(Contractor contractor) throws SQLException {
@@ -205,7 +201,6 @@ public class LeaveRequestRepoImpl implements LeaveRequestRepo {
                     requestMap.put(rs.getLong("leave_request_id"), LeaveRequest.builder().startDate(rs.getDate("start_date").toLocalDate())
                             .endDate(rs.getDate("end_date").toLocalDate()).decision(LeaveRequest.Decision.valueOf(rs.getString("decision")))
                             .contractor(Contractor.builder().contractorId(rs.getLong("contractor_id")).build())
-                            .file(FileEntity.builder().fileId(rs.getLong("file_id")).build())
                             .build());
 
                 }
