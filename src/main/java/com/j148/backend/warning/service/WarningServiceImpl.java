@@ -33,12 +33,26 @@ public class WarningServiceImpl implements WarningService {
     @Inject
     private EmailSender emailSender;
 
+
     @Transactional(dontRollbackOn = {IllegalArgumentException.class, IllegalStateException.class}, rollbackOn = {SQLException.class})
     @Override
     public Warning lateComingWarning(Contractor contractor) throws SQLException, Exception {
         if (contractor != null) {
             if (contractor.getContractorId() != null) {
+
+                try {
+                    emailSender.sendNotification(contractor.getUser().getEmail()
+                            ,"Dear " + contractor.getUser().getName()
+                                    + "\n\nThis message serves to inform you that you have received a warning for checking in LATE."
+                                    +"Repeated offenses will result in a disciplinary hearing and are documented as part of your performance. To avoid this please ensure you check-in before '8:30'."
+                                    +"\nKind regards," + "\nAdmin"
+                            , "Late warning Issued");
+                } catch (MessagingException ex) {
+                    Logger.getLogger(WarningServiceImpl.class.getName()).log(Level.SEVERE, "late coming warning message error, Error sending e-mail informing a contractor they received a warning", ex);
+                }
+
                 return warningRepo.createLateWarning(contractor).orElseThrow(() -> new RuntimeException("Warning could not be issued"));
+
             } else {
                 throw new IllegalArgumentException("Contract ID is null");
             }
