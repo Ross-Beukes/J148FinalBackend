@@ -62,7 +62,13 @@ public class FileEntityServiceImpl implements FileEntityService {
         s3Repo.deleteFile("vzapbucket", String.valueOf(fileEntity.getFileId()));
     }
         User user = userRepo.retreiveUserFromEmail(fileEntity.getUser()).get();
-        emailSender.sendNotification(fileEntity.getUser().getEmail(), "The file : " + fileEntity.getCategory() + " for user " + user.getName() + " " + user.getSurname() + " has been set to " + fileEntity.getVerified(), "Document verification update");
+        emailSender.sendNotification(fileEntity.getUser().getEmail(), "Dear : " +fileEntity.getUser().getName()
+                        +"\nThis e-mail is to inform you that your uploaded "
+                        + fileEntity.getCategory()
+                        + "has been reviewed and has been "
+                        + fileEntity.getVerified()
+                        +"\nKind regards,\nAdmin"
+                , "Document verification update");
         return fileEntityRepo.fileVerification(fileEntity)
                 .orElseThrow(() -> new RuntimeException("File status could not be changed."));
     }
