@@ -7,4 +7,6 @@ import com.j148.backend.user.model.User;
 
 public interface ContractService {
     Contract offerContract(User user, AptitudeTest aptitudeTest, FileEntity idFile, FileEntity matricCertificateFile) throws Exception;
+
+    Contract findActiveContractOffer(User user) throws Exception;
 }

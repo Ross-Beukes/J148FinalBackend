@@ -12,6 +12,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.Response;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 import java.sql.SQLException;
@@ -64,6 +65,7 @@ public class ContractorResource {
     @POST
     @Path("changeStatus")
     @Consumes(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     public Response changeContractorStatus(Contractor contractor) {
         try {
             Contractor updatedContractor = contractorService.changeContractorStatus(contractor);
@@ -121,4 +123,3 @@ public class ContractorResource {
         }
     }
 }
-

@@ -3,6 +3,8 @@ package com.j148.backend.contract.repo;
 
 import com.j148.backend.config.DBConfig;
 import com.j148.backend.contract.model.Contract;
+import com.j148.backend.contract_period.model.ContractPeriod;
+import com.j148.backend.user.model.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.sql.Connection;
@@ -92,6 +94,52 @@ public class ContractRepoImpl implements ContractRepo {
 //         }
 //
 //        return Optional.empty();
+        return Optional.empty();
+    }
+
+    // Update ContractRepoImpl.java
+    @Override
+    public Optional<Contract> findActiveContractOffer(User user) throws SQLException {
+        String sql = """
+            SELECT c.*, cp.* 
+            FROM contract c
+            JOIN contractor_period cp ON c.contract_period_id = cp.contractor_period_id
+            WHERE c.user_id = ? 
+            AND c.decision = 'PENDING' 
+            AND c.expiration_date >= CURDATE() 
+            AND c.deleted = false
+            """;
+
+        try (Connection con = DBConfig.getCon();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setLong(1, user.getUserId());
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    ContractPeriod contractPeriod = ContractPeriod.builder()
+                            .contractPeriodId(rs.getLong("contractor_period_id"))
+                            .name(rs.getString("name"))
+                            .startDate(rs.getDate("start_date").toLocalDate())
+                            .endDate(rs.getDate("end_date").toLocalDate())
+                            .build();
+
+                    Contract contract = Contract.builder()
+                            .contractId(rs.getLong("contract_id"))
+                            .contractPeriod(contractPeriod)
+                            .user(user)
+                            .offerDate(rs.getDate("offer_date").toLocalDate())
+                            .decisionDate(rs.getDate("decision_date") != null ?
+                                    rs.getDate("decision_date").toLocalDate() : null)
+                            .expirationDate(rs.getDate("expiration_date").toLocalDate())
+                            .decision(Contract.Decision.valueOf(rs.getString("decision")))
+                            .isDeleted(rs.getBoolean("deleted"))
+                            .build();
+
+                    return Optional.of(contract);
+                }
+            }
+        }
         return Optional.empty();
     }
 

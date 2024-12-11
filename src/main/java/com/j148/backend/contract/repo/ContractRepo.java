@@ -1,6 +1,8 @@
 package com.j148.backend.contract.repo;
 
 import com.j148.backend.contract.model.Contract;
+import com.j148.backend.user.model.User;
+
 import java.sql.SQLException;
 import java.util.Optional;
 
@@ -22,8 +24,11 @@ public interface ContractRepo {
      *@return Optional<Contract>
      */ 
     public Optional<Contract> findContract(long contractId) throws SQLException;
-    
-    
+
+
+    // Update ContractRepoImpl.java
+    Optional<Contract> findActiveContractOffer(User user) throws SQLException;
+
     /**
      * The update Contract method updates an existing Contract record in the HRMS Database
      * 
