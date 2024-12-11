@@ -194,7 +194,7 @@ public class AttendanceRepoImpl implements AttendanceRepo {
                 """;
         List<Attendance> currentAttendance = new ArrayList<>();
         try (Connection con = DBConfig.getCon(); PreparedStatement ps = con.prepareStatement(query)) {
-            ps.setLong(1, 1);
+            ps.setLong(1, contractPeriod.getContractPeriodId());
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     User user = User.builder()

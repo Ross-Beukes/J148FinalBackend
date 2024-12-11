@@ -92,25 +92,6 @@ public class ContractPeriodResource {
         }
     }
 
-    @GET
-    @Path("find-period-by-id")
-    public Response findContractPeriodById(ContractPeriod contractPeriod) {
-        try {
-            if (contractPeriod == null || contractPeriod.getContractPeriodId() == null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Contract period or ID must not be null.").build();
-            }
-
-            ContractPeriod foundContractPeriod = contractPeriodService.findContractPeriodById(contractPeriod);
-
-            return Response.ok(foundContractPeriod).build();
-        } catch (NoSuchElementException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Contract period not found with ID: " + contractPeriod.getContractPeriodId()).build();
-        } catch (Exception e) {
-            LOG.log(Level.SEVERE, "An unexpected error occurred", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred").build();
-        }
-    }
-
 
     /**
      * Endpoint to retrieve the current contract period.
