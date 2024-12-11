@@ -93,7 +93,7 @@ public class AttendanceServiceImpl implements AttendanceService {
             Attendance.Register register = foundAttendance.getRegister();
             Contractor contractor = foundAttendance.getContractor();
             Long contractorID = contractor.getContractorId();
-            if (timeOut != timeIn) {
+            if (!(timeOut.equals(timeIn))) {
                 throw new RuntimeException("Contractor already checked out");
             }
             if (attendanceId != 0L && timeIn != null && register != null && contractorID != 0L) {
