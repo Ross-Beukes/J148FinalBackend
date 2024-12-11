@@ -284,7 +284,7 @@ public class Scheduler {
         }
     }
 
-    @Schedule(hour = "8", minute = "53", persistent = false)
+    @Schedule(hour = "8", minute = "00", persistent = false)
     public void setContractorToOnLeave() {
         try {
             List<LeaveRequest> leaveRequestList = getApprovedLeaveRequests();
@@ -302,7 +302,7 @@ public class Scheduler {
         }
     }
 
-    @Schedule(hour = "8", minute = "55", persistent = false)
+    @Schedule(hour = "15", minute = "30", persistent = false)
     public void setContractorToActive() {
         try {
             List<LeaveRequest> leaveRequestList = getApprovedLeaveRequests();
