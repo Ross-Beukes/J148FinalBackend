@@ -17,16 +17,30 @@ public class DBConfig {
         basicDataSource.setUsername("admin");
         basicDataSource.setPassword("Hangwelani");
         basicDataSource.setUrl("jdbc:mysql://hrms.ctqm24m4mbs5.af-south-1.rds.amazonaws.com:3306/hrms?useSSL=false");
-        basicDataSource.setInitialSize(10);
-        basicDataSource.setMaxTotal(80);
-        basicDataSource.setMaxIdle(20);
-        basicDataSource.setMaxWaitMillis(5000);
+
+        // Better connection pool settings for t3.medium
+        basicDataSource.setInitialSize(5);
+        basicDataSource.setMinIdle(5);
+        basicDataSource.setMaxIdle(10);
+        basicDataSource.setMaxTotal(30);
+        basicDataSource.setMaxWaitMillis(10000);
+
+        // Connection validation
+        basicDataSource.setTestOnBorrow(true);
+        basicDataSource.setTestWhileIdle(true);
+        basicDataSource.setValidationQuery("SELECT 1");
+        basicDataSource.setValidationQueryTimeout(5);
+
+        // Connection cleanup
+        basicDataSource.setRemoveAbandonedOnBorrow(true);
+        basicDataSource.setRemoveAbandonedTimeout(60);
+
+        // Better transaction isolation
+        basicDataSource.setDefaultTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
     }
 
     public Connection getCon() throws SQLException {
-        Connection con = basicDataSource.getConnection();
-        con.setTransactionIsolation(Connection.TRANSACTION_READ_UNCOMMITTED);
-        return con;
+        return basicDataSource.getConnection();
     }
 
     public void close() throws SQLException {
