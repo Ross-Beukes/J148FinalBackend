@@ -307,7 +307,7 @@ public class FileEntityRepoImpl implements FileEntityRepo {
 
     @Override
     public Optional<FileEntity> findFileByUserIdAndCategory(User user, FileEntity fileEntity) throws SQLException {
-        String query = "SELECT * FROM files WHERE category = ? AND user_id = ?";
+        String query = "SELECT * FROM files WHERE category = ? AND user_id = ? ORDER BY date_added DESC";
 
         try (Connection con = DBConfig.getCon();
              PreparedStatement ps = con.prepareStatement(query)) {
