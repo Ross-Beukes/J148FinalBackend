@@ -62,10 +62,10 @@ public class FileEntityServiceImpl implements FileEntityService {
         s3Repo.deleteFile("vzapbucket", String.valueOf(fileEntity.getFileId()));
     }
         User user = userRepo.retreiveUserFromEmail(fileEntity.getUser()).get();
-        emailSender.sendNotification(fileEntity.getUser().getEmail(), "Dear : " +fileEntity.getUser().getName()
+        emailSender.sendNotification(fileEntity.getUser().getEmail(), "Dear applicant, "
                         +"\nThis e-mail is to inform you that your uploaded "
                         + fileEntity.getCategory()
-                        + "has been reviewed and has been "
+                        + " has been reviewed and has been "
                         + fileEntity.getVerified()
                         +"\nKind regards,\nAdmin"
                 , "Document verification update");
